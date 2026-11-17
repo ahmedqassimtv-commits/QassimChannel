@@ -17,6 +17,7 @@ const Articles = lazy(() => import('./pages/Articles.jsx'))
 const ArticleView = lazy(() => import('./pages/ArticleView.jsx'))
 const OnAir = lazy(() => import('./pages/OnAir.jsx'))
 const About = lazy(() => import('./pages/About.jsx'))
+const Books = lazy(() => import('./pages/Books.jsx'))
 
 function ScrollToTop({ lenisRef }) {
   const { pathname, hash, state } = useLocation()
@@ -72,8 +73,11 @@ function AppRoutes() {
         <Route path="/stories" element={<Stories />} />
         <Route path="/articles" element={<Articles />} />
         <Route path="/articles/:slug" element={<ArticleView />} />
-        <Route path="/on-air" element={<OnAir />} />
-        <Route path="/about" element={<About />} />
+        <Route path="/masaha/on-air" element={<OnAir />} />
+        <Route path="/masaha/books" element={<Books />} />
+        <Route path="/masaha/about" element={<About />} />
+        <Route path="/on-air" element={<Navigate to="/masaha/on-air" replace />} />
+        <Route path="/about" element={<Navigate to="/masaha/about" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Suspense>

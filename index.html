@@ -30,19 +30,19 @@
 
     <!-- تطبيق الثيم المحفوظ قبل تحميل React (مفيش وميض) -->
     <script>
-      // الثيمات الثلاثة فقط: green (أخضر) و red (أحمر) و blue (لبني)
+      // الثيمات الثلاثة فقط: green (أخضر) و red (أحمر) و gold (ذهبي)
       // أي قيمة أخرى (ومنها emerald/sand القديمتان) تُعاد إلى الأخضر الافتراضي
-      var THEME_COLORS = { green: '#051F20', red: '#1A0A07', blue: '#EBE2CC' }
+      var THEME_COLORS = { green: '#051F20', red: '#1A0A07', gold: '#1A1408' }
       document.documentElement.dataset.theme = 'green'
       try {
         var t = localStorage.getItem('qassimz:theme')
-        if (t === 'green' || t === 'red' || t === 'blue') {
+        if (t === 'green' || t === 'red' || t === 'gold') {
           document.documentElement.dataset.theme = t
         }
         var themeNow = document.documentElement.dataset.theme
         document.querySelector('meta[name="theme-color"]').setAttribute('content', THEME_COLORS[themeNow])
-        // الثيم اللبني فاتح، والثيمان الآخران داكنان
-        document.querySelector('meta[name="color-scheme"]').setAttribute('content', themeNow === 'blue' ? 'light' : 'dark')
+        // جميع الثيمات داكنة
+        document.querySelector('meta[name="color-scheme"]').setAttribute('content', 'dark')
       } catch (e) {}
     </script>
 

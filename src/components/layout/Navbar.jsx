@@ -30,6 +30,9 @@ import {
   Search,
   ArrowUpLeft,
   Check,
+  User,
+  Library,
+  Compass,
 } from 'lucide-react'
 import {
   playGlassDropdown,
@@ -162,14 +165,21 @@ const SEARCH_INDEX = [
   { title: 'أرشيف الحكايات', sub: 'صور نادرة وقصص من التاريخ', to: '/stories', icon: History },
   { title: 'الفيديوهات', sub: 'حلقات وثائقية ولقطات قصيرة', to: '/videos', icon: Video },
   { title: 'المقالات', sub: 'قراءات ومقالات متأنية', to: '/articles', icon: BookOpen },
-  { title: 'أون إير — ON AIR', sub: 'منشورات وحضور قاسم الحيّ', to: '/on-air', icon: Radio },
+  { title: 'أون إير — ON AIR', sub: 'البث المباشر والمحتوى الحيّ', to: '/masaha/on-air', icon: Radio },
+  { title: 'الكتب والقصص', sub: 'مكتبة القراءات والحكايات', to: '/masaha/books', icon: Library },
+  { title: 'عنّي', sub: 'وراء الصورة والحكاية', to: '/masaha/about', icon: User },
 ]
 
 const NAV_ITEMS = [
   { to: '/stories', label: 'أرشيف الحكايات', icon: History },
   { to: '/videos', label: 'الفيديوهات', icon: Video },
   { to: '/articles', label: 'المقالات', icon: BookOpen },
-  { to: '/on-air', label: 'أون إير', badge: 'ON AIR', icon: Radio },
+]
+
+const MASAHA_ITEMS = [
+  { to: '/masaha/on-air', label: 'أون إير', sub: 'البث المباشر والمحتوى الحيّ', icon: Radio },
+  { to: '/masaha/books', label: 'الكتب والقصص', sub: 'مكتبة القراءات والحكايات', icon: Library },
+  { to: '/masaha/about', label: 'عنّي', sub: 'وراء الصورة والحكاية', icon: User },
 ]
 
 function resolveRouteKey(pathname) {
@@ -178,7 +188,7 @@ function resolveRouteKey(pathname) {
   if (pathname.startsWith('/stories')) return '/stories'
   if (pathname.startsWith('/videos')) return '/videos'
   if (pathname.startsWith('/articles')) return '/articles'
-  if (pathname.startsWith('/on-air')) return '/on-air'
+  if (pathname.startsWith('/masaha')) return 'masaha'
   return '/'
 }
 
@@ -470,6 +480,54 @@ function VerdictPlanDropdown({ currentPath, onNavigateSection, onClose, onHoverS
   )
 }
 
+// قائمة «مساحة» المنسدلة — البث والكتب وعنّي
+function MasahaDropdown({ onNavigateSection, onClose, onHoverSound }) {
+  return (
+    <div className="relative z-10 p-2.5 text-right">
+      {/* ترويسة */}
+      <div className="mb-2 flex items-center justify-between border-b border-white/10 px-2 pb-2">
+        <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/90">
+          <Compass className="size-3.5 text-[color:var(--qz-mint)]" />
+          <span>مساحة قاسم</span>
+        </span>
+        <span className="rounded-full border border-white/14 bg-white/8 px-2 py-0.5 font-sans text-[8.5px] font-semibold tracking-[0.14em] text-[color:var(--qz-mint)]">
+          MASAHA
+        </span>
+      </div>
+
+      {/* الروابط */}
+      <div className="flex flex-col gap-1">
+        {MASAHA_ITEMS.map((item) => (
+          <motion.button
+            key={item.to}
+            type="button"
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ type: 'spring', bounce: 0, duration: 0.3 }}
+            onMouseEnter={() => {
+              onHoverSound()
+              prefetchRoute(item.to)
+            }}
+            onClick={(e) => {
+              playGlassDropdown(false)
+              onClose()
+              onNavigateSection(e, item.to, 'masaha')
+            }}
+            className="group/item flex cursor-pointer items-center gap-3 rounded-2xl px-3 py-2.5 text-right transition-colors hover:bg-white/[0.08]"
+          >
+            <GlassIcon icon={item.icon} size="md" />
+            <span>
+              <span className="block text-xs font-bold text-white">{item.label}</span>
+              <span className="block text-[11px] text-[color:var(--qz-sage)]">{item.sub}</span>
+            </span>
+            <ArrowUpLeft className="mr-auto size-3.5 text-[color:var(--qz-sage)] opacity-0 transition-opacity group-hover/item:opacity-100" />
+          </motion.button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function Navbar() {
   const location = useLocation()
   const navigate = useNavigate()
@@ -480,6 +538,7 @@ export default function Navbar() {
   const [activeKey, setActiveKey] = useState(() => resolveRouteKey(location.pathname))
   const [hoveredKey, setHoveredKey] = useState(null)
   const [verdictOpen, setVerdictOpen] = useState(false)
+  const [masahaOpen, setMasahaOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchExpanded, setSearchExpanded] = useState(false)
   const [searchSuggestionsOpen, setSearchSuggestionsOpen] = useState(false)
@@ -488,6 +547,7 @@ export default function Navbar() {
   const [isCompact, setIsCompact] = useState(false)
   const [lensReady, setLensReady] = useState(false)
   const [verdictAnchor, setVerdictAnchor] = useState({ right: 144, originX: 250 })
+  const [masahaAnchor, setMasahaAnchor] = useState({ right: 16, originX: 160 })
   const [suggestionsHeight, setSuggestionsHeight] = useState(0)
 
   // مراجع العناصر (DOM Refs)
@@ -496,6 +556,8 @@ export default function Navbar() {
   const dropdownHostRef = useRef(null)
   const verdictBtnRef = useRef(null)
   const verdictMenuRef = useRef(null)
+  const masahaBtnRef = useRef(null)
+  const masahaMenuRef = useRef(null)
   const searchBoxRef = useRef(null)
   const searchDropdownRef = useRef(null)
   const searchListInnerRef = useRef(null)
@@ -508,6 +570,7 @@ export default function Navbar() {
   const hasMountedRef = useRef(false)
   const wasSearchExpandedRef = useRef(false)
   const verdictCloseTimerRef = useRef(null)
+  const masahaCloseTimerRef = useRef(null)
   const searchSuggestionsCloseTimerRef = useRef(null)
   const mobileCloseTimerRef = useRef(null)
   const focusTimerRef = useRef(null)
@@ -518,6 +581,7 @@ export default function Navbar() {
   const searchExpandedRef = useRef(searchExpanded)
   const searchSuggestionsOpenRef = useRef(searchSuggestionsOpen)
   const verdictOpenRef = useRef(verdictOpen)
+  const masahaOpenRef = useRef(masahaOpen)
   const mobileMenuOpenRef = useRef(mobileMenuOpen)
 
   activeKeyRef.current = activeKey
@@ -525,6 +589,7 @@ export default function Navbar() {
   searchExpandedRef.current = searchExpanded
   searchSuggestionsOpenRef.current = searchSuggestionsOpen
   verdictOpenRef.current = verdictOpen
+  masahaOpenRef.current = masahaOpen
   mobileMenuOpenRef.current = mobileMenuOpen
 
   const triggerHoverSound = useCallback(() => {
@@ -606,6 +671,7 @@ export default function Navbar() {
     setActiveKey(nextRouteKey)
     setHoveredKey(null)
     setVerdictOpen(false)
+    setMasahaOpen(false)
     setMobileMenuOpen(false)
     setSearchSuggestionsOpen(false)
     setSearchExpanded(false)
@@ -613,7 +679,7 @@ export default function Navbar() {
   }, [location.pathname])
 
   // تحديد القسم المستهدف للمؤشر: الأولوية للـ Hover، ثم فتح الفِردِكت، ثم القسم النشط الحقيقي
-  const indicatorTargetKey = hoveredKey || (verdictOpen ? 'verdict' : activeKey)
+  const indicatorTargetKey = hoveredKey || (verdictOpen ? 'verdict' : masahaOpen ? 'masaha' : activeKey)
 
   useLayoutEffect(() => {
     if (!searchExpanded) {
@@ -688,6 +754,29 @@ export default function Navbar() {
     return () => window.removeEventListener('resize', updateVerdictAlignment)
   }, [verdictOpen, updateVerdictAlignment])
 
+  const updateMasahaAlignment = useCallback(() => {
+    const btnEl = masahaBtnRef.current
+    const hostEl = dropdownHostRef.current
+    if (!btnEl || !hostEl) return
+    const btnRect = btnEl.getBoundingClientRect()
+    const hostRect = hostEl.getBoundingClientRect()
+    const menuWidth = Math.min(320, window.innerWidth - 24)
+    const rawRight = hostRect.right - btnRect.right
+    const maxRight = Math.max(0, hostRect.width - menuWidth)
+    const clampedRight = Math.max(0, Math.min(rawRight, maxRight))
+    const btnCenterX = btnRect.left + btnRect.width / 2
+    const menuLeft = hostRect.right - clampedRight - menuWidth
+    const originX = Math.max(24, Math.min(menuWidth - 24, btnCenterX - menuLeft))
+    setMasahaAnchor({ right: Math.round(clampedRight), originX: Math.round(originX) })
+  }, [])
+
+  useLayoutEffect(() => {
+    if (!masahaOpen) return undefined
+    updateMasahaAlignment()
+    window.addEventListener('resize', updateMasahaAlignment, { passive: true })
+    return () => window.removeEventListener('resize', updateMasahaAlignment)
+  }, [masahaOpen, updateMasahaAlignment])
+
   // مراقبة وضع التصغير (Compact Mode) بناءً على موضع Scroll الحقيقي فقط
   useEffect(() => {
     let rafId = null
@@ -757,6 +846,35 @@ export default function Navbar() {
     [clearVerdictTimer]
   )
 
+  const clearMasahaTimer = useCallback(() => {
+    window.clearTimeout(masahaCloseTimerRef.current)
+    masahaCloseTimerRef.current = null
+  }, [])
+
+  const handleMasahaEnter = useCallback(
+    (event) => {
+      if (event?.pointerType && event.pointerType !== 'mouse') return
+      clearMasahaTimer()
+    },
+    [clearMasahaTimer]
+  )
+
+  const handleMasahaLeave = useCallback(
+    (event) => {
+      if (event?.pointerType && event.pointerType !== 'mouse') return
+      if (!masahaOpenRef.current) return
+      clearMasahaTimer()
+      masahaCloseTimerRef.current = window.setTimeout(() => {
+        masahaCloseTimerRef.current = null
+        setMasahaOpen((open) => {
+          if (open) playGlassDropdown(false)
+          return false
+        })
+      }, DROPDOWN_CLOSE_DELAY)
+    },
+    [clearMasahaTimer]
+  )
+
   const handleSearchAreaEnter = useCallback(
     (event) => {
       if (event?.pointerType && event.pointerType !== 'mouse') return
@@ -806,12 +924,17 @@ export default function Navbar() {
 
   const openInlineSearch = useCallback(() => {
     clearVerdictTimer()
+    clearMasahaTimer()
     clearMobileTimer()
     clearSearchSuggestionsTimer()
 
     if (verdictOpenRef.current) {
       playGlassDropdown(false)
       setVerdictOpen(false)
+    }
+    if (masahaOpenRef.current) {
+      playGlassDropdown(false)
+      setMasahaOpen(false)
     }
     if (mobileMenuOpenRef.current) {
       setMobileMenuOpen(false)
@@ -827,7 +950,7 @@ export default function Navbar() {
     focusTimerRef.current = window.setTimeout(() => {
       searchInputRef.current?.focus()
     }, 65)
-  }, [clearMobileTimer, clearSearchSuggestionsTimer, clearVerdictTimer])
+  }, [clearMasahaTimer, clearMobileTimer, clearSearchSuggestionsTimer, clearVerdictTimer])
 
   const closeInlineSearch = useCallback(() => {
     clearSearchSuggestionsTimer()
@@ -855,6 +978,16 @@ export default function Navbar() {
         }
       }
 
+      if (masahaOpenRef.current) {
+        const insideMasaha =
+          masahaBtnRef.current?.contains(target) || masahaMenuRef.current?.contains(target)
+        if (!insideMasaha) {
+          clearMasahaTimer()
+          playGlassDropdown(false)
+          setMasahaOpen(false)
+        }
+      }
+
       if (searchExpandedRef.current || searchSuggestionsOpenRef.current) {
         const insideSearch =
           searchBoxRef.current?.contains(target) || searchDropdownRef.current?.contains(target)
@@ -876,7 +1009,7 @@ export default function Navbar() {
 
     document.addEventListener('pointerdown', handleClickOutside)
     return () => document.removeEventListener('pointerdown', handleClickOutside)
-  }, [clearMobileTimer, clearVerdictTimer, closeInlineSearch])
+  }, [clearMasahaTimer, clearMobileTimer, clearVerdictTimer, closeInlineSearch])
 
   // اختصارات لوحة المفاتيح العامة: Ctrl+K / Cmd+K و Escape
   useEffect(() => {
@@ -900,6 +1033,11 @@ export default function Navbar() {
           playGlassDropdown(false)
           setVerdictOpen(false)
         }
+        if (masahaOpenRef.current) {
+          clearMasahaTimer()
+          playGlassDropdown(false)
+          setMasahaOpen(false)
+        }
         if (mobileMenuOpenRef.current) {
           clearMobileTimer()
           playGlassDropdown(false)
@@ -910,11 +1048,11 @@ export default function Navbar() {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [clearMobileTimer, clearVerdictTimer, closeInlineSearch, openInlineSearch])
+  }, [clearMasahaTimer, clearMobileTimer, clearVerdictTimer, closeInlineSearch, openInlineSearch])
 
   // إغلاق واجهة البحث الموسعة بالكامل (الحقل + الاقتراحات) والقوائم عند Scroll الفعلي للصفحة
   useEffect(() => {
-    if (!verdictOpen && !searchExpanded && !searchSuggestionsOpen && !mobileMenuOpen) {
+    if (!verdictOpen && !masahaOpen && !searchExpanded && !searchSuggestionsOpen && !mobileMenuOpen) {
       return undefined
     }
     const anchorY = window.scrollY
@@ -930,6 +1068,11 @@ export default function Navbar() {
           clearVerdictTimer()
           playGlassDropdown(false)
           setVerdictOpen(false)
+        }
+        if (masahaOpenRef.current) {
+          clearMasahaTimer()
+          playGlassDropdown(false)
+          setMasahaOpen(false)
         }
         if (searchExpandedRef.current || searchSuggestionsOpenRef.current) {
           closeInlineSearch()
@@ -949,10 +1092,12 @@ export default function Navbar() {
     }
   }, [
     verdictOpen,
+    masahaOpen,
     searchExpanded,
     searchSuggestionsOpen,
     mobileMenuOpen,
     clearVerdictTimer,
+    clearMasahaTimer,
     clearMobileTimer,
     closeInlineSearch,
   ])
@@ -961,6 +1106,7 @@ export default function Navbar() {
   useEffect(
     () => () => {
       window.clearTimeout(verdictCloseTimerRef.current)
+      window.clearTimeout(masahaCloseTimerRef.current)
       window.clearTimeout(searchSuggestionsCloseTimerRef.current)
       window.clearTimeout(mobileCloseTimerRef.current)
       window.clearTimeout(focusTimerRef.current)
@@ -974,6 +1120,7 @@ export default function Navbar() {
       event.preventDefault()
 
       clearVerdictTimer()
+      clearMasahaTimer()
       clearMobileTimer()
       clearSearchSuggestionsTimer()
 
@@ -982,6 +1129,7 @@ export default function Navbar() {
       setHoveredKey(null)
       syncNavIndicator(sectionKey, false)
       setVerdictOpen(false)
+      setMasahaOpen(false)
       setMobileMenuOpen(false)
       setSearchSuggestionsOpen(false)
       setSearchExpanded(false)
@@ -997,6 +1145,7 @@ export default function Navbar() {
     [
       clearMobileTimer,
       clearSearchSuggestionsTimer,
+      clearMasahaTimer,
       clearVerdictTimer,
       location.pathname,
       navigate,
@@ -1052,7 +1201,8 @@ export default function Navbar() {
   }
 
   const isVerdictActive = activeKey === 'verdict'
-  const isLightTheme = theme === 'blue' // اللبني هو الثيم الفاتح الوحيد
+  // الثيم الذهبي داكن — لا يوجد ثيم فاتح حالياً
+  const isLightTheme = false
 
   return (
     <header
@@ -1338,6 +1488,62 @@ export default function Navbar() {
                     </NavLink>
                   )
                 })}
+
+                {/* مساحة ▾ */}
+                <div
+                  ref={(el) => {
+                    masahaBtnRef.current = el
+                    itemRefs.current.masaha = el
+                  }}
+                  onPointerEnter={handleMasahaEnter}
+                  onPointerLeave={handleMasahaLeave}
+                  onMouseEnter={() => {
+                    setHoveredKey('masaha')
+                    triggerHoverSound()
+                  }}
+                  className={`relative z-10 rounded-full ${
+                    activeKey === 'masaha' && indicatorTargetKey !== 'masaha'
+                      ? 'bg-white/[0.06] ring-1 ring-white/14'
+                      : ''
+                  }`}
+                >
+                  <button
+                    type="button"
+                    onClick={() => {
+                      clearMasahaTimer()
+                      const next = !masahaOpen
+                      if (next) {
+                        closeInlineSearch()
+                        setMobileMenuOpen(false)
+                        setVerdictOpen(false)
+                        syncNavIndicator('masaha', false)
+                      }
+                      playGlassDropdown(next)
+                      setMasahaOpen(next)
+                    }}
+                    aria-expanded={masahaOpen}
+                    aria-haspopup="true"
+                    data-qz-navitem=""
+                    className={`group/link relative inline-flex cursor-pointer items-center gap-1.5 rounded-full py-1.5 pl-3 pr-2 text-xs font-medium transition-colors duration-200 xl:text-sm ${
+                      activeKey === 'masaha' || masahaOpen
+                        ? 'font-semibold text-white'
+                        : 'text-white/90 hover:text-white'
+                    }`}
+                  >
+                    <CleanNavIcon
+                      Icon={Compass}
+                      active={activeKey === 'masaha' || indicatorTargetKey === 'masaha' || masahaOpen}
+                    />
+                    <span className="flex items-center gap-1.5 whitespace-nowrap [text-shadow:0_1px_2px_rgba(0,0,0,0.45)]">
+                      <span>مساحة</span>
+                      <ChevronDown
+                        className={`size-3.5 text-[color:var(--qz-mint)]/90 transition-transform duration-200 ${
+                          masahaOpen ? 'rotate-180' : ''
+                        }`}
+                      />
+                    </span>
+                  </button>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -1524,7 +1730,44 @@ export default function Navbar() {
           )}
         </AnimatePresence>
 
-        {/* 2. قائمة اقتراحات البحث (Spring Dropdown نظيفة تمامًا بدون Ghosting عند الخروج) */}
+        {/* 2. قائمة مساحة المنسدلة */}
+        <AnimatePresence>
+          {masahaOpen && !searchExpanded && (
+            <motion.div
+              key="masaha-dropdown"
+              ref={masahaMenuRef}
+              variants={verdictMenuVariants}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              onPointerEnter={handleMasahaEnter}
+              onPointerLeave={handleMasahaLeave}
+              style={{
+                right: masahaAnchor.right,
+                transformOrigin: `${masahaAnchor.originX}px top`,
+              }}
+              className="qassimz-dropdown-shell pointer-events-auto absolute top-1.5 hidden w-80 overflow-visible rounded-[28px] border-y border-x-0 border-white/16 bg-[color:var(--qz-ink)]/86 text-right shadow-[0_24px_60px_rgba(0,0,0,0.52)] backdrop-blur-[20px] saturate-[180%] before:absolute before:-top-2.5 before:inset-x-0 before:h-2.5 before:content-[''] lg:block"
+            >
+              <span
+                aria-hidden="true"
+                style={{ left: Math.max(16, masahaAnchor.originX - 28) }}
+                className="pointer-events-none absolute -top-1.5 h-2 w-14 rounded-t-full border-t border-white/14 bg-white/[0.08] backdrop-blur-xl"
+              />
+              <div className="relative overflow-hidden rounded-[28px]">
+                <MasahaDropdown
+                  onNavigateSection={handleSectionSelect}
+                  onClose={() => {
+                    clearMasahaTimer()
+                    setMasahaOpen(false)
+                  }}
+                  onHoverSound={triggerHoverSound}
+                />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* 3. قائمة اقتراحات البحث (Spring Dropdown نظيفة تمامًا بدون Ghosting عند الخروج) */}
         <AnimatePresence>
           {searchSuggestionsOpen && (
             <motion.div
@@ -1727,6 +1970,28 @@ export default function Navbar() {
                       <GlassIcon icon={Tv} size="sm" />
                       <span>حُكم المسلسلات</span>
                     </NavLink>
+                  </div>
+
+                  <div className="my-1 rounded-2xl border-y border-x-0 border-white/10 bg-white/4 p-2">
+                    <div className="px-2 pb-1 text-[9.5px] font-semibold tracking-wider text-[color:var(--qz-sage)]">
+                      مساحة — MASAHA
+                    </div>
+                    {MASAHA_ITEMS.map(({ to, label, icon: ItemIcon }) => (
+                      <NavLink
+                        key={to}
+                        to={to}
+                        onMouseEnter={triggerHoverSound}
+                        onClick={(event) => {
+                          playGlassDropdown(false)
+                          handleSectionSelect(event, to, 'masaha')
+                        }}
+                        data-qz-item=""
+                        className="mt-1 flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-white"
+                      >
+                        <GlassIcon icon={ItemIcon} size="sm" />
+                        <span>{label}</span>
+                      </NavLink>
+                    ))}
                   </div>
 
                   {NAV_ITEMS.map(({ to, label, badge, icon: ItemIcon }) => (

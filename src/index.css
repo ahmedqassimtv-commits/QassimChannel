@@ -149,6 +149,7 @@
   font-style: normal;
   font-display: swap;
   font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+  unicode-range: U+0600-06FF, U+FB50-FDFF, U+FE70-FEFF, U+0020-002F, U+060C, U+061B, U+061F;
 }
 
 /* ==========================================================================
@@ -229,10 +230,13 @@ article, .font-text {
 .font-afarhood {
   font-family: var(--font-afarhood) !important;
   font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
-  letter-spacing: 0;
-  line-height: 1.75;
+  letter-spacing: 0.01em;
+  line-height: 1.65;
+  word-spacing: 0.05em;
   word-break: keep-all;
   overflow-wrap: anywhere;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 /* ==========================================================================
@@ -377,53 +381,23 @@ html[data-theme='red'] {
   color-scheme: dark;
 }
 
-html[data-theme='blue'] {
-  --qz-ink: #EBE2CC;    --qz-ink-rgb: 235 226 204;
-  --qz-deep: #DED6C1;   --qz-deep-rgb: 222 214 193;
-  --qz-forest: #CFC6B1; --qz-forest-rgb: 207 198 177;
-  --qz-moss: #B7B09E;   --qz-moss-rgb: 183 176 158;
-  --qz-sage: #5E584B;   --qz-sage-rgb: 94 88 75;
-  --qz-mint: #1F1D18;   --qz-mint-rgb: 31 29 24;
-  --qz-x1: #CFC6B1; --qz-x2: #B7B09E; --qz-x3: #DED6C1; --qz-x4: #E5DEC9;
-  --qz-x5: #EBE2CC; --qz-x6: #F5EFE0; --qz-x7: #1A1814;
-  --qz-glow-rgb: 94 88 75;
-  --qz-grad: linear-gradient(120deg, #1F1D18 0%, #3D382E 45%, #5E584B 80%, #7A7364 100%);
-  --qz-bg-tint: linear-gradient(160deg, #EBE2CC 0%, #DED6C1 38%, #CFC6B1 72%, #B7B09E 100%);
-  --color-emerald-100: #1F1D18;
-  --color-emerald-200: #2E2B24;
-  --color-emerald-300: #4A453A;
-  --color-emerald-400: #6E6758;
-  color-scheme: light;
-}
-
-html[data-theme='blue'] .text-white,
-html[data-theme='blue'] .text-white\/95,
-html[data-theme='blue'] .text-white\/90 {
-  color: #1F1D18 !important;
-  text-shadow: none !important;
-}
-
-html[data-theme='blue'] .text-white\/80,
-html[data-theme='blue'] .text-white\/75,
-html[data-theme='blue'] .text-white\/70,
-html[data-theme='blue'] .text-white\/60,
-html[data-theme='blue'] .text-white\/50 {
-  color: #3D382E !important;
-  text-shadow: none !important;
-}
-
-html[data-theme='blue'] .border-white\/25,
-html[data-theme='blue'] .border-white\/24,
-html[data-theme='blue'] .border-white\/22,
-html[data-theme='blue'] .border-white\/20,
-html[data-theme='blue'] .border-white\/18,
-html[data-theme='blue'] .border-white\/16 {
-  border-color: rgba(31, 29, 24, 0.16) !important;
-}
-
-html[data-theme='blue'] .bg-white\/10,
-html[data-theme='blue'] .bg-white\/8 {
-  background-color: rgba(31, 29, 24, 0.05) !important;
+html[data-theme='gold'] {
+  --qz-ink: #1A1408;    --qz-ink-rgb: 26 20 8;
+  --qz-deep: #2A1F0E;   --qz-deep-rgb: 42 31 14;
+  --qz-forest: #3D2E14; --qz-forest-rgb: 61 46 20;
+  --qz-moss: #8A6D3B;   --qz-moss-rgb: 138 109 59;
+  --qz-sage: #C9A54E;   --qz-sage-rgb: 201 165 78;
+  --qz-mint: #F5E6C0;   --qz-mint-rgb: 245 230 192;
+  --qz-x1: #4A3A1A; --qz-x2: #3D2E14; --qz-x3: #2A1F0E; --qz-x4: #221A0B;
+  --qz-x5: #1A1408; --qz-x6: #0E0B04; --qz-x7: #FFF8E8;
+  --qz-glow-rgb: 201 165 78;
+  --qz-grad: linear-gradient(120deg, #C9A54E 0%, #E8C96A 35%, #F5D780 65%, #FFE8A0 100%);
+  --qz-bg-tint: linear-gradient(150deg, #1A1408 0%, #3D2E14 32%, #8A6D3B 58%, #C9A54E 80%, #F5D780 100%);
+  --color-emerald-100: #FFF0D0;
+  --color-emerald-200: #F5D780;
+  --color-emerald-300: #C9A54E;
+  --color-emerald-400: #8A6D3B;
+  color-scheme: dark;
 }
 
 html[data-theme='red'] img:not(.grayscale):not([data-no-tint]),
@@ -435,9 +409,9 @@ html[data-theme='red'] iframe {
 html[data-theme='red'] h1,
 html[data-theme='red'] .font-cinema,
 html[data-theme='red'] h2.font-history,
-html[data-theme='blue'] h1,
-html[data-theme='blue'] .font-cinema,
-html[data-theme='blue'] h2.font-history {
+html[data-theme='gold'] h1,
+html[data-theme='gold'] .font-cinema,
+html[data-theme='gold'] h2.font-history {
   background-image: var(--qz-grad);
   -webkit-background-clip: text;
   background-clip: text;
@@ -494,16 +468,17 @@ html.qz-theme-switching *::after {
   will-change: transform, width;
 }
 
-html[data-theme='blue'] .qz-nav-pill {
+html[data-theme='gold'] .qz-nav-pill {
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.74) 0%,
-    rgba(235, 226, 204, 0.86) 100%
+    rgb(var(--qz-moss-rgb) / 0.72) 0%,
+    rgb(var(--qz-forest-rgb) / 0.82) 100%
   );
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    inset 0 0 0 1px rgba(31, 29, 24, 0.16),
-    0 4px 12px rgba(31, 29, 24, 0.09);
+    inset 0 1px 0 rgba(201, 165, 78, 0.28),
+    inset 0 -1px 0 rgba(201, 165, 78, 0.06),
+    inset 0 0 0 1px rgba(201, 165, 78, 0.18),
+    0 4px 14px rgba(0, 0, 0, 0.22);
 }
 
 /* مؤشر Highlight المطاطي لنتائج البحث (Spring Dropdown) */
@@ -518,15 +493,15 @@ html[data-theme='blue'] .qz-nav-pill {
     inset 0 0 0 1px rgba(255, 255, 255, 0.16);
 }
 
-html[data-theme='blue'] .qz-search-highlight {
+html[data-theme='gold'] .qz-search-highlight {
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.72) 0%,
-    rgba(235, 226, 204, 0.84) 100%
+    rgb(var(--qz-moss-rgb) / 0.68) 0%,
+    rgb(var(--qz-forest-rgb) / 0.78) 100%
   );
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    inset 0 0 0 1px rgba(31, 29, 24, 0.14);
+    inset 0 1px 0 rgba(201, 165, 78, 0.24),
+    inset 0 0 0 1px rgba(201, 165, 78, 0.16);
 }
 
 /* شريط التبويبات في الصفحات الداخلية */
@@ -562,17 +537,17 @@ html[data-theme='blue'] .qz-search-highlight {
     0 4px 12px rgba(0, 0, 0, 0.22) !important;
 }
 
-html[data-theme='blue'] .qz-seg-bubble,
-html[data-theme='blue'] [data-liquid-active='true'] > .qz-seg-bubble {
+html[data-theme='gold'] .qz-seg-bubble,
+html[data-theme='gold'] [data-liquid-active='true'] > .qz-seg-bubble {
   background: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.78) 0%,
-    rgba(235, 226, 204, 0.9) 100%
+    rgb(var(--qz-moss-rgb) / 0.72) 0%,
+    rgb(var(--qz-forest-rgb) / 0.82) 100%
   ) !important;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    inset 0 0 0 1px rgba(31, 29, 24, 0.18),
-    0 4px 12px rgba(31, 29, 24, 0.12) !important;
+    inset 0 1px 0 rgba(201, 165, 78, 0.28),
+    inset 0 0 0 1px rgba(201, 165, 78, 0.18),
+    0 4px 12px rgba(0, 0, 0, 0.22) !important;
 }
 
 .qz-menu-bubble {
@@ -597,7 +572,7 @@ html[data-theme='blue'] [data-liquid-active='true'] > .qz-seg-bubble {
   box-shadow: 0 0 10px rgb(var(--qz-mint-rgb) / 0.45);
 }
 html[data-theme='red'] .qz-vol-fill,
-html[data-theme='blue'] .qz-vol-fill {
+html[data-theme='gold'] .qz-vol-fill {
   background: var(--qz-grad);
   box-shadow: 0 0 12px rgb(var(--qz-glow-rgb) / 0.5);
 }
@@ -620,11 +595,11 @@ html[data-theme='blue'] .qz-vol-fill {
   ) !important;
 }
 
-html[data-theme='blue'] .qz-glass-layer {
+html[data-theme='gold'] .qz-glass-layer {
   background: linear-gradient(
     180deg,
-    rgba(245, 239, 224, 0.72) 0%,
-    rgba(235, 226, 204, 0.82) 100%
+    rgb(var(--qz-deep-rgb) / 0.62) 0%,
+    rgb(var(--qz-ink-rgb) / 0.72) 100%
   ) !important;
 }
 
@@ -635,11 +610,11 @@ html[data-theme='blue'] .qz-glass-layer {
     0 14px 36px rgba(0, 0, 0, 0.28);
 }
 
-html[data-theme='blue'] .qz-glass-rim {
+html[data-theme='gold'] .qz-glass-rim {
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.85),
-    inset 0 -1px 0 rgba(31, 29, 24, 0.08),
-    0 12px 30px rgba(31, 29, 24, 0.12);
+    inset 0 1px 0 rgba(201, 165, 78, 0.22),
+    inset 0 -1px 0 rgba(201, 165, 78, 0.05),
+    0 14px 36px rgba(0, 0, 0, 0.3);
 }
 
 .qz-seg.qz-seg-glass {
@@ -1095,11 +1070,11 @@ html[data-theme='blue'] .qz-glass-rim {
     inset 0 -1px 0 rgba(255, 255, 255, 0.08),
     0 12px 32px rgba(0, 0, 0, 0.22);
 }
-html[data-theme='blue'] .qassimz-apple-nav-shell {
+html[data-theme='gold'] .qassimz-apple-nav-shell {
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    inset 0 -1px 0 rgba(31, 29, 24, 0.08),
-    0 12px 28px rgba(31, 29, 24, 0.14);
+    inset 0 1px 0 rgba(201, 165, 78, 0.3),
+    inset 0 -1px 0 rgba(201, 165, 78, 0.06),
+    0 12px 32px rgba(0, 0, 0, 0.26);
 }
 /* استجابة فورية على pointer-down: تصغير 0.97 خلال 100ms لروابط الناڤبار */
 .qassimz-apple-nav-shell a[data-qz-navitem] {
@@ -1115,8 +1090,8 @@ html[data-theme='blue'] .qassimz-apple-nav-shell {
     backdrop-filter: none;
     background-color: rgb(var(--qz-ink-rgb) / 0.94) !important;
   }
-  html[data-theme='blue'] .qassimz-apple-nav-shell {
-    background-color: #ebe2cc !important;
+  html[data-theme='gold'] .qassimz-apple-nav-shell {
+    background-color: rgb(var(--qz-ink-rgb) / 0.94) !important;
   }
   .qassimz-apple-nav-shell .qz-glass-layer {
     -webkit-backdrop-filter: none;

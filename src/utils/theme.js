@@ -4,15 +4,15 @@ import { useSyncExternalStore } from 'react'
  * الثيمات الثلاثة:
  * - 'green' → الأخضر الزمردي (الأصلي)
  * - 'red'   → الجمري: تدريج أحمر ⇠ أصفر
- * - 'blue'  → اللبني: الثيم الفاتح (خلفية فاتحة ونص داكن)
+ * - 'gold'  → الذهبي: ثيم داكن بلمسات ذهبية فاخرة
  */
 
-export const THEMES = ['green', 'red', 'blue']
+export const THEMES = ['green', 'red', 'gold']
 const STORAGE_KEY = 'qassimz:theme'
 const META_COLORS = {
   green: '#051F20',
   red: '#1A0A07',
-  blue: '#EBE2CC',
+  gold: '#1A1408',
 }
 
 const listeners = new Set()
