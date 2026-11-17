@@ -1,0 +1,17 @@
+node_modules
+dist
+
+# Backup & temporary files
+*.bak
+*.backup
+*.old
+*.orig
+*~
+*.tmp
+* - Copy*
+*نسخة*
+backup/
+backups/
+
+# macOS Finder metadata — must not be committed
+.DS_Store

@@ -1,0 +1,1125 @@
+@import "tailwindcss";
+@import "yet-another-react-lightbox/styles.css";
+@import "yet-another-react-lightbox/plugins/captions.css";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+@plugin "@tailwindcss/typography";
+
+/* ==========================================================================
+   1. تعريف خط ثمانية الرقمي — Thmanyah Sans
+   ========================================================================== */
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('/fonts/thmanyahsans/woff2/thmanyahsans-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('/fonts/thmanyahsans/woff2/thmanyahsans-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('/fonts/thmanyahsans/woff2/thmanyahsans-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('/fonts/thmanyahsans/woff2/thmanyahsans-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Sans';
+  src: url('/fonts/thmanyahsans/woff2/thmanyahsans-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ==========================================================================
+   2. تعريف خط ثمانية للعناوين — Thmanyah Serif Display
+   ========================================================================== */
+@font-face {
+  font-family: 'Thmanyah Display';
+  src: url('/fonts/thmanyahserifdisplay/woff2/thmanyahserifdisplay-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Display';
+  src: url('/fonts/thmanyahserifdisplay/woff2/thmanyahserifdisplay-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Display';
+  src: url('/fonts/thmanyahserifdisplay/woff2/thmanyahserifdisplay-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Display';
+  src: url('/fonts/thmanyahserifdisplay/woff2/thmanyahserifdisplay-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Display';
+  src: url('/fonts/thmanyahserifdisplay/woff2/thmanyahserifdisplay-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ==========================================================================
+   3. تعريف خط ثمانية للنصوص — Thmanyah Serif Text
+   ========================================================================== */
+@font-face {
+  font-family: 'Thmanyah Text';
+  src: url('/fonts/thmanyahseriftext/woff2/thmanyahseriftext-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Text';
+  src: url('/fonts/thmanyahseriftext/woff2/thmanyahseriftext-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Text';
+  src: url('/fonts/thmanyahseriftext/woff2/thmanyahseriftext-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Text';
+  src: url('/fonts/thmanyahseriftext/woff2/thmanyahseriftext-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Thmanyah Text';
+  src: url('/fonts/thmanyahseriftext/woff2/thmanyahseriftext-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ==========================================================================
+   4. تعريف خط Liftaswash
+   ========================================================================== */
+@font-face {
+  font-family: 'Liftaswash';
+  src:
+    url('/fonts/liftaswash/woff2/liftaswash.woff2') format('woff2'),
+    url('/fonts/liftaswash/ttf/liftaswash.otf') format('opentype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ==========================================================================
+   5. تعريف خط A Farhood
+   ========================================================================== */
+@font-face {
+  font-family: 'A Farhood';
+  src:
+    url('/fonts/A Farhood/woff2/AFarhood.woff2') format('woff2'),
+    url('/fonts/A Farhood/ttf/AFarhood.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+}
+
+/* ==========================================================================
+   6. التوزيع التلقائي للخطوط وخصائص OpenType
+   ========================================================================== */
+:root {
+  --font-sans-ui: 'Thmanyah Sans', system-ui, -apple-system, sans-serif;
+  --font-display: 'Thmanyah Display', 'Thmanyah Sans', serif;
+  --font-text: 'Thmanyah Text', 'Thmanyah Sans', serif;
+  --font-cinema: 'Liftaswash', 'Thmanyah Display', serif;
+  --font-afarhood: 'A Farhood', 'Thmanyah Display', serif;
+  --font-history: var(--font-afarhood);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+body {
+  font-family: var(--font-sans-ui);
+  background-color: var(--qz-ink);
+  color: var(--qz-mint);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+  font-feature-settings: "ss01" 1;
+}
+
+.thmanyah-swash {
+  font-family: var(--font-display);
+  font-feature-settings: "ss01" 1, "salt" 1;
+}
+
+article, .font-text {
+  font-family: var(--font-text);
+  font-feature-settings: "ss01" 0, "salt" 0;
+  line-height: 1.95;
+}
+
+.font-cinema {
+  font-family: var(--font-cinema) !important;
+  font-feature-settings: normal;
+  letter-spacing: 0;
+}
+
+.font-history,
+.font-afarhood {
+  font-family: var(--font-afarhood) !important;
+  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+  letter-spacing: 0;
+  line-height: 1.75;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+/* ==========================================================================
+   7. نظام الزجاج السائل الموحد للكروت
+   ========================================================================== */
+.liquid-glass {
+  position: relative;
+  background: linear-gradient(
+    145deg,
+    rgb(var(--qz-forest-rgb) / 0.56) 0%,
+    rgb(var(--qz-deep-rgb) / 0.64) 52%,
+    rgb(var(--qz-ink-rgb) / 0.72) 100%
+  );
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  border: 1px solid rgb(var(--qz-mint-rgb) / 0.16);
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    inset 0 -1px 0 rgb(var(--qz-sage-rgb) / 0.12);
+}
+
+.liquid-glass-hover {
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.32s ease,
+    box-shadow 0.32s ease;
+}
+
+.liquid-glass-hover:hover {
+  border-color: rgb(var(--qz-mint-rgb) / 0.32);
+  box-shadow:
+    0 24px 54px rgba(0, 0, 0, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.36),
+    inset 0 -1px 0 rgb(var(--qz-sage-rgb) / 0.18);
+}
+
+.qassimz-apple-nav-shell {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: max-width;
+}
+
+.qassimz-dropdown-shell {
+  -webkit-backdrop-filter: blur(22px) saturate(175%);
+  backdrop-filter: blur(22px) saturate(175%);
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.qassimz-dropdown-shell[data-liquid-active='true'] {
+  background-color: rgb(var(--qz-ink-rgb) / 0.78) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(175%);
+  backdrop-filter: blur(22px) saturate(175%);
+}
+
+/* شريط الصوت بأسلوب iOS */
+.qassimz-ios-volume {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06));
+  -webkit-backdrop-filter: blur(16px) saturate(165%);
+  backdrop-filter: blur(16px) saturate(165%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.2),
+    0 6px 18px rgba(0, 0, 0, 0.32);
+  outline: none;
+  will-change: transform;
+}
+.qassimz-ios-volume:focus-visible {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 0 0 2px rgb(var(--qz-mint-rgb) / 0.7),
+    0 6px 18px rgba(0, 0, 0, 0.32);
+}
+.qassimz-ios-volume-fill {
+  background: linear-gradient(180deg, #ffffff 0%, var(--qz-x7) 55%, var(--qz-mint) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -2px 4px rgb(var(--qz-ink-rgb) / 0.08),
+    0 0 14px rgb(var(--qz-mint-rgb) / 0.35);
+}
+
+/* لوجو قاسمز الزجاجي */
+.qz-glass-logo {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  animation: qz-logo-idle-sheen 9s ease-in-out 2.5s infinite;
+}
+.qz-glass-logo .qz-glass-sheen {
+  transform-box: view-box;
+  translate: 0 0;
+  opacity: 0;
+}
+.group:hover .qz-glass-logo .qz-glass-sheen,
+.group:focus-visible .qz-glass-logo .qz-glass-sheen {
+  animation: qz-logo-sheen 0.9s cubic-bezier(0.3, 0.7, 0.2, 1) forwards;
+}
+@keyframes qz-logo-sheen {
+  0% { translate: 0 0; opacity: 0; }
+  15% { opacity: 1; }
+  100% { translate: 2200px 0; opacity: 0.2; }
+}
+@keyframes qz-logo-idle-sheen {
+  0%, 88%, 100% { opacity: 1; }
+  94% { opacity: 0.92; }
+}
+
+/* ==========================================================================
+   8. الثيمات (متغيرات الألوان)
+   ========================================================================== */
+:root {
+  --qz-ink: #051F20;    --qz-ink-rgb: 5 31 32;
+  --qz-deep: #0B2B26;   --qz-deep-rgb: 11 43 38;
+  --qz-forest: #163832; --qz-forest-rgb: 22 56 50;
+  --qz-moss: #235347;   --qz-moss-rgb: 35 83 71;
+  --qz-sage: #8EB69B;   --qz-sage-rgb: 142 182 155;
+  --qz-mint: #DAF1DE;   --qz-mint-rgb: 218 241 222;
+  --qz-x1: #1E4D42; --qz-x2: #1B463B; --qz-x3: #123B33; --qz-x4: #0F352E;
+  --qz-x5: #0D2F29; --qz-x6: #07120C; --qz-x7: #EEF8F0;
+  --qz-glow-rgb: 142 240 210;
+  --qz-bg-filter: none;
+  --qz-grad: linear-gradient(120deg, var(--qz-mint), var(--qz-sage));
+}
+
+html[data-theme='red'] {
+  --qz-ink: #1A0A07;    --qz-ink-rgb: 26 10 7;
+  --qz-deep: #261009;   --qz-deep-rgb: 38 16 9;
+  --qz-forest: #3B160C; --qz-forest-rgb: 59 22 12;
+  --qz-moss: #8A2A12;   --qz-moss-rgb: 138 42 18;
+  --qz-sage: #F2A65A;   --qz-sage-rgb: 242 166 90;
+  --qz-mint: #FFE7C2;   --qz-mint-rgb: 255 231 194;
+  --qz-x1: #9A3412; --qz-x2: #7C2D12; --qz-x3: #5C1D0C; --qz-x4: #4A170A;
+  --qz-x5: #3A1208; --qz-x6: #120604; --qz-x7: #FFF4E3;
+  --qz-glow-rgb: 255 160 70;
+  --qz-grad: linear-gradient(120deg, #E5372B 0%, #F2672B 35%, #F59E2B 65%, #FFD54A 100%);
+  --qz-bg-tint: linear-gradient(150deg, #1A0A07 0%, #6E1A0C 32%, #B9300F 58%, #E0731C 80%, #F2C14A 100%);
+  --color-emerald-100: #FFE9C7;
+  --color-emerald-200: #FFD39A;
+  --color-emerald-300: #FDB45C;
+  --color-emerald-400: #F2672B;
+  color-scheme: dark;
+}
+
+html[data-theme='blue'] {
+  --qz-ink: #EBE2CC;    --qz-ink-rgb: 235 226 204;
+  --qz-deep: #DED6C1;   --qz-deep-rgb: 222 214 193;
+  --qz-forest: #CFC6B1; --qz-forest-rgb: 207 198 177;
+  --qz-moss: #B7B09E;   --qz-moss-rgb: 183 176 158;
+  --qz-sage: #5E584B;   --qz-sage-rgb: 94 88 75;
+  --qz-mint: #1F1D18;   --qz-mint-rgb: 31 29 24;
+  --qz-x1: #CFC6B1; --qz-x2: #B7B09E; --qz-x3: #DED6C1; --qz-x4: #E5DEC9;
+  --qz-x5: #EBE2CC; --qz-x6: #F5EFE0; --qz-x7: #1A1814;
+  --qz-glow-rgb: 94 88 75;
+  --qz-grad: linear-gradient(120deg, #1F1D18 0%, #3D382E 45%, #5E584B 80%, #7A7364 100%);
+  --qz-bg-tint: linear-gradient(160deg, #EBE2CC 0%, #DED6C1 38%, #CFC6B1 72%, #B7B09E 100%);
+  --color-emerald-100: #1F1D18;
+  --color-emerald-200: #2E2B24;
+  --color-emerald-300: #4A453A;
+  --color-emerald-400: #6E6758;
+  color-scheme: light;
+}
+
+html[data-theme='blue'] .text-white,
+html[data-theme='blue'] .text-white\/95,
+html[data-theme='blue'] .text-white\/90 {
+  color: #1F1D18 !important;
+  text-shadow: none !important;
+}
+
+html[data-theme='blue'] .text-white\/80,
+html[data-theme='blue'] .text-white\/75,
+html[data-theme='blue'] .text-white\/70,
+html[data-theme='blue'] .text-white\/60,
+html[data-theme='blue'] .text-white\/50 {
+  color: #3D382E !important;
+  text-shadow: none !important;
+}
+
+html[data-theme='blue'] .border-white\/25,
+html[data-theme='blue'] .border-white\/24,
+html[data-theme='blue'] .border-white\/22,
+html[data-theme='blue'] .border-white\/20,
+html[data-theme='blue'] .border-white\/18,
+html[data-theme='blue'] .border-white\/16 {
+  border-color: rgba(31, 29, 24, 0.16) !important;
+}
+
+html[data-theme='blue'] .bg-white\/10,
+html[data-theme='blue'] .bg-white\/8 {
+  background-color: rgba(31, 29, 24, 0.05) !important;
+}
+
+html[data-theme='red'] img:not(.grayscale):not([data-no-tint]),
+html[data-theme='red'] iframe {
+  filter: sepia(0.5) saturate(1.55) hue-rotate(-16deg) contrast(1.04);
+  transition: filter 0.6s ease;
+}
+
+html[data-theme='red'] h1,
+html[data-theme='red'] .font-cinema,
+html[data-theme='red'] h2.font-history,
+html[data-theme='blue'] h1,
+html[data-theme='blue'] .font-cinema,
+html[data-theme='blue'] h2.font-history {
+  background-image: var(--qz-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  top: -0.22em;
+  padding: 0.22em 0.12em 0.28em;
+  margin-inline: -0.12em;
+  margin-bottom: -0.5em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+html.qz-theme-switching *,
+html.qz-theme-switching *::before,
+html.qz-theme-switching *::after {
+  transition: background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease, fill 0.5s ease,
+    box-shadow 0.5s ease !important;
+}
+
+/* ==========================================================================
+   9. Liquid Glass — نظام المؤشر الموحد واقتراحات البحث في الـ Navbar
+   ========================================================================== */
+.qz-glass-knob {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.26) 0%,
+    rgba(255, 255, 255, 0.12) 100%
+  );
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  backdrop-filter: blur(12px) saturate(150%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.52),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.24),
+    0 4px 12px rgba(0, 0, 0, 0.18);
+  will-change: transform;
+}
+
+/* الكبسولة الزجاجية الذكية الموحدة (Active / Hover) في الـ Navbar */
+.qz-nav-pill {
+  transform-origin: center center;
+  border-radius: 9999px;
+  background: linear-gradient(
+    180deg,
+    rgb(var(--qz-mint-rgb) / 0.21) 0%,
+    rgb(var(--qz-sage-rgb) / 0.11) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.36),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 0 1px rgb(var(--qz-mint-rgb) / 0.24),
+    0 4px 14px rgba(0, 0, 0, 0.18);
+  will-change: transform, width;
+}
+
+html[data-theme='blue'] .qz-nav-pill {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.74) 0%,
+    rgba(235, 226, 204, 0.86) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 0 0 1px rgba(31, 29, 24, 0.16),
+    0 4px 12px rgba(31, 29, 24, 0.09);
+}
+
+/* مؤشر Highlight المطاطي لنتائج البحث (Spring Dropdown) */
+.qz-search-highlight {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0.06) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.16);
+}
+
+html[data-theme='blue'] .qz-search-highlight {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.72) 0%,
+    rgba(235, 226, 204, 0.84) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 0 0 1px rgba(31, 29, 24, 0.14);
+}
+
+/* شريط التبويبات في الصفحات الداخلية */
+.qz-seg {
+  position: relative;
+  isolation: isolate;
+  background: linear-gradient(
+    180deg,
+    rgb(var(--qz-deep-rgb) / 0.56) 0%,
+    rgb(var(--qz-ink-rgb) / 0.68) 100%
+  ) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(155%) !important;
+  backdrop-filter: blur(16px) saturate(155%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 0 1px rgb(var(--qz-mint-rgb) / 0.16),
+    0 8px 24px rgba(0, 0, 0, 0.22) !important;
+}
+
+.qz-seg-bubble,
+[data-liquid-active='true'] > .qz-seg-bubble {
+  background: linear-gradient(
+    180deg,
+    rgb(var(--qz-moss-rgb) / 0.72) 0%,
+    rgb(var(--qz-forest-rgb) / 0.82) 100%
+  ) !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.38),
+    inset 0 0 0 1px rgb(var(--qz-mint-rgb) / 0.28),
+    0 4px 12px rgba(0, 0, 0, 0.22) !important;
+}
+
+html[data-theme='blue'] .qz-seg-bubble,
+html[data-theme='blue'] [data-liquid-active='true'] > .qz-seg-bubble {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.78) 0%,
+    rgba(235, 226, 204, 0.9) 100%
+  ) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 0 0 1px rgba(31, 29, 24, 0.18),
+    0 4px 12px rgba(31, 29, 24, 0.12) !important;
+}
+
+.qz-menu-bubble {
+  border-radius: 1rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  will-change: transform;
+}
+[data-qz-item] {
+  position: relative;
+  z-index: 1;
+}
+
+.qz-vol-track {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.07));
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.35), inset 0 0 0 0.5px rgba(255, 255, 255, 0.14);
+}
+.qz-vol-fill {
+  background: linear-gradient(90deg, var(--qz-mint), #ffffff);
+  box-shadow: 0 0 10px rgb(var(--qz-mint-rgb) / 0.45);
+}
+html[data-theme='red'] .qz-vol-fill,
+html[data-theme='blue'] .qz-vol-fill {
+  background: var(--qz-grad);
+  box-shadow: 0 0 12px rgb(var(--qz-glow-rgb) / 0.5);
+}
+.qz-vol-thumb-solid {
+  background: linear-gradient(180deg, #ffffff, #e9eff2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35), 0 0 0 0.5px rgba(0, 0, 0, 0.08);
+}
+
+/* ==========================================================================
+   10. Liquid Glass v2 — لوح العزل الخلفي والحدود الزجاجية المتوازنة
+   ========================================================================== */
+.qz-glass-layer {
+  border-radius: inherit;
+  -webkit-backdrop-filter: blur(22px) saturate(175%) contrast(1.04) !important;
+  backdrop-filter: blur(22px) saturate(175%) contrast(1.04) !important;
+  background: linear-gradient(
+    180deg,
+    rgb(var(--qz-deep-rgb) / 0.58) 0%,
+    rgb(var(--qz-ink-rgb) / 0.68) 100%
+  ) !important;
+}
+
+html[data-theme='blue'] .qz-glass-layer {
+  background: linear-gradient(
+    180deg,
+    rgba(245, 239, 224, 0.72) 0%,
+    rgba(235, 226, 204, 0.82) 100%
+  ) !important;
+}
+
+.qz-glass-rim {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+    0 14px 36px rgba(0, 0, 0, 0.28);
+}
+
+html[data-theme='blue'] .qz-glass-rim {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -1px 0 rgba(31, 29, 24, 0.08),
+    0 12px 30px rgba(31, 29, 24, 0.12);
+}
+
+.qz-seg.qz-seg-glass {
+  background: rgb(var(--qz-ink-rgb) / 0.48) !important;
+}
+
+.qz-icon-tile {
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(255, 255, 255, 0.14), transparent 60%),
+    linear-gradient(180deg, rgb(var(--qz-deep-rgb) / 0.85), rgb(var(--qz-ink-rgb) / 0.92));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.34),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.14),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.25),
+    0 3px 8px rgba(0, 0, 0, 0.2);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.qz-icon-tile.is-active,
+.group\/link:hover .qz-icon-tile,
+.group\/item:hover .qz-icon-tile {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 0 0 1px rgb(var(--qz-glow-rgb) / 0.38),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.22),
+    0 0 14px rgb(var(--qz-glow-rgb) / 0.28),
+    0 3px 8px rgba(0, 0, 0, 0.22);
+}
+.qz-glass-icon {
+  filter: drop-shadow(0 0 2.5px rgb(var(--qz-glow-rgb) / 0.55)) drop-shadow(0 1px 0.5px rgba(0, 0, 0, 0.35));
+}
+
+.qz-gallery-lens {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
+  -webkit-backdrop-filter: blur(12px) saturate(165%);
+  backdrop-filter: blur(12px) saturate(165%);
+  box-shadow:
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.65),
+    inset 0 -1.5px 2px rgba(255, 255, 255, 0.3),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.28),
+    0 18px 40px rgba(0, 0, 0, 0.35);
+}
+
+@keyframes qz-col-up {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+@keyframes qz-col-down {
+  from { transform: translateY(-50%); }
+  to { transform: translateY(0); }
+}
+.qz-col-up { animation: qz-col-up var(--qz-col-dur, 48s) linear infinite; }
+.qz-col-down { animation: qz-col-down var(--qz-col-dur, 48s) linear infinite; }
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: 'Thmanyah Sans', sans-serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    --background: var(--qz-ink);
+    --foreground: var(--qz-mint);
+    --card: var(--qz-deep);
+    --card-foreground: var(--qz-mint);
+    --popover: var(--qz-deep);
+    --popover-foreground: var(--qz-mint);
+    --primary: var(--qz-sage);
+    --primary-foreground: var(--qz-ink);
+    --secondary: var(--qz-forest);
+    --secondary-foreground: var(--qz-mint);
+    --muted: var(--qz-forest);
+    --muted-foreground: var(--qz-sage);
+    --accent: var(--qz-moss);
+    --accent-foreground: var(--qz-mint);
+    --border: rgb(var(--qz-sage-rgb) / .22);
+    --input: rgb(var(--qz-sage-rgb) / .22);
+    --ring: var(--qz-sage);
+  }
+  body {
+    background-color: var(--qz-ink);
+    color: var(--qz-mint);
+  }
+}
+
+:lang(ar) {
+  letter-spacing: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .qz-col-up, .qz-col-down {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.lqg {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.lqg-canvas {
+  display: block;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.lqg-canvas[data-over="true"] {
+  cursor: grab;
+}
+
+.lqg-canvas[data-over="true"]:active {
+  cursor: grabbing;
+}
+/* ==========================================================================
+   11. الأصناف المفقودة (أُضيفت في إصلاحات 2026-11-16)
+   أصناف qz-* كانت مستخدمة في JSX بلا أي تعريف، فعناصرها كانت بلا تنسيق.
+   ملاحظة: qz-icon-fill / qz-icon-stroke و qz-refract / qz-refract-soft هي
+   معرّفات SVG (id) وليست أصنافاً، و qz-seg-item / qz-seg-lens و
+   qz-search-listbox سمات data-/id — فلا تُعرَّف هنا.
+   ========================================================================== */
+
+/* الحبة الزجاجية المتحركة في المبدّلات (GlassLens) — نفس مادة كبسولة الناڤبار */
+.qz-nav-lens {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: linear-gradient(
+    180deg,
+    rgb(var(--qz-mint-rgb) / 0.21) 0%,
+    rgb(var(--qz-sage-rgb) / 0.11) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.36),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 0 1px rgb(var(--qz-mint-rgb) / 0.24),
+    0 4px 14px rgba(0, 0, 0, 0.18);
+  will-change: transform, width;
+}
+
+/* عدسة التحويم في أشرطة التبويبات (LiquidSegmented) */
+.qz-liquid-lens {
+  background: linear-gradient(
+    180deg,
+    rgb(var(--qz-mint-rgb) / 0.16) 0%,
+    rgb(var(--qz-sage-rgb) / 0.08) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 0 0 1px rgb(var(--qz-mint-rgb) / 0.18);
+  will-change: transform;
+}
+
+/* تظليل الاقتباسات (MarkerText) — الخلفية تتحرك من 0% إلى 100% عبر JS */
+.qz-marker {
+  background-image: linear-gradient(
+    90deg,
+    rgb(var(--qz-sage-rgb) / 0.38) 0%,
+    rgb(var(--qz-mint-rgb) / 0.18) 100%
+  );
+  background-repeat: no-repeat;
+  background-size: 0% 100%;
+  border-radius: 0.5rem;
+  padding: 0.1em 0.45em;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* مبدّل أقسام الفِردِكت (PlanSwitch) */
+.qz-plan-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    180deg,
+    rgb(var(--qz-deep-rgb) / 0.56) 0%,
+    rgb(var(--qz-ink-rgb) / 0.68) 100%
+  );
+  -webkit-backdrop-filter: blur(16px) saturate(155%);
+  backdrop-filter: blur(16px) saturate(155%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 0 0 1px rgb(var(--qz-mint-rgb) / 0.16),
+    0 8px 24px rgba(0, 0, 0, 0.22);
+}
+.qz-plan-switch button {
+  position: relative;
+  z-index: 1;
+  padding: 0.45rem 0.9rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--qz-mint);
+  opacity: 0.72;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.2s ease, color 0.2s ease;
+}
+.qz-plan-switch button[aria-pressed='true'] {
+  opacity: 1;
+  font-weight: 700;
+}
+
+/* السويتش الزجاجي (GlassSwitch) */
+.qz-switch {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.qz-switch-track {
+  background: linear-gradient(
+    180deg,
+    rgb(var(--qz-deep-rgb) / 0.8) 0%,
+    rgb(var(--qz-ink-rgb) / 0.85) 100%
+  );
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.4),
+    inset 0 0 0 1px rgb(var(--qz-mint-rgb) / 0.14);
+}
+.qz-switch-icon {
+  display: grid;
+  place-items: center;
+  color: var(--qz-mint);
+}
+
+/* زر تبديل الثيم البديل (ToggleDaylight — يتيم حالياً) */
+.qz-daylight {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 9999px;
+  background: rgb(var(--qz-deep-rgb) / 0.6);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  backdrop-filter: blur(12px) saturate(150%);
+  border: 1px solid rgb(var(--qz-mint-rgb) / 0.16);
+  color: var(--qz-mint);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* غلاف مبدّل الثيم داخل الناڤبار */
+.qz-nav-switch {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* التلميحات (MorphTooltip) */
+.qz-tooltip-trigger {
+  display: inline-block;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  outline: none;
+}
+.qz-tooltip-trigger:focus-visible {
+  box-shadow: 0 0 0 2px rgb(var(--qz-mint-rgb) / 0.6);
+}
+.qz-tooltip {
+  position: fixed;
+  z-index: 120;
+  padding: 0.45rem 0.8rem;
+  border-radius: 0.75rem;
+  background: rgb(var(--qz-ink-rgb) / 0.92);
+  color: var(--qz-mint);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  backdrop-filter: blur(12px) saturate(160%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* بطاقة المواعيد (ParallaxTicket) */
+.qz-ticket {
+  position: relative;
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(
+    180deg,
+    rgb(var(--qz-deep-rgb) / 0.7) 0%,
+    rgb(var(--qz-ink-rgb) / 0.8) 100%
+  );
+  border: 1px solid rgb(var(--qz-mint-rgb) / 0.16);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.qz-ticket h2 {
+  margin-top: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--qz-mint);
+}
+.qz-ticket p {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.8;
+  color: var(--qz-sage);
+}
+.qz-ticket a {
+  display: inline-block;
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--qz-sage);
+}
+
+/* لوحة الصورة التفاعلية (PortraitLiquidReveal) */
+.qz-portrait {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 1.5rem;
+  background: rgb(var(--qz-deep-rgb) / 0.5);
+}
+
+/* الكتابة المتدرجة (Typewriter) وموجة الأوزان (WeightWave) */
+.qz-typewriter {
+  unicode-bidi: isolate;
+}
+.qz-weight-wave {
+  display: inline-block;
+  white-space: normal;
+}
+
+/* صفحة «عني» */
+.qz-about {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.qz-about-hero {
+  display: grid;
+  gap: 1.5rem;
+  align-items: center;
+}
+@media (min-width: 768px) {
+  .qz-about-hero {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.qz-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--qz-sage);
+}
+
+/* قائمة البطاقات المتمددة (ExpandCardMenu — يتيمة حالياً) */
+.qz-ex-list {
+  position: relative;
+}
+.qz-ex-card {
+  background: rgb(var(--qz-deep-rgb) / 0.7);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  backdrop-filter: blur(12px) saturate(150%);
+}
+.qz-ex-thumb {
+  width: 4rem;
+  height: 4rem;
+}
+.qz-ex-head {
+  font-weight: 700;
+  color: var(--qz-mint);
+}
+.qz-ex-badge {
+  color: var(--qz-sage);
+}
+.qz-ex-more {
+  color: var(--qz-sage);
+}
+.qz-ex-go {
+  color: var(--qz-mint);
+}
+
+/* ==========================================================================
+   12. مادة الناڤبار بأسلوب Apple
+   المراجع: شريط apple.com الحي (backdrop-filter: saturate(180%) blur(20px)،
+   حافة علوية فاتحة، hairline واحد) — WWDC25 «Meet Liquid Glass» (مادة
+   الطبقة الوظيفية العائمة فقط، لا زجاج فوق زجاج) — و WWDC18 «Designing
+   Fluid Interfaces» (استجابة على pointer-down، نوابض قابلة للمقاطعة).
+   الشكل والبنية والروابط كما هي؛ هذه الطبقة مادة وحركة فقط.
+   ========================================================================== */
+.qassimz-apple-nav-shell {
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+  /* تتبع حسب الحجم: تضييق طفيف لتسميات الناڤبار الصغيرة */
+  letter-spacing: -0.01em;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.08),
+    0 12px 32px rgba(0, 0, 0, 0.22);
+}
+html[data-theme='blue'] .qassimz-apple-nav-shell {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(31, 29, 24, 0.08),
+    0 12px 28px rgba(31, 29, 24, 0.14);
+}
+/* استجابة فورية على pointer-down: تصغير 0.97 خلال 100ms لروابط الناڤبار */
+.qassimz-apple-nav-shell a[data-qz-navitem] {
+  transition: transform 100ms ease-out;
+}
+.qassimz-apple-nav-shell a[data-qz-navitem]:active {
+  transform: scale(0.97);
+}
+/* الشفافية المخففة: سطوح صلبة بدل الزجاج */
+@media (prefers-reduced-transparency: reduce) {
+  .qassimz-apple-nav-shell {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background-color: rgb(var(--qz-ink-rgb) / 0.94) !important;
+  }
+  html[data-theme='blue'] .qassimz-apple-nav-shell {
+    background-color: #ebe2cc !important;
+  }
+  .qassimz-apple-nav-shell .qz-glass-layer {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}

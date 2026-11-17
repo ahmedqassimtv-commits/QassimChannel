@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300..900&display=swap" rel="stylesheet" />
+    <meta name="theme-color" content="#051F20" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="description" content="منصة قاسم للأفلام والوثائقيات والمراجعات والمقالات." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="mask-icon" href="/favicon.svg" color="#051F20" />
+
+    <!-- مشاركة الروابط (واتساب / فيسبوك / X) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="قاسمز" />
+    <meta property="og:locale" content="ar_AR" />
+    <meta property="og:title" content="قاسم | مساحة للصورة والحكاية" />
+    <meta property="og:description" content="منصة قاسم للأفلام والوثائقيات والمراجعات والمقالات." />
+    <!-- home.jpg غير موجودة في المستودع؛ تُستخدم شعار المنصة كصورة معاينة للروابط -->
+    <meta property="og:image" content="/images/qassimz-logo.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="قاسم | مساحة للصورة والحكاية" />
+    <meta name="twitter:description" content="منصة قاسم للأفلام والوثائقيات والمراجعات والمقالات." />
+    <meta name="twitter:image" content="/images/qassimz-logo.svg" />
+
+    <!-- تحميل مسبق لخلفية الصفحة الرئيسية -->
+    <link rel="preload" as="image" href="/fractal/optimized/08.webp" type="image/webp" />
+
+    <!-- تطبيق الثيم المحفوظ قبل تحميل React (مفيش وميض) -->
+    <script>
+      // الثيمات الثلاثة فقط: green (أخضر) و red (أحمر) و blue (لبني)
+      // أي قيمة أخرى (ومنها emerald/sand القديمتان) تُعاد إلى الأخضر الافتراضي
+      var THEME_COLORS = { green: '#051F20', red: '#1A0A07', blue: '#EBE2CC' }
+      document.documentElement.dataset.theme = 'green'
+      try {
+        var t = localStorage.getItem('qassimz:theme')
+        if (t === 'green' || t === 'red' || t === 'blue') {
+          document.documentElement.dataset.theme = t
+        }
+        var themeNow = document.documentElement.dataset.theme
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', THEME_COLORS[themeNow])
+        // الثيم اللبني فاتح، والثيمان الآخران داكنان
+        document.querySelector('meta[name="color-scheme"]').setAttribute('content', themeNow === 'blue' ? 'light' : 'dark')
+      } catch (e) {}
+    </script>
+
+    <title>قاسم | مساحة للصورة والحكاية</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
