@@ -32,7 +32,7 @@
 - [📦 المحتوى](#المحتوى)
 - [🚀 التشغيل](#التشغيل)
 - [🗂️ بنية المشروع](#بنية-المشروع)
-- [📎 الملفات الثنائية](#الملفات-الثنائية)
+- [🎨 الأصول والهوية](#الأصول-والهوية)
 
 ## ✨ المميزات
 
@@ -105,270 +105,35 @@ npm run preview  # معاينة نسخة الإنتاج
 
 ## 🗂️ بنية المشروع
 
-```
-.agents/skills/apple-design/
-  SKILL.md
+| الجزء | وظيفته |
+|---|---|
+| `src/pages/` | الصفحات: الرئيسية، عنّي، المقالات، المراجعات، الحكايات، الفيديوهات، ON AIR |
+| `src/components/` | المكونات: النافبار الزجاجي، البطاقات، طبقات الزجاج والعدسة |
+| `src/data/` | المحتوى الحقيقي: المقالات، المراجعات، الفيديوهات، إعدادات يوتيوب |
+| `src/utils/` + `src/lib/` | محرك الزجاج السائل، فيزياء النوابض، الصوت، والثيمات |
+| `src/hooks/` | خطافات الزجاج والعدسة |
+| `src/context/` | حالة الصوت العامة |
+| `src/content/` | المقالات بصيغة Markdown |
+| `src/index.css` | كل الأنماط والثيمات الثلاثة |
+| `public/` | الخطوط، الصور، الصوت — الأصول الجاهزة للنشر |
+| `.agents/skills/apple-design/` | دليل تصميم آبل اللي اتبنى عليه النافبار |
 
-  .gitignore
-  .nvmrc
+## 🎨 الأصول والهوية البصرية
 
-.vscode/
-  settings.json
+الموقع عربي بالكامل، وهويته مبنية على ثلاث حاجات: خط عربي مخصوص، فن فراكتالي، وزجاج سائل.
 
-  README.md
-  components.json
-  index.html
-  package-lock.json
-  package.json
-
-public/
-  _redirects
-  favicon.svg
-
-public/fonts/A Farhood/ttf/
-  AFarhood.ttf
-
-public/fonts/A Farhood/woff2/
-  AFarhood.woff2
-
-public/fonts/liftaswash/ttf/
-  Lifta swash fixed Regular.otf
-  liftaswash.otf
-
-public/fonts/liftaswash/woff2/
-  Lifta swash fixed Regular.woff2
-  liftaswash.woff2
-
-public/fonts/thmanyahsans/otf/
-  thmanyahsans-Black.otf
-  thmanyahsans-Bold.otf
-  thmanyahsans-Light.otf
-  thmanyahsans-Medium.otf
-  thmanyahsans-Regular.otf
-
-public/fonts/thmanyahsans/woff2/
-  thmanyahsans-Black.woff2
-  thmanyahsans-Bold.woff2
-  thmanyahsans-Light.woff2
-  thmanyahsans-Medium.woff2
-  thmanyahsans-Regular.woff2
-
-public/fonts/thmanyahserifdisplay/otf/
-  thmanyahserifdisplay-Black.otf
-  thmanyahserifdisplay-Bold.otf
-  thmanyahserifdisplay-Light.otf
-  thmanyahserifdisplay-Medium.otf
-  thmanyahserifdisplay-Regular.otf
-
-public/fonts/thmanyahserifdisplay/woff2/
-  thmanyahserifdisplay-Black.woff2
-  thmanyahserifdisplay-Bold.woff2
-  thmanyahserifdisplay-Light.woff2
-  thmanyahserifdisplay-Medium.woff2
-  thmanyahserifdisplay-Regular.woff2
-
-public/fonts/thmanyahseriftext/otf/
-  thmanyahseriftext-Black.otf
-  thmanyahseriftext-Bold.otf
-  thmanyahseriftext-Light.otf
-  thmanyahseriftext-Medium.otf
-  thmanyahseriftext-Regular.otf
-
-public/fonts/thmanyahseriftext/woff2/
-  thmanyahseriftext-Black.woff2
-  thmanyahseriftext-Bold.woff2
-  thmanyahseriftext-Light.woff2
-  thmanyahseriftext-Medium.woff2
-  thmanyahseriftext-Regular.woff2
-
-public/fractal/optimized/
-  01.webp
-  02.webp
-  08.webp
-  09.webp
-  106.webp
-  107.webp
-  15.webp
-  48.webp
-  51.webp
-  58.webp
-  70.webp
-  71.webp
-  78.webp
-  86.webp
-  99.webp
-
-public/images/
-  qassimz-logo.svg
-  qz-lens-map.png
-
-public/sounds/
-  on-air-chill.mp3
-
-  skills-lock.json
-
-src/
-  App.jsx
-
-src/components/brand/
-  BrandLogo.jsx
-
-src/components/cards/
-  ReviewCard.jsx
-  ShortCard.jsx
-  VideoCard.jsx
-
-src/components/glass/
-  FractalImage.jsx
-  GlassBackground.jsx
-  GlassBubble.jsx
-  GlassCard.jsx
-  GlassHoverBubble.jsx
-  GlassLayer.jsx
-  LiquidGlassFilters.jsx
-
-src/components/layout/
-  CommandSearch.jsx
-  Footer.jsx
-  Navbar.jsx
-
-src/components/ui/
-  AnimatedIcons.jsx
-  BackToTop.jsx
-  DaylightThemeSwitch.jsx
-  ExpandCardMenu.jsx
-  GlassIcon.jsx
-  GlassLens.jsx
-  GlassSwitch.jsx
-  GlassVolumeSlider.jsx
-  LiquidSegmented.jsx
-  MarkerText.jsx
-  MorphTooltip.jsx
-  ParallaxTicket.jsx
-  PlanSwitch.jsx
-  PortraitLiquidReveal.jsx
-  ReadingProgress.jsx
-  ToggleDaylight.jsx
-  Typewriter.jsx
-  WeightWave.jsx
-  button.tsx
-
-src/content/articles/
-  first-article.md
-
-src/context/
-  SoundContext.tsx
-
-src/data/
-  articles.js
-  lensGallery.js
-  reviews.js
-  videos.js
-  youtubeConfig.js
-
-src/hooks/
-  useGlassFilter.js
-  useLiquidElement.js
-  useLiquidLens.js
-
-src/
-  index.css
-
-src/lib/
-  click-soft.ts
-  sound-engine.ts
-  sound-types.ts
-  springs.ts
-  toggleDaylight.ts
-  utils.ts
-
-src/
-  main.jsx
-
-src/pages/
-  About.jsx
-  ArticleView.jsx
-  Articles.jsx
-  Home.jsx
-  OnAir.jsx
-  Reviews.jsx
-  Stories.jsx
-  Videos.jsx
-
-src/utils/
-  glassMap.js
-  glassSound.js
-  liquidGlassEngine.js
-  theme.js
-
-  tsconfig.json
-  vite.config.js
-```
-
-## 📎 الملفات الثنائية
-
-كل الملفات الثنائية موجودة في المستودع — الخطوط والصور والصوت:
-
-```
-./package-lock.json
-./public/fonts/A Farhood/ttf/AFarhood.ttf
-./public/fonts/A Farhood/woff2/AFarhood.woff2
-./public/fonts/liftaswash/ttf/Lifta swash fixed Regular.otf
-./public/fonts/liftaswash/ttf/liftaswash.otf
-./public/fonts/liftaswash/woff2/Lifta swash fixed Regular.woff2
-./public/fonts/liftaswash/woff2/liftaswash.woff2
-./public/fonts/thmanyahsans/otf/thmanyahsans-Black.otf
-./public/fonts/thmanyahsans/otf/thmanyahsans-Bold.otf
-./public/fonts/thmanyahsans/otf/thmanyahsans-Light.otf
-./public/fonts/thmanyahsans/otf/thmanyahsans-Medium.otf
-./public/fonts/thmanyahsans/otf/thmanyahsans-Regular.otf
-./public/fonts/thmanyahsans/woff2/thmanyahsans-Black.woff2
-./public/fonts/thmanyahsans/woff2/thmanyahsans-Bold.woff2
-./public/fonts/thmanyahsans/woff2/thmanyahsans-Light.woff2
-./public/fonts/thmanyahsans/woff2/thmanyahsans-Medium.woff2
-./public/fonts/thmanyahsans/woff2/thmanyahsans-Regular.woff2
-./public/fonts/thmanyahserifdisplay/otf/thmanyahserifdisplay-Black.otf
-./public/fonts/thmanyahserifdisplay/otf/thmanyahserifdisplay-Bold.otf
-./public/fonts/thmanyahserifdisplay/otf/thmanyahserifdisplay-Light.otf
-./public/fonts/thmanyahserifdisplay/otf/thmanyahserifdisplay-Medium.otf
-./public/fonts/thmanyahserifdisplay/otf/thmanyahserifdisplay-Regular.otf
-./public/fonts/thmanyahserifdisplay/woff2/thmanyahserifdisplay-Black.woff2
-./public/fonts/thmanyahserifdisplay/woff2/thmanyahserifdisplay-Bold.woff2
-./public/fonts/thmanyahserifdisplay/woff2/thmanyahserifdisplay-Light.woff2
-./public/fonts/thmanyahserifdisplay/woff2/thmanyahserifdisplay-Medium.woff2
-./public/fonts/thmanyahserifdisplay/woff2/thmanyahserifdisplay-Regular.woff2
-./public/fonts/thmanyahseriftext/otf/thmanyahseriftext-Black.otf
-./public/fonts/thmanyahseriftext/otf/thmanyahseriftext-Bold.otf
-./public/fonts/thmanyahseriftext/otf/thmanyahseriftext-Light.otf
-./public/fonts/thmanyahseriftext/otf/thmanyahseriftext-Medium.otf
-./public/fonts/thmanyahseriftext/otf/thmanyahseriftext-Regular.otf
-./public/fonts/thmanyahseriftext/woff2/thmanyahseriftext-Black.woff2
-./public/fonts/thmanyahseriftext/woff2/thmanyahseriftext-Bold.woff2
-./public/fonts/thmanyahseriftext/woff2/thmanyahseriftext-Light.woff2
-./public/fonts/thmanyahseriftext/woff2/thmanyahseriftext-Medium.woff2
-./public/fonts/thmanyahseriftext/woff2/thmanyahseriftext-Regular.woff2
-./public/fractal/optimized/01.webp
-./public/fractal/optimized/02.webp
-./public/fractal/optimized/08.webp
-./public/fractal/optimized/09.webp
-./public/fractal/optimized/106.webp
-./public/fractal/optimized/107.webp
-./public/fractal/optimized/15.webp
-./public/fractal/optimized/48.webp
-./public/fractal/optimized/51.webp
-./public/fractal/optimized/58.webp
-./public/fractal/optimized/70.webp
-./public/fractal/optimized/71.webp
-./public/fractal/optimized/78.webp
-./public/fractal/optimized/86.webp
-./public/fractal/optimized/99.webp
-./public/images/qz-lens-map.png
-./public/sounds/on-air-chill.mp3
-```
+| الأصل | دوره في الموقع |
+|---|---|
+| **خطوط ثمانية** (Sans + Serif Display + Serif Text) | خطوط النصوص والعناوين — 5 أوزان لكل عائلة، بصيغتي OTF وWOFF2 |
+| **A Farhood** | خط زخرفي للعناوين المميزة |
+| **Liftaswash** | خط يدوي للمسات واللمحات البصرية |
+| **فن فراكتالي** (15 صورة) | الخلفيات الزجاجية اللي بتدي الموقع عمقه |
+| **خريطة العدسة** | الصورة اللي بتحرك انكسار الضوء في عدسة النافبار |
+| **شعار قَاسِمز** | الهوية — SVG يشتغل على أي مقاس |
+| **صوت ON AIR** | موسيقى هادية بتشتغل مع البث |
 
 ملاحظة: `package-lock.json` موجود في المستودع (ملف مولّد، يُعاد توليده بأمر `npm install`).
 
 ---
 
 الكود موجود في ملفات المشروع نفسها — الريدمي ده للتعريف بالمشروع بس.
-
