@@ -2,11 +2,23 @@
   "name": "qassimz-portal",
   "private": true,
   "version": "1.0.0",
+  "description": "منصة قاسمز — واجهة محتوى عربية بالزجاج السائل",
+  "author": "Ahmed Qassim",
+  "license": "MIT",
+  "homepage": "https://ahmedqassimtv-commits.github.io/QassimChannel/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ahmedqassimtv-commits/QassimChannel.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "echo 'No linter configured yet'",
+    "clean": "rm -rf dist node_modules/.cache"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

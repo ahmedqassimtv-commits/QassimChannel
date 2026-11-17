@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 💬 سؤال عام
+    url: https://github.com/ahmedqassimtv-commits/QassimChannel/discussions
+    about: اطرح سؤالك في المناقشات بدلاً من فتح Issue
