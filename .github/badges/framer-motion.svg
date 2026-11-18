@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="144" height="20" viewBox="0 0 144 20" role="img" aria-label="Framer Motion: 14">
+  <title>Framer Motion: 14</title>
+  <defs>
+    <linearGradient id="label-bg" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#444D56"/>
+      <stop offset="100%" stop-color="#24292E"/>
+    </linearGradient>
+    <linearGradient id="val-bg" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#3B82F6"/>
+      <stop offset="100%" stop-color="#0055FF"/>
+    </linearGradient>
+    <clipPath id="r">
+      <rect width="144" height="20" rx="3"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#r)">
+    <rect width="116" height="20" fill="url(#label-bg)"/>
+    <rect x="116" width="28" height="20" fill="url(#val-bg)"/>
+  </g>
+  <path fill="#60A5FA" d="M7 4.5h8v3.7h-4l4 3.7H7V8.2h4L7 4.5zm0 7.4h4v3.7L7 11.9z"/>
+  <g font-family="Verdana,Geneva,'DejaVu Sans',sans-serif" font-size="11">
+    <text x="22" y="15" fill="#010101" fill-opacity=".3" aria-hidden="true">Framer Motion</text>
+    <text x="22" y="14" fill="#FFFFFF">Framer Motion</text>
+    <text x="130" y="15" text-anchor="middle" fill="#010101" fill-opacity=".3" aria-hidden="true">14</text>
+    <text x="130" y="14" text-anchor="middle" fill="#FFFFFF">14</text>
+  </g>
+</svg>

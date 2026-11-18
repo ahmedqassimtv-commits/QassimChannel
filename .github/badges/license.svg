@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="104" height="20" viewBox="0 0 104 20" role="img" aria-label="License: MIT">
+  <title>License: MIT</title>
+  <defs>
+    <linearGradient id="label-bg" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#444D56"/>
+      <stop offset="100%" stop-color="#24292E"/>
+    </linearGradient>
+    <linearGradient id="val-bg" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#34D058"/>
+      <stop offset="100%" stop-color="#28A745"/>
+    </linearGradient>
+    <clipPath id="r">
+      <rect width="104" height="20" rx="3"/>
+    </clipPath>
+  </defs>
+  <g clip-path="url(#r)">
+    <rect width="70" height="20" fill="url(#label-bg)"/>
+    <rect x="70" width="34" height="20" fill="url(#val-bg)"/>
+  </g>
+  <path fill="#959DA5" d="M11 4.2a.75.75 0 0 1 .75.75v.8h3.5a.75.75 0 0 1 0 1.5h-.52l1.48 3.7a2.25 2.25 0 0 1-4.42 0l1.48-3.7h-1.52v6.5h1.75a.75.75 0 0 1 0 1.5h-5a.75.75 0 0 1 0-1.5h1.75v-6.5H8.73l1.48 3.7a2.25 2.25 0 0 1-4.42 0l1.48-3.7h-.52a.75.75 0 0 1 0-1.5h3.5v-.8A.75.75 0 0 1 11 4.2z"/>
+  <g font-family="Verdana,Geneva,'DejaVu Sans',sans-serif" font-size="11">
+    <text x="22" y="15" fill="#010101" fill-opacity=".3" aria-hidden="true">License</text>
+    <text x="22" y="14" fill="#FFFFFF">License</text>
+    <text x="87" y="15" text-anchor="middle" fill="#010101" fill-opacity=".3" aria-hidden="true">MIT</text>
+    <text x="87" y="14" text-anchor="middle" fill="#FFFFFF">MIT</text>
+  </g>
+</svg>
