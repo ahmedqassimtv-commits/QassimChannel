@@ -13,9 +13,6 @@ import {
   animate,
   motion,
   useMotionValue,
-  useSpring,
-  useTransform,
-  useVelocity,
 } from 'framer-motion'
 import {
   Home,
@@ -46,46 +43,37 @@ import BrandLogo from '../brand/BrandLogo.jsx'
 import DaylightThemeSwitch from '../ui/DaylightThemeSwitch.jsx'
 import GlassHoverBubble from '../glass/GlassHoverBubble.jsx'
 import GlassIcon from '../ui/GlassIcon.jsx'
+import { LiquidGlass } from '../glass/LiquidGlass.tsx'
+import {
+  NimbusIcons,
+  WaterlineIcon,
+  WaterlineLayers,
+  useWaterline,
+} from '../glass/WaterlineCapsule.tsx'
 import { setTheme, useTheme } from '../../utils/theme.js'
 import { CloseSpinIcon, MenuMorphIcon } from '../ui/AnimatedIcons.jsx'
-// ============================================================================
-// إعادة تصميم بأسلوب Apple — مع الحفاظ على الشكل والبنية والروابط والتسميات.
-// المراجع:
-//  • شريط apple.com الحي: مادة backdrop-filter: saturate(180%) blur(20px)
-//    وحافة علوية فاتحة و hairline واحد — انظر .qassimz-apple-nav-shell في
-//    src/index.css (التحليل: github.com/tszaks/design-thesis — APPLE_WEB.md).
-//  • WWDC25 Session 219 «Meet Liquid Glass»: الزجاج السائل للطبقة الوظيفية
-//    العائمة فقط، ولا زجاج فوق زجاج، و«materialize» بدل التلاشي الصريح.
-//  • WWDC18 Session 803 «Designing Fluid Interfaces»: النوابض قابلة
-//    للمقاطعة وتبدأ من القيمة الظاهرة، damping 1.0 افتراضياً بلا overshoot،
-//    والاستجابة على pointer-down لا على release (انظر SKILL.md المرفق).
-// التطبيق: نوابض bounce: 0 / duration 0.4، مادة blur(20px) saturate(180%)،
-// تصغير 0.97 خلال 100ms على pointer-down لروابط الناڤبار، تتبع -0.01em،
-// وسطح صلب عند prefers-reduced-transparency. السلوك الحالي (القوائم،
-/// Ctrl+K، مبدّل الثيم، القائمة المحمولة، أصوات glassSound) لم يتغير.
-// ============================================================================
 
+// ============================================================================
+// إعادة تصميم النوف بار وحركة الكبسولة:
+//  1. سطح النوف بار والقوائم المنسدلة عبر LiquidGlass:
+//     • خريطة انكسار بصرية Lissé Squircle + 3-slice Capsule Baking
+//     • تشتت لوني Chromatic RGB Dispersion عند الحواف المنحنية
+//     • طبقة حافة Specular Rim وإضاءة اتجاهية بامتداد 2px خارج الإطار
+//  2. حركة الكبسولة عبر Nimbus UI · "Waterline":
+//     • قطرة ماء نشطة بفيزياء جسمين مقترنين (Head + Tail مع تأخر Meniscus 70ms)
+//     • انشطار العنق السائل إلى قطيرات تابعة (Satellite Droplets) في القفزات الطويلة
+//       واندماجها مجددًا عبر SDF Smooth-Min مع موجة ارتطام دائرية
+//     • ارتفاع Meniscus ثلاثي الأبعاد تحت المؤشر + موجات نقر متسعة + مشاهد أيقونات حيّة
+// ============================================================================
 
 const DROPDOWN_CLOSE_DELAY = 360
 
-// فيزياء تحول العناصر الداخلية بسلاسة — بأسلوب Apple (WWDC18 «Designing Fluid
-// Interfaces»): نوابض حرجة التخميد افتراضياً (damping 1.0، بلا overshoot) تستأنف
-// من القيمة الظاهرة على الشاشة ويمكن مقاطعتها وإعادة توجيهها في أي لحظة.
-// في Framer Motion تُترجم إلى bounce: 0 مع duration 0.4 (انظر SKILL.md).
 const morphSpring = {
   type: 'spring',
   bounce: 0,
   duration: 0.4,
 }
 
-// فيزياء انزلاق الكبسولة الزجاجية الموحدة (مشتركة بين النوف بار وقائمة الفِردِكت)
-const tabSlideSpring = {
-  type: 'spring',
-  bounce: 0,
-  duration: 0.4,
-}
-
-// فيزياء Spring Dropdown لقائمة اقتراحات البحث
 const dropdownHeightSpring = {
   type: 'spring',
   bounce: 0,
@@ -104,7 +92,6 @@ const dropdownOpacitySpring = {
   duration: 0.3,
 }
 
-// حركات قائمة الفِردِكت المنسدلة المرتبطة بزرها
 const verdictMenuVariants = {
   hidden: {
     opacity: 0,
@@ -127,7 +114,6 @@ const verdictMenuVariants = {
   },
 }
 
-// حركات قائمة الموبايل المستقلة
 const mobileMenuVariants = {
   hidden: {
     opacity: 0,
@@ -154,7 +140,6 @@ const PLAN_POP = { stiffness: 520, damping: 16, mass: 0.8 }
 const PLAN_SOFT = { stiffness: 260, damping: 24, mass: 1 }
 const PLAN_FADE = { stiffness: 420, damping: 32, mass: 1 }
 
-// فيزياء Highlight المطاطي لنتائج البحث
 const SEARCH_HIGHLIGHT_LEAD = { type: 'spring', stiffness: 620, damping: 36 }
 const SEARCH_HIGHLIGHT_TRAIL = { type: 'spring', stiffness: 200, damping: 20 }
 
@@ -171,9 +156,9 @@ const SEARCH_INDEX = [
 ]
 
 const NAV_ITEMS = [
-  { to: '/stories', label: 'أرشيف الحكايات', icon: History },
-  { to: '/videos', label: 'الفيديوهات', icon: Video },
-  { to: '/articles', label: 'المقالات', icon: BookOpen },
+  { to: '/stories', label: 'أرشيف الحكايات', icon: History, waterIcon: NimbusIcons.stories, fx: 'spin' },
+  { to: '/videos', label: 'الفيديوهات', icon: Video, waterIcon: NimbusIcons.videos, fx: 'pop' },
+  { to: '/articles', label: 'المقالات', icon: BookOpen, waterIcon: NimbusIcons.articles, fx: 'drop' },
 ]
 
 const MASAHA_ITEMS = [
@@ -181,6 +166,9 @@ const MASAHA_ITEMS = [
   { to: '/masaha/books', label: 'الكتب والقصص', sub: 'مكتبة القراءات والحكايات', icon: Library },
   { to: '/masaha/about', label: 'عنّي', sub: 'وراء الصورة والحكاية', icon: User },
 ]
+
+// الترتيب الكامل لعناصر مسار الكبسولة المائية (Waterline Track) من اليمين لليسار
+const TRACK_KEYS = ['/', 'verdict', '/stories', '/videos', '/articles', 'masaha']
 
 function resolveRouteKey(pathname) {
   if (pathname.startsWith('/verdict') || pathname.startsWith('/reviews')) return 'verdict'
@@ -192,42 +180,36 @@ function resolveRouteKey(pathname) {
   return '/'
 }
 
-function CleanNavIcon({ Icon, active }) {
-  return <GlassIcon icon={Icon} size="md" active={active} />
+function resolveWaterPalette(theme) {
+  if (theme === 'red') return 'red'
+  if (theme === 'gold') return 'gold'
+  return 'green'
 }
 
 // مؤشر Highlight زجاجي مطاطي لنتائج البحث
-function SearchElasticHighlight({ containerRef, rowRefs, activeIndex, visible }) {
+function SearchElasticHighlight({ rowRefs, activeIndex, visible, itemCount }) {
   const topMV = useMotionValue(0)
-  const bottomMV = useMotionValue(46)
-  const heightMV = useTransform([topMV, bottomMV], ([t, b]) => Math.max(0, b - t))
-  const opacitySpring = useSpring(0, { stiffness: 400, damping: 32 })
+  const heightMV = useMotionValue(46)
   const prevTopRef = useRef(null)
 
   useLayoutEffect(() => {
-    const container = containerRef.current
     const rowEl = activeIndex >= 0 ? rowRefs.current[activeIndex] : null
-
-    if (!visible || !container || !rowEl) {
-      opacitySpring.set(0)
-      return
-    }
+    if (!visible || !rowEl) return
 
     const nextTop = rowEl.offsetTop
-    const nextBottom = nextTop + rowEl.offsetHeight
+    const nextHeight = rowEl.offsetHeight
 
-    if (prevTopRef.current === null || opacitySpring.get() < 0.05) {
+    if (prevTopRef.current === null) {
       topMV.jump(nextTop)
-      bottomMV.jump(nextBottom)
+      heightMV.jump(nextHeight)
     } else {
       const movingDown = nextTop >= prevTopRef.current
       animate(topMV, nextTop, movingDown ? SEARCH_HIGHLIGHT_TRAIL : SEARCH_HIGHLIGHT_LEAD)
-      animate(bottomMV, nextBottom, movingDown ? SEARCH_HIGHLIGHT_LEAD : SEARCH_HIGHLIGHT_TRAIL)
+      animate(heightMV, nextHeight, SEARCH_HIGHLIGHT_LEAD)
     }
 
     prevTopRef.current = nextTop
-    opacitySpring.set(1)
-  }, [activeIndex, visible, containerRef, rowRefs, topMV, bottomMV, opacitySpring])
+  }, [activeIndex, visible, itemCount, rowRefs, topMV, heightMV])
 
   return (
     <motion.span
@@ -235,87 +217,58 @@ function SearchElasticHighlight({ containerRef, rowRefs, activeIndex, visible })
       style={{
         y: topMV,
         height: heightMV,
-        opacity: opacitySpring,
-        willChange: 'transform, height, opacity',
+        opacity: visible ? 1 : 0,
+        willChange: 'transform, height',
       }}
       className="qz-search-highlight pointer-events-none absolute inset-x-0 top-0 z-0 rounded-2xl"
     />
   )
 }
 
-// قائمة الفِردِكت المنسدلة بكبسولة موحدة مطابقة لكبسولة الـ Navbar تمامًا
-function VerdictPlanDropdown({ currentPath, onNavigateSection, onClose, onHoverSound }) {
+// قائمة الفِردِكت المنسدلة بكبسولة Waterline مائية مطابقة لكبسولة الـ Navbar
+function VerdictPlanDropdown({
+  currentPath,
+  waterPalette,
+  onNavigateSection,
+  onClose,
+  onHoverSound,
+}) {
   const isSeriesDefault = currentPath.startsWith('/verdict/series')
   const [selected, setSelected] = useState(isSeriesDefault ? 'series' : 'movies')
-  const [pillReady, setPillReady] = useState(false)
+  const isSeries = selected === 'series'
+  const segIndex = isSeries ? 1 : 0
 
-  const switchTrackRef = useRef(null)
-  const moviesBtnRef = useRef(null)
-  const seriesBtnRef = useRef(null)
-  const hasInitRef = useRef(false)
+  const segWl = useWaterline({
+    activeIndex: segIndex,
+    itemCount: 2,
+    tone: 'dark',
+    palette: waterPalette,
+    trackRim: 0.42,
+    ambient: 0.55,
+    wallInset: 4,
+    sound: false,
+  })
 
-  // نفس كبسولة وفيزياء النوف بار الرئيسية بالضبط
-  const segPillX = useSpring(0, tabSlideSpring)
-  const segPillW = useSpring(0, tabSlideSpring)
-  const segPillVelocity = useVelocity(segPillX)
-  const segPillScaleX = useTransform(segPillVelocity, (v) => 1 + Math.min(Math.abs(v) / 2150, 0.22))
-  const segPillScaleY = useTransform(segPillVelocity, (v) => 1 - Math.min(Math.abs(v) / 5400, 0.08))
-
-  const syncSegPill = useCallback(
-    (tab, instant = false) => {
-      const btn = tab === 'series' ? seriesBtnRef.current : moviesBtnRef.current
-      if (!btn) return
-      const nextX = Math.round(btn.offsetLeft)
-      const nextW = Math.round(btn.offsetWidth)
-      if (nextW === 0) return
-
-      if (instant) {
-        segPillX.jump(nextX)
-        segPillW.jump(nextW)
-        hasInitRef.current = true
-        setPillReady(true)
-      } else {
-        segPillX.set(nextX)
-        segPillW.set(nextW)
-      }
-    },
-    [segPillW, segPillX]
-  )
-
-  useLayoutEffect(() => {
-    syncSegPill(selected, !hasInitRef.current)
-  }, [selected, syncSegPill])
-
-  useEffect(() => {
-    const trackEl = switchTrackRef.current
-    if (!trackEl) return undefined
-    const ro = new ResizeObserver(() => {
-      syncSegPill(selected, false)
-    })
-    ro.observe(trackEl)
-    return () => ro.disconnect()
-  }, [selected, syncSegPill])
-
-  const handlePick = (tab) => {
+  const handlePick = (tab, idx, fxKind) => {
+    segWl.triggerFx(idx, fxKind)
     if (tab === selected) return
     playGlassTap()
     setSelected(tab)
   }
-
-  const isSeries = selected === 'series'
 
   return (
     <div
       onKeyDown={(e) => {
         if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
           e.preventDefault()
-          handlePick(e.key === 'ArrowLeft' ? 'series' : 'movies')
+          if (e.key === 'ArrowLeft') handlePick('series', 1, 'glow')
+          else handlePick('movies', 0, 'pop')
         }
       }}
-      className="relative z-10 p-2.5 text-right"
+      className="relative z-10 p-3 text-right"
     >
       {/* ترويسة تربط القائمة بصريًا بقسم الفِردِكت */}
-      <div className="mb-2 flex items-center justify-between border-b border-white/10 px-2 pb-2">
+      <div className="mb-2.5 flex items-center justify-between border-b border-white/10 px-2 pb-2">
         <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/90">
           <Scale className="size-3.5 text-[color:var(--qz-mint)]" />
           <span>تصفّح الفِردِكت</span>
@@ -325,65 +278,76 @@ function VerdictPlanDropdown({ currentPath, onNavigateSection, onClose, onHoverS
         </span>
       </div>
 
-      {/* Segmented Track واحد بكبسولة زجاجية متحركة واحدة من نفس عائلة مؤشر النوف بار */}
+      {/* Segmented Track بكبسولة Waterline المائية */}
       <div
-        ref={switchTrackRef}
+        ref={segWl.trackRef}
         role="radiogroup"
         aria-label="أقسام الفِردِكت"
-        className="relative flex items-center gap-1 rounded-full border-y border-x-0 border-white/12 bg-white/[0.04] p-1"
+        onPointerMove={segWl.onPointerMove}
+        onPointerLeave={segWl.onPointerLeave}
+        onPointerDown={segWl.onPointerDown}
+        className="relative flex items-center gap-1 rounded-full bg-white/[0.04] p-1"
       >
-        {pillReady && (
-          <motion.span
-            aria-hidden="true"
-            style={{
-              left: 0,
-              x: segPillX,
-              width: segPillW,
-              scaleX: segPillScaleX,
-              scaleY: segPillScaleY,
-              willChange: 'transform, width',
-            }}
-            className="qz-nav-pill pointer-events-none absolute inset-y-1 z-0 rounded-full"
-          />
-        )}
+        <WaterlineLayers
+          canvasRef={segWl.canvasRef}
+          dropRef={segWl.dropRef}
+          glMode={segWl.glMode}
+          dropInsetY={4}
+        />
 
         <button
-          ref={moviesBtnRef}
+          ref={segWl.registerItem(0)}
           type="button"
           role="radio"
           aria-checked={!isSeries}
+          data-qz-active={!isSeries ? 'true' : undefined}
           onMouseEnter={() => {
             onHoverSound()
             prefetchRoute('/verdict/movies')
           }}
-          onClick={() => handlePick('movies')}
-          className={`relative z-10 flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full py-1.5 text-xs transition-colors duration-200 ${
+          onClick={() => handlePick('movies', 0, 'pop')}
+          className={`relative z-10 flex h-9 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full text-xs font-medium transition-colors duration-200 ${
             !isSeries
-              ? 'font-semibold text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.45)]'
-              : 'font-medium text-white/75 hover:text-white'
+              ? 'text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)]'
+              : 'text-white/70 hover:text-white'
           }`}
         >
-          <Film className="size-3.5 text-[color:var(--qz-mint)]" />
+          <WaterlineIcon
+            fx="pop"
+            playing={segWl.fx.i === 0}
+            playKey={segWl.fx.n}
+            iconRef={segWl.registerIcon(0)}
+          >
+            <Film className="size-3.5" />
+          </WaterlineIcon>
           <span>حُكم السينما</span>
         </button>
 
         <button
-          ref={seriesBtnRef}
+          ref={segWl.registerItem(1)}
           type="button"
           role="radio"
           aria-checked={isSeries}
+          data-qz-active={isSeries ? 'true' : undefined}
           onMouseEnter={() => {
             onHoverSound()
             prefetchRoute('/verdict/series')
           }}
-          onClick={() => handlePick('series')}
-          className={`relative z-10 flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full py-1.5 text-xs transition-colors duration-200 ${
+          onClick={() => handlePick('series', 1, 'glow')}
+          className={`relative z-10 flex h-9 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full text-xs font-medium transition-colors duration-200 ${
             isSeries
-              ? 'font-semibold text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.45)]'
-              : 'font-medium text-white/75 hover:text-white'
+              ? 'text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)]'
+              : 'text-white/70 hover:text-white'
           }`}
         >
-          <Tv className="size-3.5 text-[color:var(--qz-mint)]" />
+          <WaterlineIcon
+            fx="glow"
+            playing={segWl.fx.i === 1}
+            playKey={segWl.fx.n}
+            iconRef={segWl.registerIcon(1)}
+          >
+            <Tv className="size-3.5" />
+          </WaterlineIcon>
           <span>حُكم المسلسلات</span>
         </button>
       </div>
@@ -483,8 +447,7 @@ function VerdictPlanDropdown({ currentPath, onNavigateSection, onClose, onHoverS
 // قائمة «مساحة» المنسدلة — البث والكتب وعنّي
 function MasahaDropdown({ onNavigateSection, onClose, onHoverSound }) {
   return (
-    <div className="relative z-10 p-2.5 text-right">
-      {/* ترويسة */}
+    <div className="relative z-10 p-3 text-right">
       <div className="mb-2 flex items-center justify-between border-b border-white/10 px-2 pb-2">
         <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/90">
           <Compass className="size-3.5 text-[color:var(--qz-mint)]" />
@@ -495,7 +458,6 @@ function MasahaDropdown({ onNavigateSection, onClose, onHoverSound }) {
         </span>
       </div>
 
-      {/* الروابط */}
       <div className="flex flex-col gap-1">
         {MASAHA_ITEMS.map((item) => (
           <motion.button
@@ -528,15 +490,261 @@ function MasahaDropdown({ onNavigateSection, onClose, onHoverSound }) {
   )
 }
 
+// مسار الأقسام الستة مع كبسولة الماء السائلة (Nimbus Waterline)
+function DesktopWaterlineTrack({
+  activeKey,
+  verdictOpen,
+  masahaOpen,
+  waterPalette,
+  verdictBtnRef,
+  masahaBtnRef,
+  onVerdictEnter,
+  onVerdictLeave,
+  onToggleVerdict,
+  onMasahaEnter,
+  onMasahaLeave,
+  onToggleMasaha,
+  onSectionSelect,
+  onHoverSound,
+}) {
+  const targetKey = verdictOpen ? 'verdict' : masahaOpen ? 'masaha' : activeKey
+  const activeIndex = Math.max(0, TRACK_KEYS.indexOf(targetKey))
+
+  const wl = useWaterline({
+    activeIndex,
+    itemCount: TRACK_KEYS.length,
+    tone: 'dark',
+    palette: waterPalette,
+    trackRim: 0,
+    ambient: 0.68,
+    wallInset: 4,
+    sound: false,
+  })
+
+  const bindVerdictRef = useCallback(
+    (el) => {
+      verdictBtnRef.current = el
+      wl.registerItem(1)(el)
+    },
+    [verdictBtnRef, wl]
+  )
+
+  const bindMasahaRef = useCallback(
+    (el) => {
+      masahaBtnRef.current = el
+      wl.registerItem(5)(el)
+    },
+    [masahaBtnRef, wl]
+  )
+
+  const handleTrackKeyDown = (event) => {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
+    event.preventDefault()
+    // في اتجاه RTL: السهم الأيسر ينتقل للعنصر التالي (+1) والأيمن للسابق (-1)
+    const dir = event.key === 'ArrowLeft' ? 1 : -1
+    const nextIdx = (activeIndex + dir + TRACK_KEYS.length) % TRACK_KEYS.length
+    const el = wl.itemRefs.current[nextIdx]
+    const focusTarget = el?.matches('button, a') ? el : el?.querySelector('button, a')
+    focusTarget?.focus()
+  }
+
+  return (
+    <motion.div
+      key="nav-links-track"
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.98 }}
+      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+      ref={wl.trackRef}
+      data-gl={wl.glMode}
+      onKeyDown={handleTrackKeyDown}
+      onPointerMove={wl.onPointerMove}
+      onPointerLeave={wl.onPointerLeave}
+      onPointerDown={wl.onPointerDown}
+      className="relative hidden items-center gap-0.5 rounded-full p-1 lg:flex xl:gap-1"
+    >
+      {/* شيدر قطرة الماء والانشطار السائل وموجات النقر */}
+      <WaterlineLayers
+        canvasRef={wl.canvasRef}
+        dropRef={wl.dropRef}
+        glMode={wl.glMode}
+        dropInsetY={4}
+      />
+
+      {/* 1. الرئيسية */}
+      <NavLink
+        ref={wl.registerItem(0)}
+        to="/"
+        end
+        data-qz-navitem=""
+        data-qz-active={targetKey === '/' ? 'true' : undefined}
+        onMouseEnter={() => {
+          prefetchRoute('/')
+          onHoverSound()
+        }}
+        onClick={(event) => {
+          wl.triggerFx(0, 'glow')
+          onSectionSelect(event, '/', '/')
+        }}
+        className={`group/link relative z-10 inline-flex h-10 items-center gap-2 rounded-full px-3.5 text-xs font-medium transition-colors duration-200 xl:px-4 xl:text-[13.5px] ${
+          targetKey === '/'
+            ? 'text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)]'
+            : 'text-white/74 hover:text-white'
+        }`}
+      >
+        <WaterlineIcon
+          fx="glow"
+          playing={wl.fx.i === 0}
+          playKey={wl.fx.n}
+          iconRef={wl.registerIcon(0)}
+        >
+          {NimbusIcons.home}
+        </WaterlineIcon>
+        <span className="whitespace-nowrap">الرئيسية</span>
+      </NavLink>
+
+      {/* 2. الفِردِكت | THE VERDICT */}
+      <div
+        ref={bindVerdictRef}
+        onPointerEnter={onVerdictEnter}
+        onPointerLeave={onVerdictLeave}
+        onMouseEnter={() => {
+          prefetchRoute('/verdict/movies')
+          prefetchRoute('/verdict/series')
+          onHoverSound()
+        }}
+        className="relative z-10 rounded-full"
+      >
+        <button
+          type="button"
+          onClick={() => {
+            wl.triggerFx(1, 'wave')
+            onToggleVerdict()
+          }}
+          aria-expanded={verdictOpen}
+          aria-haspopup="true"
+          data-qz-navitem=""
+          data-qz-active={targetKey === 'verdict' ? 'true' : undefined}
+          className={`group/link relative inline-flex h-10 cursor-pointer items-center gap-2 rounded-full px-3.5 text-xs font-medium transition-colors duration-200 xl:px-4 xl:text-[13.5px] ${
+            targetKey === 'verdict'
+              ? 'text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)]'
+              : 'text-white/74 hover:text-white'
+          }`}
+        >
+          <WaterlineIcon
+            fx="wave"
+            playing={wl.fx.i === 1}
+            playKey={wl.fx.n}
+            iconRef={wl.registerIcon(1)}
+          >
+            {NimbusIcons.verdict}
+          </WaterlineIcon>
+          <span className="flex items-center gap-1.5 whitespace-nowrap">
+            <span>الفِردِكت</span>
+            <span className="hidden rounded-full border border-white/16 bg-white/10 px-2 py-0.5 font-sans text-[8.5px] font-semibold tracking-[0.14em] text-[color:var(--qz-mint)]/95 2xl:inline">
+              THE VERDICT
+            </span>
+            <ChevronDown
+              className={`size-3.5 text-[color:var(--qz-mint)]/85 transition-transform duration-200 ${
+                verdictOpen ? 'rotate-180' : ''
+              }`}
+            />
+          </span>
+        </button>
+      </div>
+
+      {/* 3، 4، 5: أرشيف الحكايات، الفيديوهات، المقالات */}
+      {NAV_ITEMS.map(({ to, label, waterIcon, fx }, idx) => {
+        const trackIdx = idx + 2
+        const isCurrent = targetKey === to
+        return (
+          <NavLink
+            key={to}
+            ref={wl.registerItem(trackIdx)}
+            to={to}
+            data-qz-navitem=""
+            data-qz-active={isCurrent ? 'true' : undefined}
+            onMouseEnter={() => {
+              prefetchRoute(to)
+              onHoverSound()
+            }}
+            onClick={(event) => {
+              wl.triggerFx(trackIdx, fx)
+              onSectionSelect(event, to, to)
+            }}
+            className={`group/link relative z-10 inline-flex h-10 items-center gap-2 rounded-full px-3.5 text-xs font-medium transition-colors duration-200 xl:px-4 xl:text-[13.5px] ${
+              isCurrent
+                ? 'text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)]'
+                : 'text-white/74 hover:text-white'
+            }`}
+          >
+            <WaterlineIcon
+              fx={fx}
+              playing={wl.fx.i === trackIdx}
+              playKey={wl.fx.n}
+              iconRef={wl.registerIcon(trackIdx)}
+            >
+              {waterIcon}
+            </WaterlineIcon>
+            <span className="whitespace-nowrap">{label}</span>
+          </NavLink>
+        )
+      })}
+
+      {/* 6. مساحة ▾ */}
+      <div
+        ref={bindMasahaRef}
+        onPointerEnter={onMasahaEnter}
+        onPointerLeave={onMasahaLeave}
+        onMouseEnter={onHoverSound}
+        className="relative z-10 rounded-full"
+      >
+        <button
+          type="button"
+          onClick={() => {
+            wl.triggerFx(5, 'spin')
+            onToggleMasaha()
+          }}
+          aria-expanded={masahaOpen}
+          aria-haspopup="true"
+          data-qz-navitem=""
+          data-qz-active={targetKey === 'masaha' ? 'true' : undefined}
+          className={`group/link relative inline-flex h-10 cursor-pointer items-center gap-2 rounded-full px-3.5 text-xs font-medium transition-colors duration-200 xl:px-4 xl:text-[13.5px] ${
+            targetKey === 'masaha'
+              ? 'text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)]'
+              : 'text-white/74 hover:text-white'
+          }`}
+        >
+          <WaterlineIcon
+            fx="spin"
+            playing={wl.fx.i === 5}
+            playKey={wl.fx.n}
+            iconRef={wl.registerIcon(5)}
+          >
+            {NimbusIcons.compass}
+          </WaterlineIcon>
+          <span className="flex items-center gap-1.5 whitespace-nowrap">
+            <span>مساحة</span>
+            <ChevronDown
+              className={`size-3.5 text-[color:var(--qz-mint)]/85 transition-transform duration-200 ${
+                masahaOpen ? 'rotate-180' : ''
+              }`}
+            />
+          </span>
+        </button>
+      </div>
+    </motion.div>
+  )
+}
+
 export default function Navbar() {
   const location = useLocation()
   const navigate = useNavigate()
   const [, startTransition] = useTransition()
   const theme = useTheme()
+  const waterPalette = resolveWaterPalette(theme)
 
-  // الفصل الصريح بين القسم النشط الفعلي (activeKey) ومعاينة Hover/Dropdown المؤقتة
   const [activeKey, setActiveKey] = useState(() => resolveRouteKey(location.pathname))
-  const [hoveredKey, setHoveredKey] = useState(null)
   const [verdictOpen, setVerdictOpen] = useState(false)
   const [masahaOpen, setMasahaOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -545,14 +753,11 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('')
   const [activeSearchIndex, setActiveSearchIndex] = useState(0)
   const [isCompact, setIsCompact] = useState(false)
-  const [lensReady, setLensReady] = useState(false)
   const [verdictAnchor, setVerdictAnchor] = useState({ right: 144, originX: 250 })
   const [masahaAnchor, setMasahaAnchor] = useState({ right: 16, originX: 160 })
   const [suggestionsHeight, setSuggestionsHeight] = useState(0)
 
   // مراجع العناصر (DOM Refs)
-  const linksTrackRef = useRef(null)
-  const itemRefs = useRef({})
   const dropdownHostRef = useRef(null)
   const verdictBtnRef = useRef(null)
   const verdictMenuRef = useRef(null)
@@ -567,8 +772,6 @@ export default function Navbar() {
   const mobileMenuRef = useRef(null)
 
   // مراجع المؤقتات والحالات الفورية
-  const hasMountedRef = useRef(false)
-  const wasSearchExpandedRef = useRef(false)
   const verdictCloseTimerRef = useRef(null)
   const masahaCloseTimerRef = useRef(null)
   const searchSuggestionsCloseTimerRef = useRef(null)
@@ -576,16 +779,12 @@ export default function Navbar() {
   const focusTimerRef = useRef(null)
   const lastHoverSoundAtRef = useRef(0)
 
-  const activeKeyRef = useRef(activeKey)
-  const hoveredKeyRef = useRef(hoveredKey)
   const searchExpandedRef = useRef(searchExpanded)
   const searchSuggestionsOpenRef = useRef(searchSuggestionsOpen)
   const verdictOpenRef = useRef(verdictOpen)
   const masahaOpenRef = useRef(masahaOpen)
   const mobileMenuOpenRef = useRef(mobileMenuOpen)
 
-  activeKeyRef.current = activeKey
-  hoveredKeyRef.current = hoveredKey
   searchExpandedRef.current = searchExpanded
   searchSuggestionsOpenRef.current = searchSuggestionsOpen
   verdictOpenRef.current = verdictOpen
@@ -599,77 +798,10 @@ export default function Navbar() {
     playGlassHover()
   }, [])
 
-  // المؤشر الزجاجي الموحد: ينتقل بسلاسة بين Hover و Verdict و Active دون Fade Out
-  const navPillX = useSpring(0, tabSlideSpring)
-  const navPillW = useSpring(0, tabSlideSpring)
-  const navPillLean = useSpring(0, { stiffness: 185, damping: 18, mass: 0.78 })
-  const navPillRenderX = useTransform([navPillX, navPillLean], ([x, lean]) => x + lean)
-  const navPillVelocity = useVelocity(navPillX)
-  const navPillScaleX = useTransform(navPillVelocity, (v) => 1 + Math.min(Math.abs(v) / 2150, 0.22))
-  const navPillScaleY = useTransform(navPillVelocity, (v) => 1 - Math.min(Math.abs(v) / 5400, 0.08))
-
-  // تفاعل ضوء داخلي خافت يتبع الماوس في المنتصف فقط بعيدًا عن الجوانب
-  const rawMouseX = useMotionValue(0)
-  const rawMouseY = useMotionValue(0)
-  const smoothGlowX = useSpring(rawMouseX, { stiffness: 180, damping: 17 })
-  const smoothGlowY = useSpring(rawMouseY, { stiffness: 180, damping: 17 })
-  const glowOpacity = useSpring(0, { stiffness: 220, damping: 24 })
-  const NAV_GLOW_RADIUS = 150
-  const navGlowX = useTransform(smoothGlowX, (v) => v - NAV_GLOW_RADIUS)
-  const navGlowY = useTransform(smoothGlowY, (v) => v - NAV_GLOW_RADIUS)
-
-  const handleTrackMouseMove = useCallback(
-    (event) => {
-      const item = event.target.closest?.('[data-qz-navitem]')
-      if (!item) return
-      const r = item.getBoundingClientRect()
-      if (r.width === 0) return
-      const rel = (event.clientX - (r.left + r.width / 2)) / (r.width / 2)
-      navPillLean.set(Math.max(-1, Math.min(1, rel)) * 5)
-    },
-    [navPillLean]
-  )
-
-  const handleNavMouseMove = useCallback(
-    ({ currentTarget, clientX, clientY }) => {
-      const { left, top } = currentTarget.getBoundingClientRect()
-      rawMouseX.set(clientX - left)
-      rawMouseY.set(clientY - top)
-      if (glowOpacity.get() < 0.99) {
-        glowOpacity.set(1)
-      }
-    },
-    [rawMouseX, rawMouseY, glowOpacity]
-  )
-
-  // مزامنة قياسات المؤشر الموحد مع DOM الفعلي
-  const syncNavIndicator = useCallback(
-    (targetKey, instant = false) => {
-      const itemEl = itemRefs.current[targetKey]
-      if (!itemEl) return
-
-      const nextX = Math.round(itemEl.offsetLeft)
-      const nextW = Math.round(itemEl.offsetWidth)
-      if (nextW === 0) return
-
-      if (instant) {
-        navPillX.jump(nextX)
-        navPillW.jump(nextW)
-        hasMountedRef.current = true
-        setLensReady(true)
-      } else {
-        navPillX.set(nextX)
-        navPillW.set(nextW)
-      }
-    },
-    [navPillW, navPillX]
-  )
-
-  // تحديث المسار النشط عند تغير الرابط دون إعادة تشغيل أي Animation للرأس أو اللوجو
+  // تحديث المسار النشط عند تغير الرابط
   useLayoutEffect(() => {
     const nextRouteKey = resolveRouteKey(location.pathname)
     setActiveKey(nextRouteKey)
-    setHoveredKey(null)
     setVerdictOpen(false)
     setMasahaOpen(false)
     setMobileMenuOpen(false)
@@ -678,55 +810,7 @@ export default function Navbar() {
     setSearchQuery('')
   }, [location.pathname])
 
-  // تحديد القسم المستهدف للمؤشر: الأولوية للـ Hover، ثم فتح الفِردِكت، ثم القسم النشط الحقيقي
-  const indicatorTargetKey = hoveredKey || (verdictOpen ? 'verdict' : masahaOpen ? 'masaha' : activeKey)
-
-  useLayoutEffect(() => {
-    if (!searchExpanded) {
-      const returningFromSearch = wasSearchExpandedRef.current
-      wasSearchExpandedRef.current = false
-      syncNavIndicator(indicatorTargetKey, !hasMountedRef.current || returningFromSearch)
-    } else {
-      wasSearchExpandedRef.current = true
-    }
-  }, [indicatorTargetKey, searchExpanded, syncNavIndicator])
-
-  // مراقبة تغير أبعاد المسار أو تحميل الخطوط
-  useEffect(() => {
-    if (searchExpanded) return
-    const trackEl = linksTrackRef.current
-    if (!trackEl) return
-
-    let rafId = null
-    const resync = () => {
-      if (rafId) return
-      rafId = window.requestAnimationFrame(() => {
-        rafId = null
-        if (!searchExpandedRef.current && hasMountedRef.current) {
-          const currentTarget =
-            hoveredKeyRef.current || (verdictOpenRef.current ? 'verdict' : activeKeyRef.current)
-          syncNavIndicator(currentTarget, false)
-        }
-      })
-    }
-
-    const ro = new ResizeObserver(resync)
-    ro.observe(trackEl)
-    Object.values(itemRefs.current).forEach((el) => {
-      if (el && trackEl.contains(el)) ro.observe(el)
-    })
-
-    if (document.fonts?.ready) {
-      document.fonts.ready.then(resync).catch(() => {})
-    }
-
-    return () => {
-      ro.disconnect()
-      if (rafId) window.cancelAnimationFrame(rafId)
-    }
-  }, [searchExpanded, syncNavIndicator])
-
-  // محاذاة قائمة الفِردِكت مع زرها فعليًا عبر getBoundingClientRect
+  // محاذاة قائمة الفِردِكت مع زرها
   const updateVerdictAlignment = useCallback(() => {
     const btnEl = verdictBtnRef.current
     const hostEl = dropdownHostRef.current
@@ -777,7 +861,7 @@ export default function Navbar() {
     return () => window.removeEventListener('resize', updateMasahaAlignment)
   }, [masahaOpen, updateMasahaAlignment])
 
-  // مراقبة وضع التصغير (Compact Mode) بناءً على موضع Scroll الحقيقي فقط
+  // مراقبة وضع التصغير (Compact Mode) بناءً على موضع Scroll الحقيقي
   useEffect(() => {
     let rafId = null
 
@@ -810,6 +894,11 @@ export default function Navbar() {
   const clearVerdictTimer = useCallback(() => {
     window.clearTimeout(verdictCloseTimerRef.current)
     verdictCloseTimerRef.current = null
+  }, [])
+
+  const clearMasahaTimer = useCallback(() => {
+    window.clearTimeout(masahaCloseTimerRef.current)
+    masahaCloseTimerRef.current = null
   }, [])
 
   const clearSearchSuggestionsTimer = useCallback(() => {
@@ -845,11 +934,6 @@ export default function Navbar() {
     },
     [clearVerdictTimer]
   )
-
-  const clearMasahaTimer = useCallback(() => {
-    window.clearTimeout(masahaCloseTimerRef.current)
-    masahaCloseTimerRef.current = null
-  }, [])
 
   const handleMasahaEnter = useCallback(
     (event) => {
@@ -941,7 +1025,6 @@ export default function Navbar() {
     }
 
     playGlassMorph(true)
-    setHoveredKey(null)
     setActiveSearchIndex(0)
     setSearchExpanded(true)
     setSearchSuggestionsOpen(true)
@@ -1050,7 +1133,7 @@ export default function Navbar() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [clearMasahaTimer, clearMobileTimer, clearVerdictTimer, closeInlineSearch, openInlineSearch])
 
-  // إغلاق واجهة البحث الموسعة بالكامل (الحقل + الاقتراحات) والقوائم عند Scroll الفعلي للصفحة
+  // إغلاق البحث والقوائم المنسدلة عند التمرير الفعلي للصفحة
   useEffect(() => {
     if (!verdictOpen && !masahaOpen && !searchExpanded && !searchSuggestionsOpen && !mobileMenuOpen) {
       return undefined
@@ -1114,7 +1197,7 @@ export default function Navbar() {
     []
   )
 
-  // التنقل السلس بين الأقسام من أي موضع في الصفحة
+  // التنقل السلس بين الأقسام
   const handleSectionSelect = useCallback(
     (event, targetPath, sectionKey = targetPath) => {
       event.preventDefault()
@@ -1126,8 +1209,6 @@ export default function Navbar() {
 
       const isRouteChange = location.pathname !== targetPath
       setActiveKey(sectionKey)
-      setHoveredKey(null)
-      syncNavIndicator(sectionKey, false)
       setVerdictOpen(false)
       setMasahaOpen(false)
       setMobileMenuOpen(false)
@@ -1149,9 +1230,32 @@ export default function Navbar() {
       clearVerdictTimer,
       location.pathname,
       navigate,
-      syncNavIndicator,
     ]
   )
+
+  const handleToggleVerdict = useCallback(() => {
+    clearVerdictTimer()
+    const next = !verdictOpenRef.current
+    if (next) {
+      if (searchExpandedRef.current) closeInlineSearch()
+      setMobileMenuOpen(false)
+      setMasahaOpen(false)
+    }
+    playGlassDropdown(next)
+    setVerdictOpen(next)
+  }, [clearVerdictTimer, closeInlineSearch])
+
+  const handleToggleMasaha = useCallback(() => {
+    clearMasahaTimer()
+    const next = !masahaOpenRef.current
+    if (next) {
+      if (searchExpandedRef.current) closeInlineSearch()
+      setMobileMenuOpen(false)
+      setVerdictOpen(false)
+    }
+    playGlassDropdown(next)
+    setMasahaOpen(next)
+  }, [clearMasahaTimer, closeInlineSearch])
 
   const filteredSearch = useMemo(() => {
     const q = searchQuery.trim().toLowerCase()
@@ -1159,7 +1263,6 @@ export default function Navbar() {
     return SEARCH_INDEX.filter((item) => `${item.title} ${item.sub}`.toLowerCase().includes(q))
   }, [searchQuery])
 
-  // قياس الارتفاع الفعلي لنتائج البحث لتمدد Spring Dropdown من الأعلى للأسفل بدقة
   useLayoutEffect(() => {
     if (!searchSuggestionsOpen) return undefined
     const innerEl = searchListInnerRef.current
@@ -1175,7 +1278,6 @@ export default function Navbar() {
     return () => ro.disconnect()
   }, [searchSuggestionsOpen, filteredSearch])
 
-  // التنقل بلوحة المفاتيح داخل نتائج البحث
   const handleSearchInputKeyDown = (event) => {
     if (event.key === 'ArrowDown') {
       event.preventDefault()
@@ -1200,391 +1302,127 @@ export default function Navbar() {
     }
   }
 
-  const isVerdictActive = activeKey === 'verdict'
-  // الثيم الذهبي داكن — لا يوجد ثيم فاتح حالياً
-  const isLightTheme = false
-
   return (
     <header
       dir="rtl"
       className="fixed inset-x-0 top-3.5 z-[70] isolation-isolate px-2.5 sm:top-4 sm:px-5"
     >
-      {/* كبسولة الزجاج السائل الرئيسية — خالية تمامًا من اللمعان الجانبي ووميض التقاط الصور */}
-      <nav
-        onMouseMove={handleNavMouseMove}
-        onMouseLeave={() => {
-          setHoveredKey(null)
-          navPillLean.set(0)
-          glowOpacity.set(0)
-        }}
-        aria-label="التنقل الرئيسي"
-        className={`qassimz-apple-nav-shell qz-glass-rim group/nav relative z-20 mx-auto flex items-center justify-between gap-2 overflow-hidden rounded-full border-y border-x-0 px-2.5 py-1.5 transition-[max-width,background-color,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-          isLightTheme
-            ? 'border-[#1F1D18]/14 bg-[#EBE2CC]/74'
-            : 'border-white/14 bg-[color:var(--qz-ink)]/34'
-        } ${
-          searchExpanded
-            ? 'w-full max-w-2xl'
-            : isCompact
-              ? 'w-fit max-w-full'
-              : 'w-full max-w-[78rem]'
-        }`}
+      {/* كبسولة النوف بار الرئيسية — سطح LiquidGlass البصري مع انكسار الحواف والـ Specular Rim */}
+      <LiquidGlass
+        asChild
+        appearance="dark"
+        material="clear"
+        refraction={26}
+        bezel={26}
+        dispersion={0.18}
+        blur={1}
+        fallbackBlur={20}
       >
-        {/* الطبقة 1: لوح العزل الخلفي والانكسار البصري متعدد الطبقات (خلف المحتوى دون أي Snapshot يسبب وميضًا) */}
-        <span
-          aria-hidden="true"
-          className="qz-glass-layer pointer-events-none absolute inset-0 z-0 rounded-full"
-        />
-
-        {/* الطبقة 2: طبقة عمق زجاجي داخلي بفرق انكسار ناعم بعيدًا عن الجوانب */}
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-y-[3px] inset-x-14 z-0 rounded-full bg-linear-to-b from-white/[0.07] via-transparent to-black/[0.12]"
-        />
-
-        {/* الطبقة 3: ضوء داخلي خافت يتبع الماوس في المنتصف فقط بعيدًا عن الأطراف */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-16 inset-y-0 z-10 overflow-hidden rounded-full"
+        <nav
+          aria-label="التنقل الرئيسي"
+          className={`qassimz-liquid-nav group/nav relative z-20 mx-auto flex items-center justify-between gap-2 rounded-full bg-[rgb(var(--qz-deep-rgb)/0.14)] px-2.5 py-1.5 transition-[background-color] duration-300 ${
+            searchExpanded
+              ? 'w-full max-w-2xl'
+              : isCompact
+                ? 'w-fit max-w-full'
+                : 'w-full max-w-[78rem]'
+          }`}
         >
-          <motion.div
-            className="absolute left-0 top-0"
-            style={{
-              x: navGlowX,
-              y: navGlowY,
-              opacity: glowOpacity,
-              width: NAV_GLOW_RADIUS * 2,
-              height: NAV_GLOW_RADIUS * 2,
-              background: isLightTheme
-                ? `radial-gradient(${NAV_GLOW_RADIUS}px circle at center, rgba(255, 255, 255, 0.24), rgba(142, 182, 155, 0.05) 52%, transparent 76%)`
-                : `radial-gradient(${NAV_GLOW_RADIUS}px circle at center, rgba(255, 255, 255, 0.09), rgb(var(--qz-glow-rgb) / 0.03) 50%, transparent 76%)`,
-              willChange: 'transform, opacity',
-            }}
-          />
-        </div>
-
-        {/* المحتوى الداخلي للكبسولة (نصوص وأيقونات حادة تمامًا) */}
-        <div className="relative z-20 flex w-full items-center justify-between gap-2">
-          {/* الهوية واللوجو: يتحرك فقط عند تغير وضع Compact أو فتح/إغلاق البحث */}
-          <AnimatePresence initial={false}>
-            {!isCompact && !searchExpanded && (
-              <motion.div
-                key="brand-identity"
-                initial={{ opacity: 0, width: 0, scale: 0.94 }}
-                animate={{
-                  opacity: 1,
-                  width: 'auto',
-                  scale: 1,
-                  transition: {
-                    width: { duration: 0.34, ease: [0.22, 1, 0.36, 1] },
-                    opacity: { duration: 0.24, delay: 0.06, ease: 'easeOut' },
-                    scale: { duration: 0.32, ease: [0.22, 1, 0.36, 1] },
-                  },
-                }}
-                exit={{
-                  opacity: 0,
-                  width: 0,
-                  scale: 0.94,
-                  transition: {
-                    opacity: { duration: 0.14, ease: 'easeIn' },
-                    width: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
-                    scale: { duration: 0.22, ease: 'easeIn' },
-                  },
-                }}
-                className="shrink-0 overflow-hidden"
-              >
-                <button
-                  type="button"
-                  onMouseEnter={() => {
-                    setHoveredKey(null)
-                    triggerHoverSound()
+          <div className="relative z-20 flex w-full items-center justify-between gap-2">
+            {/* الهوية واللوجو */}
+            <AnimatePresence initial={false}>
+              {!isCompact && !searchExpanded && (
+                <motion.div
+                  key="brand-identity"
+                  initial={{ opacity: 0, width: 0, scale: 0.94 }}
+                  animate={{
+                    opacity: 1,
+                    width: 'auto',
+                    scale: 1,
+                    transition: {
+                      width: { duration: 0.34, ease: [0.22, 1, 0.36, 1] },
+                      opacity: { duration: 0.24, delay: 0.06, ease: 'easeOut' },
+                      scale: { duration: 0.32, ease: [0.22, 1, 0.36, 1] },
+                    },
                   }}
-                  onClick={(event) => {
-                    playGlassDropdown(true)
-                    handleSectionSelect(event, '/', '/')
+                  exit={{
+                    opacity: 0,
+                    width: 0,
+                    scale: 0.94,
+                    transition: {
+                      opacity: { duration: 0.14, ease: 'easeIn' },
+                      width: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
+                      scale: { duration: 0.22, ease: 'easeIn' },
+                    },
                   }}
-                  aria-label="قاسمز - الرئيسية"
-                  className="group flex shrink-0 cursor-pointer items-center rounded-full px-2 py-1 sm:px-2.5"
-                >
-                  <BrandLogo
-                    variant="glass"
-                    title="قاسمز"
-                    className="h-7 w-auto transition-transform duration-300 group-hover:scale-[1.04] sm:h-8"
-                  />
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* مسار الأقسام الستة */}
-          <AnimatePresence initial={false}>
-            {!searchExpanded && (
-              <motion.div
-                key="nav-links-track"
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                ref={linksTrackRef}
-                onMouseMove={handleTrackMouseMove}
-                onMouseLeave={() => {
-                  setHoveredKey(null)
-                  navPillLean.set(0)
-                }}
-                className="relative hidden items-center gap-1 lg:flex xl:gap-1.5"
-              >
-                {/* الكبسولة الزجاجية الذكية الموحدة */}
-                {lensReady && (
-                  <motion.div
-                    aria-hidden="true"
-                    style={{
-                      left: 0,
-                      x: navPillRenderX,
-                      width: navPillW,
-                      scaleY: navPillScaleY,
-                      scaleX: navPillScaleX,
-                      willChange: 'transform, width',
-                    }}
-                    className="qz-nav-pill pointer-events-none absolute inset-y-0 z-0 rounded-full"
-                  />
-                )}
-
-                {/* 1. الرئيسية */}
-                <NavLink
-                  ref={(el) => {
-                    itemRefs.current['/'] = el
-                  }}
-                  to="/"
-                  end
-                  onMouseEnter={() => {
-                    setHoveredKey('/')
-                    prefetchRoute('/')
-                    triggerHoverSound()
-                  }}
-                  onClick={(event) => handleSectionSelect(event, '/', '/')}
-                  data-qz-navitem=""
-                  className={`group/link relative z-10 inline-flex items-center gap-2 rounded-full py-1.5 pl-3 pr-2 text-xs font-medium text-white/90 transition-colors duration-200 hover:text-white xl:pl-3.5 xl:text-sm ${
-                    activeKey === '/' && indicatorTargetKey !== '/'
-                      ? 'bg-white/[0.06] ring-1 ring-white/14'
-                      : ''
-                  }`}
-                >
-                  {() => {
-                    const isActive = activeKey === '/'
-                    const isHighlighted = indicatorTargetKey === '/'
-                    return (
-                      <>
-                        <CleanNavIcon Icon={Home} active={isActive || isHighlighted} />
-                        <span
-                          className={`whitespace-nowrap [text-shadow:0_1px_2px_rgba(0,0,0,0.45)] ${
-                            isActive ? 'font-semibold text-white' : ''
-                          }`}
-                        >
-                          الرئيسية
-                        </span>
-                      </>
-                    )
-                  }}
-                </NavLink>
-
-                {/* 2. الفِردِكت | THE VERDICT */}
-                <div
-                  ref={(el) => {
-                    verdictBtnRef.current = el
-                    itemRefs.current.verdict = el
-                  }}
-                  onPointerEnter={handleVerdictEnter}
-                  onPointerLeave={handleVerdictLeave}
-                  onMouseEnter={() => {
-                    setHoveredKey('verdict')
-                    prefetchRoute('/verdict/movies')
-                    prefetchRoute('/verdict/series')
-                    triggerHoverSound()
-                  }}
-                  className={`relative z-10 rounded-full ${
-                    isVerdictActive && indicatorTargetKey !== 'verdict'
-                      ? 'bg-white/[0.06] ring-1 ring-white/14'
-                      : ''
-                  }`}
+                  className="shrink-0 overflow-hidden"
                 >
                   <button
                     type="button"
-                    onClick={() => {
-                      clearVerdictTimer()
-                      const next = !verdictOpen
-                      if (next) {
-                        closeInlineSearch()
-                        setMobileMenuOpen(false)
-                        syncNavIndicator('verdict', false)
-                      }
-                      playGlassDropdown(next)
-                      setVerdictOpen(next)
+                    onMouseEnter={triggerHoverSound}
+                    onClick={(event) => {
+                      playGlassDropdown(true)
+                      handleSectionSelect(event, '/', '/')
                     }}
-                    aria-expanded={verdictOpen}
-                    aria-haspopup="true"
-                    data-qz-navitem=""
-                    className={`group/link relative inline-flex cursor-pointer items-center gap-1.5 rounded-full py-1.5 pl-3 pr-2 text-xs font-medium transition-colors duration-200 xl:text-sm ${
-                      isVerdictActive || verdictOpen
-                        ? 'font-semibold text-white'
-                        : 'text-white/90 hover:text-white'
-                    }`}
+                    aria-label="قاسمز - الرئيسية"
+                    className="group flex shrink-0 cursor-pointer items-center rounded-full px-2 py-1 sm:px-2.5"
                   >
-                    <CleanNavIcon
-                      Icon={Scale}
-                      active={isVerdictActive || indicatorTargetKey === 'verdict' || verdictOpen}
+                    <BrandLogo
+                      variant="glass"
+                      title="قاسمز"
+                      className="h-7 w-auto transition-transform duration-300 group-hover:scale-[1.04] sm:h-8"
                     />
-                    <span className="flex items-center gap-1.5 whitespace-nowrap [text-shadow:0_1px_2px_rgba(0,0,0,0.45)]">
-                      <span>الفِردِكت</span>
-                      <span className="hidden rounded-full border border-white/16 bg-white/8 px-2 py-0.5 font-sans text-[8.5px] font-medium tracking-[0.14em] text-[color:var(--qz-mint)]/90 2xl:inline">
-                        THE VERDICT
-                      </span>
-                      <ChevronDown
-                        className={`size-3.5 text-[color:var(--qz-mint)]/90 transition-transform duration-200 ${
-                          verdictOpen ? 'rotate-180' : ''
-                        }`}
-                      />
-                    </span>
                   </button>
-                </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-                {/* 3، 4، 5، 6 */}
-                {NAV_ITEMS.map(({ to, label, badge, icon: ItemIcon }) => {
-                  const isActive = activeKey === to
-                  const isHighlighted = indicatorTargetKey === to
-                  return (
-                    <NavLink
-                      key={to}
-                      ref={(el) => {
-                        itemRefs.current[to] = el
-                      }}
-                      to={to}
-                      onMouseEnter={() => {
-                        setHoveredKey(to)
-                        prefetchRoute(to)
-                        triggerHoverSound()
-                      }}
-                      onClick={(event) => handleSectionSelect(event, to, to)}
-                      data-qz-navitem=""
-                      className={`group/link relative z-10 inline-flex items-center gap-2 rounded-full py-1.5 pl-3 pr-2 text-xs font-medium text-white/90 transition-colors duration-200 hover:text-white xl:pl-3.5 xl:text-sm ${
-                        isActive && indicatorTargetKey !== to
-                          ? 'bg-white/[0.06] ring-1 ring-white/14'
-                          : ''
-                      }`}
-                    >
-                      <CleanNavIcon Icon={ItemIcon} active={isActive || isHighlighted} />
-                      <span
-                        className={`flex items-center gap-1.5 whitespace-nowrap [text-shadow:0_1px_2px_rgba(0,0,0,0.45)] ${
-                          isActive ? 'font-semibold text-white' : ''
-                        }`}
-                      >
-                        <span>{label}</span>
-                        {badge && (
-                          <span className="flex items-center gap-1 rounded-full bg-emerald-400/22 px-1.5 py-0.5 font-sans text-[8px] font-semibold tracking-wider text-emerald-100">
-                            <span className="size-1.5 animate-pulse rounded-full bg-emerald-300" />
-                            {badge}
-                          </span>
-                        )}
-                      </span>
-                    </NavLink>
-                  )
-                })}
+            {/* مسار الأقسام الستة مع كبسولة الماء السائلة (Nimbus Waterline) */}
+            <AnimatePresence initial={false}>
+              {!searchExpanded && (
+                <DesktopWaterlineTrack
+                  activeKey={activeKey}
+                  verdictOpen={verdictOpen}
+                  masahaOpen={masahaOpen}
+                  waterPalette={waterPalette}
+                  verdictBtnRef={verdictBtnRef}
+                  masahaBtnRef={masahaBtnRef}
+                  onVerdictEnter={handleVerdictEnter}
+                  onVerdictLeave={handleVerdictLeave}
+                  onToggleVerdict={handleToggleVerdict}
+                  onMasahaEnter={handleMasahaEnter}
+                  onMasahaLeave={handleMasahaLeave}
+                  onToggleMasaha={handleToggleMasaha}
+                  onSectionSelect={handleSectionSelect}
+                  onHoverSound={triggerHoverSound}
+                />
+              )}
+            </AnimatePresence>
 
-                {/* مساحة ▾ */}
-                <div
-                  ref={(el) => {
-                    masahaBtnRef.current = el
-                    itemRefs.current.masaha = el
-                  }}
-                  onPointerEnter={handleMasahaEnter}
-                  onPointerLeave={handleMasahaLeave}
-                  onMouseEnter={() => {
-                    setHoveredKey('masaha')
-                    triggerHoverSound()
-                  }}
-                  className={`relative z-10 rounded-full ${
-                    activeKey === 'masaha' && indicatorTargetKey !== 'masaha'
-                      ? 'bg-white/[0.06] ring-1 ring-white/14'
-                      : ''
-                  }`}
-                >
-                  <button
-                    type="button"
-                    onClick={() => {
-                      clearMasahaTimer()
-                      const next = !masahaOpen
-                      if (next) {
-                        closeInlineSearch()
-                        setMobileMenuOpen(false)
-                        setVerdictOpen(false)
-                        syncNavIndicator('masaha', false)
-                      }
-                      playGlassDropdown(next)
-                      setMasahaOpen(next)
-                    }}
-                    aria-expanded={masahaOpen}
-                    aria-haspopup="true"
-                    data-qz-navitem=""
-                    className={`group/link relative inline-flex cursor-pointer items-center gap-1.5 rounded-full py-1.5 pl-3 pr-2 text-xs font-medium transition-colors duration-200 xl:text-sm ${
-                      activeKey === 'masaha' || masahaOpen
-                        ? 'font-semibold text-white'
-                        : 'text-white/90 hover:text-white'
-                    }`}
-                  >
-                    <CleanNavIcon
-                      Icon={Compass}
-                      active={activeKey === 'masaha' || indicatorTargetKey === 'masaha' || masahaOpen}
-                    />
-                    <span className="flex items-center gap-1.5 whitespace-nowrap [text-shadow:0_1px_2px_rgba(0,0,0,0.45)]">
-                      <span>مساحة</span>
-                      <ChevronDown
-                        className={`size-3.5 text-[color:var(--qz-mint)]/90 transition-transform duration-200 ${
-                          masahaOpen ? 'rotate-180' : ''
-                        }`}
-                      />
-                    </span>
-                  </button>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* مجموعة البحث وزر تبديل الثيم المتماثلة */}
-          <div
-            ref={searchBoxRef}
-            onPointerEnter={handleSearchAreaEnter}
-            onPointerLeave={handleSearchAreaLeave}
-            onMouseEnter={() => setHoveredKey(null)}
-            className={`flex items-center gap-2 ${
-              searchExpanded ? 'min-w-0 flex-1' : 'shrink-0'
-            }`}
-          >
-            {/* كبسولة حقل البحث */}
+            {/* مجموعة البحث ومبدّل الثيم والقائمة المحمولة */}
             <div
-              role="combobox"
-              aria-expanded={searchSuggestionsOpen}
-              aria-haspopup="listbox"
-              aria-owns="qz-search-listbox"
-              onMouseEnter={() => {
-                if (!searchExpanded) triggerHoverSound()
-              }}
-              onClick={() => {
-                if (!searchExpanded) {
-                  openInlineSearch()
-                } else {
-                  clearSearchSuggestionsTimer()
-                  setSearchSuggestionsOpen(true)
-                  searchInputRef.current?.focus()
-                }
-              }}
-              className={`relative flex items-center overflow-hidden rounded-full border-y border-x-0 transition-[width,background-color,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                searchExpanded
-                  ? 'w-full border-white/20 bg-white/[0.11] px-3.5 py-1.5'
-                  : 'cursor-pointer border-white/16 bg-white/[0.08] px-3.5 py-1.5 hover:border-white/24 hover:bg-white/[0.13]'
+              ref={searchBoxRef}
+              onPointerEnter={handleSearchAreaEnter}
+              onPointerLeave={handleSearchAreaLeave}
+              className={`flex items-center gap-2 ${
+                searchExpanded ? 'min-w-0 flex-1' : 'shrink-0'
               }`}
             >
-              <Search className="size-3.5 shrink-0 text-[color:var(--qz-mint)]" />
+              {/* كبسولة البحث الزجاجية المتداخلة (Nested LiquidGlass عند الإغلاق، وحوض زجاجي نقي عند التوسّع) */}
               {searchExpanded ? (
-                <>
+                <div
+                  role="combobox"
+                  aria-expanded={searchSuggestionsOpen}
+                  aria-haspopup="listbox"
+                  aria-owns="qz-search-listbox"
+                  onClick={() => {
+                    clearSearchSuggestionsTimer()
+                    setSearchSuggestionsOpen(true)
+                    searchInputRef.current?.focus()
+                  }}
+                  className="flex h-10 w-full items-center rounded-full border border-white/14 bg-white/[0.05] px-3.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.14)]"
+                >
+                  <Search className="size-3.5 shrink-0 text-[color:var(--qz-mint)]" />
                   <input
                     ref={searchInputRef}
                     type="text"
@@ -1631,61 +1469,87 @@ export default function Navbar() {
                   >
                     <CloseSpinIcon size={12} />
                   </motion.button>
-                </>
+                </div>
               ) : (
-                <span className="mr-2 flex items-center gap-1.5 whitespace-nowrap text-xs text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.45)]">
-                  <span>بحث</span>
-                  <kbd className="hidden rounded bg-white/12 px-1.5 py-0.5 font-sans text-[8.5px] text-[color:var(--qz-mint)] 2xl:inline">
-                    Ctrl K
-                  </kbd>
-                </span>
+                <LiquidGlass
+                  appearance="dark"
+                  material="clear"
+                  interactive
+                  refraction={6}
+                  blur={0.8}
+                  fallbackBlur={8}
+                  role="combobox"
+                  aria-expanded={false}
+                  aria-haspopup="listbox"
+                  aria-owns="qz-search-listbox"
+                  onMouseEnter={triggerHoverSound}
+                  onClick={openInlineSearch}
+                  className="flex h-10 cursor-pointer items-center rounded-full bg-white/[0.02] px-3.5 transition-colors duration-200 hover:bg-white/[0.06]"
+                >
+                  <Search className="size-3.5 shrink-0 text-[color:var(--qz-mint)]" />
+                  <span className="mr-2 flex items-center gap-1.5 whitespace-nowrap text-xs font-medium text-white/90 [text-shadow:0_1px_2px_rgba(0,0,0,0.45)]">
+                    <span>بحث</span>
+                    <kbd className="hidden rounded-md bg-white/12 px-1.5 py-0.5 font-sans text-[8.5px] text-[color:var(--qz-mint)] 2xl:inline">
+                      Ctrl K
+                    </kbd>
+                  </span>
+                </LiquidGlass>
+              )}
+
+              {/* خانة تبديل الثيمات الثلاثة (الزمردي • الجمري • الذهبي) */}
+              <div
+                onMouseEnter={triggerHoverSound}
+                className="flex shrink-0 items-center justify-center overflow-visible"
+                style={{ width: 74, minWidth: 74, maxWidth: 74, height: 40, minHeight: 40 }}
+              >
+                <DaylightThemeSwitch
+                  theme={theme === 'gold' ? 'blue' : theme}
+                  onCycleTheme={(nextTheme) =>
+                    setTheme(nextTheme === 'blue' ? 'gold' : nextTheme)
+                  }
+                  className="qz-nav-switch"
+                />
+              </div>
+
+              {/* زر قائمة الموبايل بسطح LiquidGlass تفاعلي */}
+              {!searchExpanded && (
+                <LiquidGlass
+                  asChild
+                  appearance="dark"
+                  material="clear"
+                  interactive
+                  refraction={6}
+                  fallbackBlur={8}
+                >
+                  <button
+                    ref={mobileBtnRef}
+                    type="button"
+                    onMouseEnter={triggerHoverSound}
+                    onClick={() => {
+                      clearMobileTimer()
+                      const next = !mobileMenuOpen
+                      if (next) {
+                        setVerdictOpen(false)
+                        setMasahaOpen(false)
+                        setSearchSuggestionsOpen(false)
+                      }
+                      playGlassDropdown(next)
+                      setMobileMenuOpen(next)
+                    }}
+                    className="grid size-9 shrink-0 cursor-pointer place-items-center rounded-full bg-white/[0.03] text-white transition-colors hover:bg-white/[0.08] lg:hidden"
+                    aria-label={mobileMenuOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
+                    aria-expanded={mobileMenuOpen}
+                  >
+                    <MenuMorphIcon open={mobileMenuOpen} size={16} />
+                  </button>
+                </LiquidGlass>
               )}
             </div>
-
-            {/* خانة تبديل الثيمات المتماثلة */}
-            <div
-              onMouseEnter={triggerHoverSound}
-              className="flex shrink-0 items-center justify-center overflow-visible"
-              style={{ width: 74, minWidth: 74, maxWidth: 74, height: 40, minHeight: 40 }}
-            >
-              <DaylightThemeSwitch
-                theme={theme}
-                onCycleTheme={(nextTheme) => setTheme(nextTheme)}
-                className="qz-nav-switch"
-              />
-            </div>
-
-            {/* زر قائمة الموبايل */}
-            {!searchExpanded && (
-              <motion.button
-                ref={mobileBtnRef}
-                type="button"
-                onMouseEnter={triggerHoverSound}
-                onClick={() => {
-                  clearMobileTimer()
-                  const next = !mobileMenuOpen
-                  if (next) {
-                    setVerdictOpen(false)
-                    setSearchSuggestionsOpen(false)
-                  }
-                  playGlassDropdown(next)
-                  setMobileMenuOpen(next)
-                }}
-                whileTap={{ scale: 0.88 }}
-                animate={{ rotate: mobileMenuOpen ? 90 : 0 }}
-                transition={{ type: 'spring', stiffness: 380, damping: 20 }}
-                className="grid size-8 shrink-0 cursor-pointer place-items-center rounded-full border-y border-x-0 border-white/18 bg-white/10 text-white transition-colors hover:bg-white/16 lg:hidden"
-                aria-label={mobileMenuOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
-                aria-expanded={mobileMenuOpen}
-              >
-                <MenuMorphIcon open={mobileMenuOpen} size={16} />
-              </motion.button>
-            )}
           </div>
-        </div>
-      </nav>
+        </nav>
+      </LiquidGlass>
 
-      {/* طبقة القوائم المنسدلة المستقلة — نسخة واحدة نظيفة لكل قائمة دون Ghosting */}
+      {/* طبقة القوائم المنسدلة المستقلة بأسطح LiquidGlass الموحدة */}
       <div
         ref={dropdownHostRef}
         className="pointer-events-none relative z-30 mx-auto max-w-[78rem]"
@@ -1706,18 +1570,24 @@ export default function Navbar() {
                 right: verdictAnchor.right,
                 transformOrigin: `${verdictAnchor.originX}px top`,
               }}
-              className="qassimz-dropdown-shell pointer-events-auto absolute top-1.5 hidden w-80 overflow-visible rounded-[28px] border-y border-x-0 border-white/16 bg-[color:var(--qz-ink)]/86 text-right shadow-[0_24px_60px_rgba(0,0,0,0.52)] backdrop-blur-[20px] saturate-[180%] before:absolute before:-top-2.5 before:inset-x-0 before:h-2.5 before:content-[''] lg:block"
+              className="pointer-events-auto absolute top-2 hidden w-80 before:absolute before:-top-3 before:inset-x-0 before:h-3 before:content-[''] lg:block"
             >
-              {/* وصلة زجاجية رقيقة تربط القائمة بزر Verdict مباشرة */}
               <span
                 aria-hidden="true"
                 style={{ left: Math.max(16, verdictAnchor.originX - 28) }}
-                className="pointer-events-none absolute -top-1.5 h-2 w-14 rounded-t-full border-t border-white/14 bg-white/[0.08] backdrop-blur-xl"
+                className="pointer-events-none absolute -top-1.5 z-0 h-2 w-14 rounded-t-full border-t border-white/18 bg-white/[0.08] backdrop-blur-xl"
               />
-
-              <div className="relative overflow-hidden rounded-[28px]">
+              <LiquidGlass
+                appearance="dark"
+                material="regular"
+                refraction={18}
+                dispersion={0.08}
+                fallbackBlur={22}
+                className="rounded-[28px] bg-[rgb(var(--qz-ink-rgb)/0.68)] text-right shadow-[0_24px_60px_rgba(0,0,0,0.52)]"
+              >
                 <VerdictPlanDropdown
                   currentPath={location.pathname}
+                  waterPalette={waterPalette}
                   onNavigateSection={handleSectionSelect}
                   onClose={() => {
                     clearVerdictTimer()
@@ -1725,7 +1595,7 @@ export default function Navbar() {
                   }}
                   onHoverSound={triggerHoverSound}
                 />
-              </div>
+              </LiquidGlass>
             </motion.div>
           )}
         </AnimatePresence>
@@ -1746,14 +1616,21 @@ export default function Navbar() {
                 right: masahaAnchor.right,
                 transformOrigin: `${masahaAnchor.originX}px top`,
               }}
-              className="qassimz-dropdown-shell pointer-events-auto absolute top-1.5 hidden w-80 overflow-visible rounded-[28px] border-y border-x-0 border-white/16 bg-[color:var(--qz-ink)]/86 text-right shadow-[0_24px_60px_rgba(0,0,0,0.52)] backdrop-blur-[20px] saturate-[180%] before:absolute before:-top-2.5 before:inset-x-0 before:h-2.5 before:content-[''] lg:block"
+              className="pointer-events-auto absolute top-2 hidden w-80 before:absolute before:-top-3 before:inset-x-0 before:h-3 before:content-[''] lg:block"
             >
               <span
                 aria-hidden="true"
                 style={{ left: Math.max(16, masahaAnchor.originX - 28) }}
-                className="pointer-events-none absolute -top-1.5 h-2 w-14 rounded-t-full border-t border-white/14 bg-white/[0.08] backdrop-blur-xl"
+                className="pointer-events-none absolute -top-1.5 z-0 h-2 w-14 rounded-t-full border-t border-white/18 bg-white/[0.08] backdrop-blur-xl"
               />
-              <div className="relative overflow-hidden rounded-[28px]">
+              <LiquidGlass
+                appearance="dark"
+                material="regular"
+                refraction={18}
+                dispersion={0.08}
+                fallbackBlur={22}
+                className="rounded-[28px] bg-[rgb(var(--qz-ink-rgb)/0.68)] text-right shadow-[0_24px_60px_rgba(0,0,0,0.52)]"
+              >
                 <MasahaDropdown
                   onNavigateSection={handleSectionSelect}
                   onClose={() => {
@@ -1762,154 +1639,171 @@ export default function Navbar() {
                   }}
                   onHoverSound={triggerHoverSound}
                 />
-              </div>
+              </LiquidGlass>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* 3. قائمة اقتراحات البحث (Spring Dropdown نظيفة تمامًا بدون Ghosting عند الخروج) */}
+        {/* 3. قائمة اقتراحات البحث */}
         <AnimatePresence>
           {searchSuggestionsOpen && (
             <motion.div
               key="search-suggestions-dropdown"
               ref={searchDropdownRef}
-              initial={{ height: 0, opacity: 0, y: -6 }}
+              initial={{ opacity: 0, y: -6, scale: 0.98 }}
               animate={{
-                height: suggestionsHeight > 0 ? suggestionsHeight : 'auto',
                 opacity: 1,
                 y: 0,
+                scale: 1,
                 transition: {
-                  height: dropdownHeightSpring,
                   y: dropdownVerticalSpring,
                   opacity: dropdownOpacitySpring,
+                  scale: dropdownVerticalSpring,
                 },
               }}
               exit={{
-                height: 0,
                 opacity: 0,
                 y: -6,
+                scale: 0.98,
                 transition: {
-                  height: { duration: 0.2, ease: [0.32, 0, 0.67, 0] },
                   opacity: { duration: 0.14, ease: 'easeOut' },
                   y: { duration: 0.16, ease: 'easeOut' },
+                  scale: { duration: 0.16, ease: 'easeOut' },
                 },
               }}
               onPointerEnter={handleSearchAreaEnter}
               onPointerLeave={handleSearchAreaLeave}
               style={{ transformOrigin: 'top center' }}
-              className="qassimz-dropdown-shell pointer-events-auto relative mx-auto mt-2 w-full max-w-2xl overflow-hidden rounded-3xl border-y border-x-0 border-white/16 bg-[color:var(--qz-ink)]/88 text-right shadow-[0_24px_60px_rgba(0,0,0,0.52)] backdrop-blur-[20px] saturate-[180%]"
+              className="pointer-events-auto relative mx-auto mt-2.5 w-full max-w-2xl"
             >
-              <div ref={searchListInnerRef} className="relative p-2">
-                <div
-                  id="qz-search-listbox"
-                  role="listbox"
-                  aria-label="اقتراحات البحث"
-                  className="relative z-10"
+              <LiquidGlass
+                appearance="dark"
+                material="regular"
+                refraction={18}
+                dispersion={0.08}
+                fallbackBlur={22}
+                className="rounded-3xl bg-[rgb(var(--qz-ink-rgb)/0.68)] text-right shadow-[0_24px_60px_rgba(0,0,0,0.52)]"
+              >
+                <motion.div
+                  animate={{
+                    height: suggestionsHeight > 0 ? suggestionsHeight : 'auto',
+                    transition: { height: dropdownHeightSpring },
+                  }}
+                  className="overflow-hidden rounded-3xl"
                 >
-                  {filteredSearch.length === 0 ? (
-                    <p className="py-6 text-center text-xs text-[color:var(--qz-sage)]">
-                      لا توجد نتائج مطابقة
-                    </p>
-                  ) : (
-                    <motion.div
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      variants={{
-                        hidden: {},
-                        visible: {
-                          transition: {
-                            staggerChildren: 0.045,
-                            delayChildren: 0.02,
-                          },
-                        },
-                        exit: {
-                          transition: {
-                            staggerChildren: 0.02,
-                            staggerDirection: -1,
-                          },
-                        },
-                      }}
-                      className="relative flex flex-col gap-1"
+                  <div ref={searchListInnerRef} className="relative p-2">
+                    <div
+                      id="qz-search-listbox"
+                      role="listbox"
+                      aria-label="اقتراحات البحث"
+                      className="relative z-10"
                     >
-                      <SearchElasticHighlight
-                        containerRef={searchDropdownRef}
-                        rowRefs={searchRowRefs}
-                        activeIndex={activeSearchIndex}
-                        visible={filteredSearch.length > 0}
-                      />
+                      {filteredSearch.length === 0 ? (
+                        <p className="py-6 text-center text-xs text-[color:var(--qz-sage)]">
+                          لا توجد نتائج مطابقة
+                        </p>
+                      ) : (
+                        <motion.div
+                          initial="hidden"
+                          animate="visible"
+                          exit="exit"
+                          variants={{
+                            hidden: {},
+                            visible: {
+                              transition: {
+                                staggerChildren: 0.045,
+                                delayChildren: 0.02,
+                              },
+                            },
+                            exit: {
+                              transition: {
+                                staggerChildren: 0.02,
+                                staggerDirection: -1,
+                              },
+                            },
+                          }}
+                          className="relative flex flex-col gap-1"
+                        >
+                          <SearchElasticHighlight
+                            rowRefs={searchRowRefs}
+                            activeIndex={activeSearchIndex}
+                            visible={filteredSearch.length > 0}
+                            itemCount={filteredSearch.length}
+                          />
 
-                      {filteredSearch.map((item, idx) => {
-                        const ItemIcon = item.icon
-                        const isSelected = idx === activeSearchIndex
-                        return (
-                          <motion.button
-                            key={item.to}
-                            id={`qz-search-opt-${idx}`}
-                            role="option"
-                            aria-selected={isSelected}
-                            ref={(el) => {
-                              searchRowRefs.current[idx] = el
-                            }}
-                            variants={{
-                              hidden: { opacity: 0, y: 14 },
-                              visible: {
-                                opacity: 1,
-                                y: 0,
-                                transition: {
-                                  type: 'spring',
-                                  stiffness: 380,
-                                  damping: 28,
+                        {filteredSearch.map((item, idx) => {
+                          const ItemIcon = item.icon
+                          const isSelected = idx === activeSearchIndex
+                          return (
+                            <motion.button
+                              key={item.to}
+                              id={`qz-search-opt-${idx}`}
+                              role="option"
+                              aria-selected={isSelected}
+                              ref={(el) => {
+                                searchRowRefs.current[idx] = el
+                              }}
+                              variants={{
+                                hidden: { opacity: 0, y: 14 },
+                                visible: {
+                                  opacity: 1,
+                                  y: 0,
+                                  transition: {
+                                    type: 'spring',
+                                    stiffness: 380,
+                                    damping: 28,
+                                  },
                                 },
-                              },
-                              exit: {
-                                opacity: 0,
-                                y: 6,
-                                transition: { duration: 0.1 },
-                              },
-                            }}
-                            type="button"
-                            onMouseEnter={() => {
-                              setActiveSearchIndex(idx)
-                              triggerHoverSound()
-                              prefetchRoute(item.to)
-                            }}
-                            onClick={(event) => {
-                              closeInlineSearch()
-                              handleSectionSelect(event, item.to, resolveRouteKey(item.to))
-                            }}
-                            className="group relative z-10 flex min-h-[46px] w-full cursor-pointer items-center justify-between rounded-2xl px-3.5 py-2 text-right transition-colors"
-                          >
-                            <span className="flex items-center gap-3">
-                              <GlassIcon icon={ItemIcon} size="sm" active={isSelected} />
-                              <span>
-                                <span className="block text-xs font-bold text-white">
-                                  {item.title}
-                                </span>
-                                <span className="block text-[11px] text-[color:var(--qz-mint)]/75">
-                                  {item.sub}
+                                exit: {
+                                  opacity: 0,
+                                  y: 6,
+                                  transition: { duration: 0.1 },
+                                },
+                              }}
+                              type="button"
+                              onMouseEnter={() => {
+                                setActiveSearchIndex(idx)
+                                triggerHoverSound()
+                                prefetchRoute(item.to)
+                              }}
+                              onClick={(event) => {
+                                closeInlineSearch()
+                                handleSectionSelect(event, item.to, resolveRouteKey(item.to))
+                              }}
+                              className="group relative z-10 flex min-h-[46px] w-full cursor-pointer items-center justify-between rounded-2xl px-3.5 py-2 text-right transition-colors"
+                            >
+                              <span className="flex items-center gap-3">
+                                <GlassIcon icon={ItemIcon} size="sm" active={isSelected} />
+                                <span>
+                                  <span className="block text-xs font-bold text-white">
+                                    {item.title}
+                                  </span>
+                                  <span className="block text-[11px] text-[color:var(--qz-mint)]/75">
+                                    {item.sub}
+                                  </span>
                                 </span>
                               </span>
-                            </span>
-                            <ArrowUpLeft
-                              className={`size-3.5 shrink-0 transition-colors ${
-                                isSelected
-                                  ? 'text-white'
-                                  : 'text-[color:var(--qz-sage)] group-hover:text-white'
-                              }`}
-                            />
-                          </motion.button>
-                        )
-                      })}
-                    </motion.div>
-                  )}
+                              <ArrowUpLeft
+                                className={`size-3.5 shrink-0 transition-colors ${
+                                  isSelected
+                                    ? 'text-white'
+                                    : 'text-[color:var(--qz-sage)] group-hover:text-white'
+                                }`}
+                              />
+                            </motion.button>
+                          )
+                        })}
+                      </motion.div>
+                    )}
+                  </div>
                 </div>
-              </div>
+                </motion.div>
+              </LiquidGlass>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* 3. قائمة الموبايل المستقلة */}
+        {/* 4. قائمة الموبايل المستقلة */}
         <AnimatePresence>
           {mobileMenuOpen && (
             <motion.div
@@ -1922,100 +1816,104 @@ export default function Navbar() {
               onPointerEnter={handleMobileEnter}
               onPointerLeave={handleMobileLeave}
               style={{ transformOrigin: 'top center' }}
-              className="qassimz-dropdown-shell pointer-events-auto relative mt-2 overflow-visible rounded-3xl border-y border-x-0 border-white/16 bg-[color:var(--qz-ink)]/90 text-right shadow-2xl backdrop-blur-[20px] saturate-[180%] before:absolute before:-top-3 before:inset-x-0 before:h-3 before:content-[''] lg:hidden"
+              className="pointer-events-auto relative mt-2 before:absolute before:-top-3 before:inset-x-0 before:h-3 before:content-[''] lg:hidden"
             >
-              <div className="relative overflow-hidden rounded-3xl p-3">
-                <GlassHoverBubble containerRef={mobileMenuRef} radius={12} insetX={4} insetY={3} />
+              <LiquidGlass
+                appearance="dark"
+                material="regular"
+                refraction={18}
+                dispersion={0.08}
+                fallbackBlur={22}
+                className="rounded-3xl bg-[rgb(var(--qz-ink-rgb)/0.76)] text-right shadow-2xl"
+              >
+                <div className="relative overflow-hidden rounded-3xl p-3">
+                  <GlassHoverBubble containerRef={mobileMenuRef} radius={12} insetX={4} insetY={3} />
 
-                <div className="relative z-10 flex flex-col gap-1">
-                  <NavLink
-                    to="/"
-                    end
-                    onMouseEnter={triggerHoverSound}
-                    onClick={(event) => handleSectionSelect(event, '/', '/')}
-                    data-qz-item=""
-                    className="flex items-center gap-2.5 rounded-2xl px-3 py-2 text-sm text-white"
-                  >
-                    <GlassIcon icon={Home} size="sm" active={activeKey === '/'} />
-                    <span>الرئيسية</span>
-                  </NavLink>
-
-                  <div className="my-1 rounded-2xl border-y border-x-0 border-white/10 bg-white/4 p-2">
-                    <div className="px-2 pb-1 text-[9.5px] font-semibold tracking-wider text-[color:var(--qz-sage)]">
-                      الفِردِكت — THE VERDICT
-                    </div>
+                  <div className="relative z-10 flex flex-col gap-1">
                     <NavLink
-                      to="/verdict/movies"
+                      to="/"
+                      end
                       onMouseEnter={triggerHoverSound}
-                      onClick={(event) => {
-                        playGlassDropdown(false)
-                        handleSectionSelect(event, '/verdict/movies', 'verdict')
-                      }}
+                      onClick={(event) => handleSectionSelect(event, '/', '/')}
                       data-qz-item=""
-                      className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-white"
+                      className="flex items-center gap-2.5 rounded-2xl px-3 py-2 text-sm text-white"
                     >
-                      <GlassIcon icon={Film} size="sm" />
-                      <span>حُكم السينما (أفلام)</span>
+                      <GlassIcon icon={Home} size="sm" active={activeKey === '/'} />
+                      <span>الرئيسية</span>
                     </NavLink>
-                    <NavLink
-                      to="/verdict/series"
-                      onMouseEnter={triggerHoverSound}
-                      onClick={(event) => {
-                        playGlassDropdown(false)
-                        handleSectionSelect(event, '/verdict/series', 'verdict')
-                      }}
-                      data-qz-item=""
-                      className="mt-1 flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-white"
-                    >
-                      <GlassIcon icon={Tv} size="sm" />
-                      <span>حُكم المسلسلات</span>
-                    </NavLink>
-                  </div>
 
-                  <div className="my-1 rounded-2xl border-y border-x-0 border-white/10 bg-white/4 p-2">
-                    <div className="px-2 pb-1 text-[9.5px] font-semibold tracking-wider text-[color:var(--qz-sage)]">
-                      مساحة — MASAHA
-                    </div>
-                    {MASAHA_ITEMS.map(({ to, label, icon: ItemIcon }) => (
+                    <div className="my-1 rounded-2xl border-y border-x-0 border-white/10 bg-white/4 p-2">
+                      <div className="px-2 pb-1 text-[9.5px] font-semibold tracking-wider text-[color:var(--qz-sage)]">
+                        الفِردِكت — THE VERDICT
+                      </div>
                       <NavLink
-                        key={to}
-                        to={to}
+                        to="/verdict/movies"
                         onMouseEnter={triggerHoverSound}
                         onClick={(event) => {
                           playGlassDropdown(false)
-                          handleSectionSelect(event, to, 'masaha')
+                          handleSectionSelect(event, '/verdict/movies', 'verdict')
+                        }}
+                        data-qz-item=""
+                        className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-white"
+                      >
+                        <GlassIcon icon={Film} size="sm" />
+                        <span>حُكم السينما (أفلام)</span>
+                      </NavLink>
+                      <NavLink
+                        to="/verdict/series"
+                        onMouseEnter={triggerHoverSound}
+                        onClick={(event) => {
+                          playGlassDropdown(false)
+                          handleSectionSelect(event, '/verdict/series', 'verdict')
                         }}
                         data-qz-item=""
                         className="mt-1 flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-white"
                       >
-                        <GlassIcon icon={ItemIcon} size="sm" />
-                        <span>{label}</span>
+                        <GlassIcon icon={Tv} size="sm" />
+                        <span>حُكم المسلسلات</span>
+                      </NavLink>
+                    </div>
+
+                    <div className="my-1 rounded-2xl border-y border-x-0 border-white/10 bg-white/4 p-2">
+                      <div className="px-2 pb-1 text-[9.5px] font-semibold tracking-wider text-[color:var(--qz-sage)]">
+                        مساحة — MASAHA
+                      </div>
+                      {MASAHA_ITEMS.map(({ to, label, icon: ItemIcon }) => (
+                        <NavLink
+                          key={to}
+                          to={to}
+                          onMouseEnter={triggerHoverSound}
+                          onClick={(event) => {
+                            playGlassDropdown(false)
+                            handleSectionSelect(event, to, 'masaha')
+                          }}
+                          data-qz-item=""
+                          className="mt-1 flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm text-white"
+                        >
+                          <GlassIcon icon={ItemIcon} size="sm" />
+                          <span>{label}</span>
+                        </NavLink>
+                      ))}
+                    </div>
+
+                    {NAV_ITEMS.map(({ to, label, icon: ItemIcon }) => (
+                      <NavLink
+                        key={to}
+                        to={to}
+                        onMouseEnter={triggerHoverSound}
+                        onClick={(event) => handleSectionSelect(event, to, to)}
+                        data-qz-item=""
+                        className="flex items-center justify-between rounded-2xl px-3 py-2 text-sm text-white"
+                      >
+                        <span className="flex items-center gap-2.5">
+                          <GlassIcon icon={ItemIcon} size="sm" active={activeKey === to} />
+                          <span>{label}</span>
+                        </span>
                       </NavLink>
                     ))}
                   </div>
-
-                  {NAV_ITEMS.map(({ to, label, badge, icon: ItemIcon }) => (
-                    <NavLink
-                      key={to}
-                      to={to}
-                      onMouseEnter={triggerHoverSound}
-                      onClick={(event) => handleSectionSelect(event, to, to)}
-                      data-qz-item=""
-                      className="flex items-center justify-between rounded-2xl px-3 py-2 text-sm text-white"
-                    >
-                      <span className="flex items-center gap-2.5">
-                        <GlassIcon icon={ItemIcon} size="sm" active={activeKey === to} />
-                        <span>{label}</span>
-                      </span>
-                      {badge && (
-                        <span className="rounded-full bg-emerald-400/22 px-2 py-0.5 font-sans text-[9px] text-emerald-200">
-                          {badge}
-                        </span>
-                      )}
-                    </NavLink>
-                  ))}
                 </div>
-              </div>
+              </LiquidGlass>
             </motion.div>
           )}
         </AnimatePresence>

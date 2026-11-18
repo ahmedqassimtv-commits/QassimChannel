@@ -1053,48 +1053,255 @@ html[data-theme='gold'] .qz-glass-rim {
 }
 
 /* ==========================================================================
-   12. مادة الناڤبار بأسلوب Apple
-   المراجع: شريط apple.com الحي (backdrop-filter: saturate(180%) blur(20px)،
-   حافة علوية فاتحة، hairline واحد) — WWDC25 «Meet Liquid Glass» (مادة
-   الطبقة الوظيفية العائمة فقط، لا زجاج فوق زجاج) — و WWDC18 «Designing
-   Fluid Interfaces» (استجابة على pointer-down، نوابض قابلة للمقاطعة).
-   الشكل والبنية والروابط كما هي؛ هذه الطبقة مادة وحركة فقط.
+   12. LiquidGlass Navbar + Nimbus "Waterline" Capsule & Icon Scenes
    ========================================================================== */
-.qassimz-apple-nav-shell {
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  backdrop-filter: blur(20px) saturate(180%);
-  /* تتبع حسب الحجم: تضييق طفيف لتسميات الناڤبار الصغيرة */
-  letter-spacing: -0.01em;
+.qassimz-liquid-nav {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* استجابة فورية على pointer-down لعناصر الناڤبار (Apple WWDC18 Fluid Interfaces) */
+.qassimz-liquid-nav [data-qz-navitem] {
+  transition: color 0.22s ease, transform 100ms ease-out;
+}
+.qassimz-liquid-nav [data-qz-navitem]:active {
+  transform: scale(0.965);
+}
+
+/* البديل البصري لقطرة الماء عند غياب WebGL (CSS Water Droplet Fallback) */
+.qz-water-drop {
+  transform-origin: center center;
+  background:
+    radial-gradient(120% 140% at 30% 0%, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0) 56%),
+    rgb(var(--qz-mint-rgb) / 0.22);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.45),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.08),
-    0 12px 32px rgba(0, 0, 0, 0.22);
+    inset 0 1px 1px rgba(255, 255, 255, 0.88),
+    inset 0 -2px 6px rgb(var(--qz-glow-rgb) / 0.28),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.42),
+    0 6px 16px -6px rgba(0, 0, 0, 0.5);
 }
-html[data-theme='gold'] .qassimz-apple-nav-shell {
-  box-shadow:
-    inset 0 1px 0 rgba(201, 165, 78, 0.3),
-    inset 0 -1px 0 rgba(201, 165, 78, 0.06),
-    0 12px 32px rgba(0, 0, 0, 0.26);
+
+/* مشاهد الأيقونات المصغّرة (Nimbus Waterline Icon Micro-Scenes) */
+.nv-ico {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
 }
-/* استجابة فورية على pointer-down: تصغير 0.97 خلال 100ms لروابط الناڤبار */
-.qassimz-apple-nav-shell a[data-qz-navitem] {
-  transition: transform 100ms ease-out;
+.nv-ico svg {
+  transition: transform 0.45s cubic-bezier(0.3, 1.6, 0.5, 1), filter 0.3s ease;
 }
-.qassimz-apple-nav-shell a[data-qz-navitem]:active {
-  transform: scale(0.97);
+[data-qz-active="true"] .nv-ico svg,
+.nimbus-item[aria-current="page"] .nv-ico svg {
+  transform: translateY(-1px) scale(1.08);
+  filter: drop-shadow(0 0 6px rgb(var(--qz-glow-rgb) / 0.45));
 }
-/* الشفافية المخففة: سطوح صلبة بدل الزجاج */
+.nv-door {
+  fill: transparent;
+  transition: fill 0.3s ease;
+}
+[data-qz-active="true"] .nv-door {
+  fill: rgb(var(--qz-glow-rgb) / 0.38);
+}
+
+.nv-ico[data-fx="pop"] svg {
+  animation: nvPop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+@keyframes nvPop {
+  0% { transform: scale(0.72); }
+  60% { transform: scale(1.22); }
+  100% { transform: translateY(-1px) scale(1.08); }
+}
+
+.nv-ico[data-fx="plane"] svg {
+  animation: nvPlane 1.15s cubic-bezier(0.55, 0, 0.3, 1) both;
+}
+@keyframes nvPlane {
+  0% { transform: none; }
+  12% { transform: translate(-3px, 2px) rotate(7deg); }
+  42% { transform: translate(64px, -26px) rotate(-24deg) scale(0.9); opacity: 0; }
+  43% { transform: translate(-60px, 16px) rotate(-12deg) scale(0.9); opacity: 0; }
+  58% { opacity: 1; }
+  80% { transform: translate(3px, -1px) rotate(2deg); }
+  100% { transform: translateY(-1px) scale(1.08); }
+}
+.nv-ico[data-fx="plane"]::after {
+  content: "";
+  position: absolute;
+  left: 55%;
+  top: 48%;
+  height: 2px;
+  width: 46px;
+  border-radius: 2px;
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.95));
+  animation: nvTrail 1.15s ease-out both;
+  pointer-events: none;
+}
+@keyframes nvTrail {
+  0%, 8% { opacity: 0; transform: rotate(-22deg) scaleX(0); }
+  30% { opacity: 0.9; transform: rotate(-22deg) scaleX(1); }
+  55%, 100% { opacity: 0; transform: rotate(-22deg) translateX(30px) scaleX(0.2); }
+}
+
+.nv-ico[data-fx="drop"] svg {
+  animation: nvDrop 0.95s cubic-bezier(0.4, 0, 0.3, 1) both;
+  transform-origin: 50% 100%;
+}
+@keyframes nvDrop {
+  0% { transform: translateY(-1px); }
+  26% { transform: translateY(-12px) scale(0.88, 1.12); }
+  46% { transform: translateY(3px) scale(1.28, 0.7); }
+  62% { transform: translateY(-3px) scale(0.92, 1.08); }
+  80% { transform: translateY(0) scale(1.04, 0.97); }
+  100% { transform: translateY(-1px) scale(1.08); }
+}
+.nv-ico[data-fx="drop"]::before,
+.nv-ico[data-fx="drop"]::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0;
+  pointer-events: none;
+}
+.nv-ico[data-fx="drop"]::before {
+  animation: nvSplashL 0.95s ease-out both;
+}
+.nv-ico[data-fx="drop"]::after {
+  animation: nvSplashR 0.95s ease-out both;
+}
+@keyframes nvSplashL {
+  0%, 44% { opacity: 0; transform: none; }
+  50% { opacity: 0.9; transform: translate(-5px, -6px); }
+  75%, 100% { opacity: 0; transform: translate(-11px, 1px) scale(0.4); }
+}
+@keyframes nvSplashR {
+  0%, 44% { opacity: 0; transform: none; }
+  50% { opacity: 0.9; transform: translate(5px, -7px); }
+  75%, 100% { opacity: 0; transform: translate(12px, 1px) scale(0.4); }
+}
+
+.nv-ico[data-fx="spin"] svg {
+  animation: nvSpin 0.95s cubic-bezier(0.2, 0.75, 0.25, 1) both;
+}
+@keyframes nvSpin {
+  0% { transform: perspective(80px) rotateY(0); }
+  100% { transform: perspective(80px) rotateY(360deg) translateY(-1px) scale(1.08); }
+}
+
+.nv-ico[data-fx="glow"] svg {
+  animation: nvHop 0.8s cubic-bezier(0.3, 1.4, 0.5, 1) both;
+  transform-origin: 50% 100%;
+}
+@keyframes nvHop {
+  0% { transform: none; }
+  30% { transform: translateY(-5px) scale(1.04, 0.96); }
+  55% { transform: translateY(0) scale(1.12, 0.88); }
+  75% { transform: translateY(-2px) scale(0.98, 1.04); }
+  100% { transform: translateY(-1px) scale(1.08); }
+}
+.nv-ico[data-fx="glow"] .nv-door {
+  animation: nvDoor 1.3s ease both;
+}
+@keyframes nvDoor {
+  0% { fill: transparent; }
+  30% { fill: #FFF3A8; }
+  100% { fill: rgb(var(--qz-glow-rgb) / 0.65); }
+}
+
+.nv-ico[data-fx="wave"] svg {
+  animation: nvWave 0.9s ease-in-out both;
+  transform-origin: 50% 92%;
+}
+@keyframes nvWave {
+  0% { transform: none; }
+  20% { transform: rotate(-15deg); }
+  40% { transform: rotate(12deg); }
+  60% { transform: rotate(-8deg); }
+  80% { transform: rotate(4deg); }
+  100% { transform: translateY(-1px) scale(1.08); }
+}
+
+/* تنسيق المكوّن المستقل LiquidNavbar */
+.nimbus-nav {
+  --n-fg: #0B132B;
+  --n-fg-soft: rgba(11, 19, 43, 0.62);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px;
+  border-radius: 999px;
+  isolation: isolate;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.nimbus-nav[data-tone="dark"] {
+  --n-fg: #F4FAFF;
+  --n-fg-soft: rgba(244, 250, 255, 0.68);
+}
+.nimbus-item {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--n-fg-soft);
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.25s ease;
+}
+.nimbus-item:hover,
+.nimbus-item[aria-current="page"] {
+  color: var(--n-fg);
+}
+.nimbus-item:focus-visible {
+  outline: 2px solid rgb(var(--qz-glow-rgb) / 0.8);
+  outline-offset: 2px;
+}
+.nimbus-nav[data-compact="true"] .nimbus-item {
+  padding: 0 13px;
+}
+.nimbus-nav[data-compact="true"] .nimbus-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* الشفافية المخففة: سطوح صلبة واضحة */
 @media (prefers-reduced-transparency: reduce) {
-  .qassimz-apple-nav-shell {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
+  .qassimz-liquid-nav,
+  [data-liquid-glass] {
     background-color: rgb(var(--qz-ink-rgb) / 0.94) !important;
-  }
-  html[data-theme='gold'] .qassimz-apple-nav-shell {
-    background-color: rgb(var(--qz-ink-rgb) / 0.94) !important;
-  }
-  .qassimz-apple-nav-shell .qz-glass-layer {
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
   }
 }
+@media (prefers-reduced-motion: reduce) {
+  .nv-ico svg,
+  .nv-ico::before,
+  .nv-ico::after,
+  .nv-door {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
