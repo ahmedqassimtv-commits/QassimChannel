@@ -1,5 +1,6 @@
 import React, { useEffect, useId, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { assetUrl } from '../../utils/assets.js';
 
 const PALETTE = {
   obsidian: 'var(--qz-ink)',
@@ -93,9 +94,9 @@ export default function GlassBackground({ section }) {
   const hasCustomImage = Boolean(
     activeConfig.customImage && activeConfig.customImage.trim() !== ''
   );
-  const targetSource = hasCustomImage
-    ? activeConfig.customImage
-    : activeConfig.fractal4k;
+  const targetSource = assetUrl(
+    hasCustomImage ? activeConfig.customImage : activeConfig.fractal4k
+  );
 
   const [resolvedSrc, setResolvedSrc] = useState(targetSource);
 
@@ -122,7 +123,9 @@ export default function GlassBackground({ section }) {
     const sources = [
       ...new Set(
         Object.values(SECTIONS_CONFIG).map((c) =>
-          c.customImage && c.customImage.trim() !== '' ? c.customImage : c.fractal4k
+          assetUrl(
+            c.customImage && c.customImage.trim() !== '' ? c.customImage : c.fractal4k
+          )
         )
       ),
     ];
@@ -268,8 +271,9 @@ export default function GlassBackground({ section }) {
             key={resolvedSrc}
             src={resolvedSrc}
             onError={() => {
-              if (resolvedSrc !== activeConfig.fractal4k) {
-                setResolvedSrc(activeConfig.fractal4k);
+              const fallback = assetUrl(activeConfig.fractal4k);
+              if (resolvedSrc !== fallback) {
+                setResolvedSrc(fallback);
               }
             }}
             alt=""

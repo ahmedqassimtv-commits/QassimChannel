@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { assetUrl } from '../../utils/assets.js';
 
 /**
  * GlassCard — 4K Fractal Haze & Botanical Emerald Edition
@@ -14,6 +15,7 @@ export default function GlassCard({
   ...props
 }) {
   const cardRef = useRef(null);
+  const resolvedTexture = fractalTexture ? assetUrl(fractalTexture) : '';
 
   const handleMouseMove = (e) => {
     const el = cardRef.current;
@@ -82,14 +84,14 @@ export default function GlassCard({
       />
 
       {/* 4. خامة Fractal Haze الـ 4K محفورة بنعومة داخل سطح الزجاج */}
-      {fractalTexture && (
+      {resolvedTexture && (
         <div
           aria-hidden="true"
           className={`pointer-events-none absolute inset-0 z-0 bg-cover bg-center opacity-[0.045] mix-blend-screen transition-opacity duration-500 group-hover:opacity-[0.095] ${
-            fractalTexture.includes('/optimized/') ? '' : 'grayscale contrast-150'
+            resolvedTexture.includes('/optimized/') ? '' : 'grayscale contrast-150'
           }`}
           style={{
-            backgroundImage: `url('${fractalTexture}')`,
+            backgroundImage: `url('${resolvedTexture}')`,
           }}
         />
       )}

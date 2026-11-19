@@ -1119,6 +1119,7 @@ function useLiquidGlass(options: LiquidGlassOptions, rootRef: React.RefObject<HT
   const mapRef = React.useRef<MapState | null>(null);
   const [mode, setMode] = React.useState<"refract" | "frost">("frost");
   const [map, setMap] = React.useState<MapState | null>(null);
+  const [resizing, setResizing] = React.useState(false);
   const [fluidFrame, setFluidFrame] = React.useState<{ w: number; h: number } | null>(null);
   const [elementSize, setElementSize] = React.useState<{ w: number; h: number } | null>(null);
   const fluidRef = useRefLatest({ fluid });
@@ -1143,6 +1144,7 @@ function useLiquidGlass(options: LiquidGlassOptions, rootRef: React.RefObject<HT
     const element = rootRef.current;
     if (!lens || !element) return;
     let raf = 0;
+    let settleTimer = 0;
     let disposed = false;
     let heldFilter: string | null = null;
     const nested = Boolean(element.parentElement?.closest("[data-liquid-glass]"));
@@ -1190,14 +1192,42 @@ function useLiquidGlass(options: LiquidGlassOptions, rootRef: React.RefObject<HT
       );
     };
 
-    const measure = () => {
+    const measure = (immediate = false) => {
       raf = 0;
+      if (disposed) return;
       const w = Math.round(lens.offsetWidth);
       const h = Math.round(lens.offsetHeight);
       if (w < 2 || h < 2) return;
       setElementSize((prev) => (prev && prev.w === w && prev.h === h ? prev : { w, h }));
       const radius = Math.round(resolveRadius(getComputedStyle(lens).borderTopLeftRadius, w, h));
       const prev = mapRef.current;
+
+      // أثناء تغير الأبعاد المتسارع (سكرول النوف بار / توسّع البحث / تغيّر ارتفاع القائمة):
+      // نؤجل إعادة خبز خرائط الـ Canvas وفلتر الـ SVG حتى تستقر الحركة لتفادي التقطيع والمط الجانبي
+      if (
+        !immediate &&
+        !fluidRef.current?.fluid &&
+        prev &&
+        prev.w > 1 &&
+        prev.h > 1 &&
+        (Math.abs(prev.w - w) > 1 || Math.abs(prev.h - h) > 1)
+      ) {
+        setResizing(true);
+        window.clearTimeout(settleTimer);
+        settleTimer = window.setTimeout(() => {
+          settleTimer = 0;
+          if (disposed) return;
+          const fw = Math.round(lens.offsetWidth);
+          const fh = Math.round(lens.offsetHeight);
+          if (fw >= 2 && fh >= 2) {
+            const fr = Math.round(resolveRadius(getComputedStyle(lens).borderTopLeftRadius, fw, fh));
+            build(fw, fh, fr);
+          }
+          setResizing(false);
+        }, 110);
+        return;
+      }
+
       if (
         fluidRef.current?.fluid &&
         prev && prev.w > 1 && prev.h > 1 &&
@@ -1223,20 +1253,24 @@ function useLiquidGlass(options: LiquidGlassOptions, rootRef: React.RefObject<HT
         fluidRaf = requestAnimationFrame(step);
         return;
       }
+      window.clearTimeout(settleTimer);
+      settleTimer = 0;
+      setResizing(false);
       setFluidFrame(null);
       build(w, h, radius);
     };
 
     const observer = new ResizeObserver(() => {
-      if (!raf) raf = requestAnimationFrame(measure);
+      if (!raf) raf = requestAnimationFrame(() => measure(false));
     });
-    measure();
+    measure(true);
     observer.observe(lens);
     return () => {
       disposed = true;
       observer.disconnect();
       cancelAnimationFrame(raf);
       cancelAnimationFrame(fluidRaf);
+      window.clearTimeout(settleTimer);
       if (heldFilter) releaseFilter(heldFilter);
     };
   }, [mode, bezel, appearance, material, tint, dark, tintRGB, refraction, dispersion, fluid, motion, rootRef]);
@@ -1246,12 +1280,13 @@ function useLiquidGlass(options: LiquidGlassOptions, rootRef: React.RefObject<HT
   }, [map]);
 
   const refracting = mode === "refract" && map !== null && map.field !== "";
+  const activeRefract = refracting && !resizing;
   const spec = material === "regular" ? (dark ? MATERIALS.regular.dark : MATERIALS.regular.light) : null;
 
   const cssTone = `saturate(${saturation}) brightness(${dark ? brightness * 0.88 : brightness})`;
   const engineBlur =
     engine === "webkit" ? Math.min(fallbackBlur, 16) : fallbackBlur;
-  const backdrop = refracting
+  const backdrop = activeRefract
     ? `url(#${map!.filterId})${blur > 0 ? ` blur(${blur}px)` : ""}`
     : material === "regular"
       ? `blur(${Math.max(2, engineBlur * 0.5)}px) ${cssTone}`
@@ -1275,13 +1310,29 @@ function useLiquidGlass(options: LiquidGlassOptions, rootRef: React.RefObject<HT
           pointerEvents: "none",
           backdropFilter: backdrop,
           WebkitBackdropFilter: backdrop,
-          clipPath: map?.clip,
+          clipPath: activeRefract ? map?.clip : undefined,
           transform: fluidTransform,
           transformOrigin: "0 0",
         } as React.CSSProperties}
       />
       {map ? (
         <>
+          {/* حافة زجاجية مرنة عبر CSS تظهر أثناء تغيّر الأبعاد فقط لتفادي مطّ صورة الحافة المخبوزة */}
+          <span
+            aria-hidden
+            style={{
+              position: "absolute",
+              inset: 0,
+              zIndex: -1,
+              borderRadius: "inherit",
+              pointerEvents: "none",
+              opacity: resizing ? 1 : 0,
+              transition: "opacity 140ms ease",
+              boxShadow: dark
+                ? "inset 0 1px 0 rgba(255, 255, 255, 0.24), inset 0 -1px 0 rgba(255, 255, 255, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.14)"
+                : "inset 0 1px 0 rgba(255, 255, 255, 0.65), inset 0 0 0 1px rgba(255, 255, 255, 0.35)",
+            }}
+          />
           <span
             aria-hidden
             style={{
@@ -1289,6 +1340,8 @@ function useLiquidGlass(options: LiquidGlassOptions, rootRef: React.RefObject<HT
               inset: -2,
               zIndex: -1,
               pointerEvents: "none",
+              opacity: resizing ? 0 : 1,
+              transition: "opacity 140ms ease",
               backgroundImage: `url(${map.overlay})`,
               backgroundSize: "100% 100%",
               backgroundRepeat: "no-repeat",
@@ -1296,7 +1349,7 @@ function useLiquidGlass(options: LiquidGlassOptions, rootRef: React.RefObject<HT
               transformOrigin: "0 0",
             }}
           />
-          {!refracting && (material === "regular" || dark) ? (
+          {!activeRefract && (material === "regular" || dark) ? (
             <span
               aria-hidden
               style={{
@@ -1336,7 +1389,7 @@ function useLiquidGlass(options: LiquidGlassOptions, rootRef: React.RefObject<HT
     </>
   );
 
-  return { mode: refracting ? ("refract" as const) : ("frost" as const), layers, lensRef } as const;
+  return { mode: activeRefract ? ("refract" as const) : ("frost" as const), layers, lensRef } as const;
 }
 
 function useRefLatest<T>(value: T): React.RefObject<T> {

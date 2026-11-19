@@ -7,7 +7,7 @@ export default function VideoCard({ video }) {
   return (
     <GlassCard className="liquid-glass-hover group p-3">
       <div className="overflow-hidden rounded-2xl">
-        <LiteYouTubeEmbed id={video.youtubeId} title={video.title} poster="hqdefault" noCookie />
+        <LiteYouTubeEmbed id={video.youtubeId} title={video.title} poster="maxresdefault" noCookie />
       </div>
       <div className="px-2 pb-2 pt-4">
         <div className="mb-2 flex items-center justify-between gap-3 text-xs text-neutral-400">

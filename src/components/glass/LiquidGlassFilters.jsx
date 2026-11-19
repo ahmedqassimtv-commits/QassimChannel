@@ -2,7 +2,9 @@
  * فلتر الانكسار المشترك (Liquid Glass) — بيتركب مرة واحدة في App.
  */
 
-const LENS_MAP = '/images/qz-lens-map.png'
+import { assetUrl } from '../../utils/assets.js'
+
+const LENS_MAP = assetUrl('/images/qz-lens-map.png')
 
 export default function LiquidGlassFilters() {
   return (

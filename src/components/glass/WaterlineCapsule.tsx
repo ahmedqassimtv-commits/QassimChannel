@@ -334,6 +334,8 @@ export interface UseWaterlineOptions {
   /** Edge inset in px for droplet bounce walls. */
   wallInset?: number
   sound?: boolean
+  /** Pause the WebGL animation loop while keeping the context warm. */
+  paused?: boolean
 }
 
 export function useWaterline({
@@ -345,6 +347,7 @@ export function useWaterline({
   ambient = 0.65,
   wallInset = 4,
   sound = false,
+  paused = false,
 }: UseWaterlineOptions) {
   const trackRef = React.useRef<HTMLElement | null>(null)
   const canvasRef = React.useRef<HTMLCanvasElement | null>(null)
@@ -359,8 +362,8 @@ export function useWaterline({
   const [fx, setFx] = React.useState({ i: -1, n: 0 })
 
   const dark = tone === "dark" ? 1 : 0
-  const cfgRef = React.useRef({ dark, palette, trackRim, ambient, wallInset })
-  cfgRef.current = { dark, palette, trackRim, ambient, wallInset }
+  const cfgRef = React.useRef({ dark, palette, trackRim, ambient, wallInset, paused })
+  cfgRef.current = { dark, palette, trackRim, ambient, wallInset, paused }
 
   const draw = React.useCallback(() => {
     const s = st.current
@@ -661,8 +664,17 @@ export function useWaterline({
   }, [itemCount])
 
   React.useEffect(() => {
+    const s = st.current
+    if (paused) {
+      if (s.raf) {
+        cancelAnimationFrame(s.raf)
+        s.raf = 0
+      }
+      return
+    }
+    draw()
     loop()
-  }, [tone, palette, loop])
+  }, [tone, palette, paused, draw, loop])
 
   const local = React.useCallback((clientX: number, clientY: number) => {
     const nav = trackRef.current

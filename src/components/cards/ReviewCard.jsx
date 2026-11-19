@@ -76,7 +76,7 @@ export default function ReviewCard({ review }) {
           <LiteYouTubeEmbed
             id={review.youtubeId}
             title={`إعلان ${review.title}`}
-            poster="hqdefault"
+            poster="maxresdefault"
             noCookie
           />
         </div>
