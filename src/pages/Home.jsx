@@ -56,7 +56,7 @@ function Hero() {
         </Reveal>
         <Reveal delay={0.55} className="mt-9 flex flex-wrap gap-3">
           {latest && (
-            <button type="button" className="qz-btn" onClick={() => cinema.open(latest)} data-qz-silent>
+            <button type="button" className="qz-btn" onClick={() => cinema.open(latest, 'hero')} data-qz-silent>
               <Play className="size-4 fill-current" aria-hidden="true" />
               شاهد أحدث حلقة
             </button>
@@ -77,9 +77,9 @@ function Hero() {
           transition={{ duration: 1.3, delay: 0.5, ease: EASE }}
           className="absolute left-0 top-[14%] z-0 hidden w-[min(30vw,440px)] 2xl:block min-[1360px]:block"
         >
-          <button type="button" onClick={() => cinema.open(latest)} className="group qz-hover-zoom block w-full text-start" data-qz-silent aria-label={`شغّل ${latest.title}`}>
+          <button type="button" onClick={() => cinema.open(latest, 'hero')} className="group qz-hover-zoom block w-full text-start" data-qz-silent aria-label={`شغّل ${latest.title}`}>
             <div className="relative">
-              <CinemaThumb video={latest} priority className="aspect-[4/5] rounded-[30px] shadow-[0_50px_120px_-30px_rgb(0_0_0/0.8)]" />
+              <CinemaThumb video={latest} scope="hero" priority className="aspect-[4/5] rounded-[30px] shadow-[0_50px_120px_-30px_rgb(0_0_0/0.8)]" />
               <div className="qz-scrim rounded-[30px]" />
               <span className="absolute inset-0 grid place-items-center">
                 <span className="qz-play !size-20">

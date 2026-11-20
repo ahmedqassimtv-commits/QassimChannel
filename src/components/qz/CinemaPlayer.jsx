@@ -23,12 +23,13 @@ export function useCinema() {
 const isShort = (v) => v?.type === 'short'
 
 /* الصورة المصغّرة القابلة للتمدد: نفس layoutId في الكارت وفي المشغّل */
-export function CinemaThumb({ video, className = '', imgClassName = '', priority = false }) {
-  const { current } = useCinema()
-  const playing = current?.youtubeId === video.youtubeId
+export function CinemaThumb({ video, scope = 'main', className = '', imgClassName = '', priority = false }) {
+  const reduce = useReducedMotion()
+  // الكارت بيفضل شايل نفس layoutId طول الوقت (النمط القياسي): المشغّل بيطلع منه
+  // وبيرجعله. شيل الـ id من الكارت وقت التشغيل كان بيعلّق حركة القفل.
   return (
     <motion.div
-      layoutId={playing ? undefined : `cinema-${video.youtubeId}`}
+      layoutId={reduce ? undefined : `cinema-${scope}-${video.youtubeId}`}
       className={`qz-media ${className}`}
       transition={SPRING_SOFT}
     >
@@ -44,10 +45,16 @@ export function CinemaThumb({ video, className = '', imgClassName = '', priority
   )
 }
 
-function Player({ video, onClose }) {
+function Player({ video, scope, onClose }) {
   const reduce = useReducedMotion()
   const [ready, setReady] = useState(false)
   const src = `https://www.youtube-nocookie.com/embed/${video.youtubeId}?autoplay=1&rel=0&modestbranding=1&playsinline=1&color=white`
+
+  // احتياطي: لو حركة التكبير ماندهتش onLayoutAnimationComplete، يوتيوب يبدأ بعد لحظة
+  useEffect(() => {
+    const id = window.setTimeout(() => setReady(true), 900)
+    return () => window.clearTimeout(id)
+  }, [])
 
   useEffect(() => {
     lockScroll()
@@ -70,9 +77,10 @@ function Player({ video, onClose }) {
       />
       <div className="qz-cinema" role="dialog" aria-modal="true" aria-label={video.title} dir="rtl" onClick={onClose}>
         <motion.div
-          layoutId={reduce ? undefined : `cinema-${video.youtubeId}`}
+          layoutId={reduce ? undefined : `cinema-${scope}-${video.youtubeId}`}
           className={`qz-cinema-frame ${isShort(video) ? 'is-short' : ''}`}
           transition={SPRING_SOFT}
+          exit={{ opacity: 0 }}
           onLayoutAnimationComplete={() => setReady(true)}
           onClick={(e) => e.stopPropagation()}
         >
@@ -88,7 +96,7 @@ function Player({ video, onClose }) {
         </motion.div>
         <motion.div
           className="qz-cinema-meta"
-          style={isShort(video) ? { width: 'min(420px, 100%)' } : undefined}
+          style={{ width: isShort(video) ? 'min(420px, 100%, calc((100vh - 200px) * 9 / 16))' : 'min(1280px, 100%, calc((100vh - 220px) * 16 / 9))' }}
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0, transition: { delay: 0.25, duration: 0.5 } }}
           exit={{ opacity: 0, transition: { duration: 0.15 } }}
@@ -128,13 +136,17 @@ function Player({ video, onClose }) {
 
 export function CinemaProvider({ children }) {
   const [current, setCurrent] = useState(null)
-  const open = useCallback((video) => setCurrent(video), [])
+  // scope: نفس الفيديو ممكن يظهر مرتين في صفحة (الافتتاحية + قسم الحلقات)،
+  // فكل مكان له نطاق عشان الشاشة تكبر من الكارت اللي اتضغط بالظبط
+  const open = useCallback((video, scope = 'main') => setCurrent({ video, scope }), [])
   const close = useCallback(() => setCurrent(null), [])
   const value = useMemo(() => ({ open, close, current }), [open, close, current])
   return (
     <CinemaContext.Provider value={value}>
       {children}
-      <AnimatePresence>{current && <Player key={current.youtubeId} video={current} onClose={close} />}</AnimatePresence>
+      <AnimatePresence>
+        {current && <Player key={`${current.scope}-${current.video.youtubeId}`} video={current.video} scope={current.scope} onClose={close} />}
+      </AnimatePresence>
     </CinemaContext.Provider>
   )
 }

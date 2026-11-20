@@ -15,7 +15,7 @@ import { lockScroll, unlockScroll } from '../lib/scroll.js'
 
 const big = (url) => url.replace(/w=\d+/, 'w=2000')
 
-function Chapter({ story, index, onOpen, hidden }) {
+function Chapter({ story, index, onOpen }) {
   const ref = useRef(null)
   const reduce = useReducedMotion()
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
@@ -44,7 +44,7 @@ function Chapter({ story, index, onOpen, hidden }) {
           data-qz-silent
         >
           <motion.div
-            layoutId={hidden ? undefined : `story-${story.id}`}
+            layoutId={reduce ? undefined : `story-${story.id}`}
             className="qz-media aspect-[4/3] !rounded-[28px]"
             transition={SPRING_SOFT}
           >
@@ -91,6 +91,7 @@ function Lightbox({ list, index, onClose, onMove }) {
       <div className="qz-cinema" onClick={onClose}>
         <motion.div
           layoutId={`story-${story.id}`}
+          exit={{ opacity: 0 }}
           className="relative overflow-hidden rounded-[24px] bg-black shadow-[0_60px_140px_-40px_rgb(0_0_0/0.9)]"
           style={{ width: 'min(1200px, 100%)', aspectRatio: '4 / 3', maxHeight: 'calc(100vh - 200px)' }}
           transition={SPRING_SOFT}
@@ -156,7 +157,7 @@ export default function Stories() {
 
       <div className="mt-10">
         {list.map((s, i) => (
-          <Chapter key={s.id} story={s} index={i} hidden={open === i} onOpen={() => setOpen(i)} />
+          <Chapter key={s.id} story={s} index={i} onOpen={() => setOpen(i)} />
         ))}
         <div className="qz-rule" />
       </div>
