@@ -7,6 +7,7 @@ import remarkGfm from 'remark-gfm'
 import { ArrowRight, Check, Share2 } from 'lucide-react'
 import MarkerText from '../components/ui/MarkerText.jsx'
 import { articles, useArticle } from '../data/articles.js'
+import { assetUrl } from '../utils/assets.js'
 import { ArticleRow, fmtDate } from '../components/qz/Kit.jsx'
 import { Reveal, SplitTitle } from '../components/motion/Motion.jsx'
 
@@ -156,7 +157,8 @@ export default function ArticleView() {
               blockquote: MarkerText,
               h2: H2,
               h3: H3,
-              img: (props) => <img {...props} loading="lazy" alt={props.alt ?? ''} />,
+              // الصور المرفوعة من صفحة الكتابة مكتوبة /uploads/... فلازم تعدّي على مسار الموقع
+              img: ({ src = '', alt = '' }) => <img src={src.startsWith('/') ? assetUrl(src) : src} alt={alt} loading="lazy" />,
               a: ({ href, children }) =>
                 href?.startsWith('/') ? (
                   <Link to={href}>{children}</Link>

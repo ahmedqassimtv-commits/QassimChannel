@@ -1,8 +1,10 @@
 import { useEffect, useSyncExternalStore } from 'react'
-import { motion } from 'framer-motion'
 import { AudioLines, Play, Radio, Waves } from 'lucide-react'
 import GlassSwitch from '../components/ui/GlassSwitch.jsx'
 import { FoldingBill } from '../components/onair/FoldingBill.tsx'
+import { PageHero, SectionHead, ShortTile, VideoTile } from '../components/qz/Kit.jsx'
+import { Stagger, StaggerItem } from '../components/motion/Motion.jsx'
+import { videos } from '../data/videos.js'
 import {
   getOnAirState,
   startOnAirAmbient,
@@ -27,7 +29,7 @@ function OnAirPlayer() {
 
   return (
     <div
-      className="inline-flex max-w-full flex-wrap items-center gap-3 rounded-[28px] border border-[color:var(--qz-mint)]/20 bg-[color:var(--qz-ink)]/60 py-1.5 pe-4 ps-2 text-xs text-[color:var(--qz-sage)] backdrop-blur-md"
+      className="inline-flex max-w-full flex-wrap items-center gap-3 rounded-[28px] border border-[color:var(--qz-line)] bg-[color:var(--qz-glass-1)] py-1.5 pe-4 ps-2 text-xs text-[color:var(--qz-text-2)] backdrop-blur-md"
       role="group"
       aria-label="مشغل موسيقى أون إير"
     >
@@ -44,7 +46,7 @@ function OnAirPlayer() {
       />
 
       <span className="flex items-center gap-1.5" aria-live="polite">
-        <Waves className={`size-3.5 text-emerald-300 ${status === 'playing' ? 'animate-pulse' : 'opacity-50'}`} />
+        <Waves className={`size-3.5 text-[color:var(--qz-accent)] ${status === 'playing' ? 'animate-pulse' : 'opacity-50'}`} />
         <span className="sm:whitespace-nowrap">{STATUS_LABELS[status] ?? STATUS_LABELS.idle}</span>
       </span>
     </div>
@@ -59,41 +61,38 @@ export default function OnAir() {
   }, [])
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.28 }}
-    >
-      <header className="liquid-glass grid items-center gap-8 rounded-3xl p-6 sm:p-10 lg:grid-cols-[minmax(0,1fr)_auto]">
-        {/* ورقة «أون إير» الزجاجية — اسحبها واطويها (three.js بيتحمّل مع الصفحة دي بس) */}
-        <div className="flex flex-col items-center gap-2 lg:order-last">
-          <FoldingBill />
-          <span className="text-[11px] text-[color:var(--qz-sage)]/80">اسحب الورقة واطويها</span>
-        </div>
-
-        <div className="min-w-0">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5">
-            <span className="grid size-9 place-items-center rounded-xl border border-emerald-400/30 bg-[color:var(--qz-ink)] text-emerald-300">
-              <Radio className="size-4" />
-            </span>
-            <span className="flex items-center gap-2 font-mono text-xs font-bold tracking-[0.2em] text-emerald-300">
-              <span className="size-2 animate-pulse rounded-full bg-emerald-400" />
-              ON AIR • البث الاجتماعي الحيّ
-            </span>
+    <div>
+      <PageHero
+        index="—"
+        eyebrow="مساحة · البث الاجتماعي الحيّ"
+        title="أون إير"
+        lead="مساحة متجددة بتجمع منشورات قاسم اليومية، مقتطفاته السريعة، وتحديثاته على المنصات في مكان واحد — على موسيقى هادية."
+        aside={
+          /* ورقة قاسمز الزجاجية — اسحبها واطويها (three.js بيتحمّل مع الصفحة دي بس) */
+          <div className="flex flex-col items-center gap-3">
+            <FoldingBill />
+            <span className="text-xs text-[color:var(--qz-text-3)]">اسحب الورقة واطويها</span>
           </div>
-
+        }
+      >
+        <div className="flex flex-wrap items-center gap-4">
+          <span className="qz-chip qz-chip-live">
+            <Radio className="size-3.5" aria-hidden="true" /> على الهوا
+          </span>
           <OnAirPlayer />
         </div>
+      </PageHero>
 
-        <h1 className="thmanyah-swash mt-4 text-4xl font-black text-[color:var(--qz-mint)] sm:text-5xl">
-          أون إير
-        </h1>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-[color:var(--qz-sage)] sm:text-base">
-          مساحة متجددة تجمع منشورات قاسم اليومية، مقتطفاته السريعة، وتحديثاته عبر منصات التواصل الاجتماعي في مكان واحد.
-        </p>
-        </div>
-      </header>
-    </motion.div>
+      <section className="qz-section">
+        <SectionHead index="01" eyebrow="من القناة" title="آخر ما اتنشر" to="/videos" cta="كل الفيديوهات" />
+        <Stagger className="grid gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3">
+          {videos.slice(0, 3).map((v) => (
+            <StaggerItem key={v.id}>
+              {v.type === 'short' ? <ShortTile video={v} /> : <VideoTile video={v} />}
+            </StaggerItem>
+          ))}
+        </Stagger>
+      </section>
+    </div>
   )
 }

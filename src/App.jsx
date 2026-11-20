@@ -67,8 +67,12 @@ function AnimatedRoutes() {
   }, [])
 
   const variants = reduce ? pageVariantsReduced : pageVariants
-  // المقالات المختلفة صفحات مختلفة، لكن /videos و /videos/shorts صفحة واحدة بفلتر
-  const pageKey = location.pathname.startsWith('/videos') ? '/videos' : location.pathname
+  // كل مقال صفحة لوحده، لكن /videos و /videos/shorts صفحة واحدة بفلتر، وكذلك أفلام/مسلسلات الفِردِكت
+  const pageKey = location.pathname.startsWith('/videos')
+    ? '/videos'
+    : location.pathname.startsWith('/verdict')
+      ? '/verdict'
+      : location.pathname
 
   // نفس الصفحة (رابط # أو أول تحميل): مفيش خروج فبنظبط التمرير هنا
   const prevKey = useRef(pageKey)
