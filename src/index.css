@@ -123,43 +123,61 @@
 }
 
 /* ==========================================================================
-   4. تعريف خط Liftaswash
+   4. خط Quiverleaf Arabic CF — الخط الأساسي للموقع (Connary Fagen، 5 أوزان)
+   الواجهة والعناوين والنافبار والكروت كلها بـ Quiverleaf؛ ثمانية فاضل
+   بنفس إعداداته (Sans احتياطي، Display للعناوين التحريرية، Text لنص المقالات).
    ========================================================================== */
 @font-face {
-  font-family: 'Liftaswash';
-  src:
-    url('/fonts/liftaswash/woff2/liftaswash.woff2') format('woff2'),
-    url('/fonts/liftaswash/ttf/liftaswash.otf') format('opentype');
-  font-weight: 100 900;
+  font-family: 'Quiverleaf Arabic CF';
+  src: url('/fonts/quiverleaf/woff2/quiverleafarabiccf-light.woff2') format('woff2');
+  font-weight: 300;
   font-style: normal;
   font-display: swap;
 }
-
-/* ==========================================================================
-   5. تعريف خط A Farhood
-   ========================================================================== */
 @font-face {
-  font-family: 'A Farhood';
-  src:
-    url('/fonts/A Farhood/woff2/AFarhood.woff2') format('woff2'),
-    url('/fonts/A Farhood/ttf/AFarhood.ttf') format('truetype');
+  font-family: 'Quiverleaf Arabic CF';
+  src: url('/fonts/quiverleaf/woff2/quiverleafarabiccf-regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
-  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
-  unicode-range: U+0600-06FF, U+FB50-FDFF, U+FE70-FEFF, U+0020-002F, U+060C, U+061B, U+061F;
+}
+@font-face {
+  font-family: 'Quiverleaf Arabic CF';
+  src: url('/fonts/quiverleaf/woff2/quiverleafarabiccf-demibold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Quiverleaf Arabic CF';
+  src: url('/fonts/quiverleaf/woff2/quiverleafarabiccf-bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Quiverleaf Arabic CF';
+  src: url('/fonts/quiverleaf/woff2/quiverleafarabiccf-extrabold.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
 }
 
 /* ==========================================================================
    6. التوزيع التلقائي للخطوط وخصائص OpenType
    ========================================================================== */
 :root {
-  --font-sans-ui: 'Thmanyah Sans', system-ui, -apple-system, sans-serif;
-  --font-display: 'Thmanyah Display', 'Thmanyah Sans', serif;
+  --font-quiver: 'Quiverleaf Arabic CF', 'Thmanyah Sans', system-ui, sans-serif;
+  --font-sans-ui: var(--font-quiver);
+  --font-display: var(--font-quiver);
   --font-text: 'Thmanyah Text', 'Thmanyah Sans', serif;
-  --font-cinema: 'Liftaswash', 'Thmanyah Display', serif;
-  --font-afarhood: 'A Farhood', 'Thmanyah Display', serif;
-  --font-history: var(--font-afarhood);
+  /* ثمانية بنفس إعداداته الأصلية لأي مكان عايز يستخدمه صراحةً */
+  --font-thmanyah: 'Thmanyah Sans', system-ui, sans-serif;
+  --font-thmanyah-display: 'Thmanyah Display', 'Thmanyah Sans', serif;
+  /* الأسماء القديمة (Liftaswash / A Farhood اتشالوا) بقت بتشاور على Quiverleaf */
+  --font-cinema: var(--font-quiver);
+  --font-afarhood: var(--font-quiver);
+  --font-history: var(--font-quiver);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -204,7 +222,6 @@ body {
 
 h1, h2, h3, h4, .font-display {
   font-family: var(--font-display);
-  font-feature-settings: "ss01" 1;
 }
 
 .thmanyah-swash {
@@ -212,29 +229,16 @@ h1, h2, h3, h4, .font-display {
   font-feature-settings: "ss01" 1, "salt" 1;
 }
 
-article, .font-text {
+.qz-prose, .font-text {
   font-family: var(--font-text);
   font-feature-settings: "ss01" 0, "salt" 0;
   line-height: 1.95;
 }
 
-.font-cinema {
-  font-family: var(--font-cinema) !important;
-  font-feature-settings: normal;
-  letter-spacing: 0;
-}
-
+.font-cinema,
 .font-history,
 .font-afarhood {
-  font-family: var(--font-afarhood) !important;
-  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
-  letter-spacing: 0.01em;
-  line-height: 1.65;
-  word-spacing: 0.05em;
-  word-break: keep-all;
-  overflow-wrap: anywhere;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
+  font-family: var(--font-quiver) !important;
 }
 
 /* ==========================================================================
