@@ -1,6 +1,4 @@
 @import "tailwindcss";
-@import "yet-another-react-lightbox/styles.css";
-@import "yet-another-react-lightbox/plugins/captions.css";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
@@ -265,19 +263,20 @@ article, .font-text {
     box-shadow 0.32s ease;
 }
 
-.liquid-glass-hover:hover {
-  border-color: rgb(var(--qz-mint-rgb) / 0.32);
-  box-shadow:
-    0 24px 54px rgba(0, 0, 0, 0.36),
-    inset 0 1px 0 rgba(255, 255, 255, 0.36),
-    inset 0 -1px 0 rgb(var(--qz-sage-rgb) / 0.18);
+@media (hover: hover) {
+  .liquid-glass-hover:hover {
+    border-color: rgb(var(--qz-mint-rgb) / 0.32);
+    box-shadow:
+      0 24px 54px rgba(0, 0, 0, 0.36),
+      inset 0 1px 0 rgba(255, 255, 255, 0.36),
+      inset 0 -1px 0 rgb(var(--qz-sage-rgb) / 0.18);
+  }
 }
 
 .qassimz-apple-nav-shell {
   transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  will-change: max-width;
 }
 
 .qassimz-dropdown-shell {
@@ -331,9 +330,13 @@ article, .font-text {
   translate: 0 0;
   opacity: 0;
 }
-.group:hover .qz-glass-logo .qz-glass-sheen,
 .group:focus-visible .qz-glass-logo .qz-glass-sheen {
   animation: qz-logo-sheen 0.9s cubic-bezier(0.3, 0.7, 0.2, 1) forwards;
+}
+@media (hover: hover) {
+  .group:hover .qz-glass-logo .qz-glass-sheen {
+    animation: qz-logo-sheen 0.9s cubic-bezier(0.3, 0.7, 0.2, 1) forwards;
+  }
 }
 @keyframes qz-logo-sheen {
   0% { translate: 0 0; opacity: 0; }
@@ -632,10 +635,17 @@ html[data-theme='gold'] .qz-glass-rim {
     0 3px 8px rgba(0, 0, 0, 0.2);
   transition: box-shadow 0.25s ease, transform 0.25s ease;
 }
-.qz-icon-tile.is-active,
-.group\/link:hover .qz-icon-tile,
-.group\/item:hover .qz-icon-tile {
-  box-shadow:
+.qz-icon-tile.is-active {
+  box-shadow: var(--qz-icon-tile-active-shadow);
+}
+@media (hover: hover) {
+  .group\/link:hover .qz-icon-tile,
+  .group\/item:hover .qz-icon-tile {
+    box-shadow: var(--qz-icon-tile-active-shadow);
+  }
+}
+:root {
+  --qz-icon-tile-active-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.45),
     inset 0 0 0 1px rgb(var(--qz-glow-rgb) / 0.38),
     inset 0 -2px 4px rgba(0, 0, 0, 0.22),
@@ -1268,9 +1278,13 @@ html[data-theme='gold'] .qz-glass-rim {
   cursor: pointer;
   transition: color 0.25s ease;
 }
-.nimbus-item:hover,
 .nimbus-item[aria-current="page"] {
   color: var(--n-fg);
+}
+@media (hover: hover) {
+  .nimbus-item:hover {
+    color: var(--n-fg);
+  }
 }
 .nimbus-item:focus-visible {
   outline: 2px solid rgb(var(--qz-glow-rgb) / 0.8);
@@ -1305,3 +1319,25 @@ html[data-theme='gold'] .qz-glass-rim {
   }
 }
 
+
+
+/* ==========================================================================
+   أداء: زجاج أخف على الموبايل
+   الـ backdrop-filter بيتحسب من جديد مع كل فريم أثناء التمرير، وعلى الموبايل
+   blur(40px) على كل كارت بيسبب تقطيع. على الشاشات اللمسية بنقلل نصف القطر —
+   الكروت خلفيتها معتمة أصلاً (72%) فالفرق في الشكل شبه مش ظاهر.
+   ========================================================================== */
+@media (hover: none), (max-width: 768px) {
+  .liquid-glass,
+  .qz-glass-card {
+    -webkit-backdrop-filter: blur(12px) saturate(140%) !important;
+    backdrop-filter: blur(12px) saturate(140%) !important;
+  }
+}
+
+/* اللمس: الكروت والأزرار بترسم حالة الضغط بنفسها، فبنلغي الوميض الرمادي الافتراضي */
+a,
+button,
+[role='button'] {
+  -webkit-tap-highlight-color: transparent;
+}

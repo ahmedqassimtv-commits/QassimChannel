@@ -103,19 +103,25 @@ export function getSquircleDisplacementMap(width = 360, height = 52, bevel = 15)
 
 const availablePages = import.meta.glob('../pages/*.jsx');
 
+// ✅ إصلاح: الأسماء لازم تطابق ملفات src/pages الفعلية والمسارات الحالية (/masaha/*)
+// قبل كده /verdict/* و /masaha/* ماكانوش بيتحمّلوا مسبقاً خالص
 const routeToPageName = {
   '/': 'Home',
   '/stories': 'Stories',
   '/videos': 'Videos',
+  '/videos/shorts': 'Videos',
   '/articles': 'Articles',
+  '/verdict/movies': 'Reviews',
+  '/verdict/series': 'Reviews',
+  '/masaha/on-air': 'OnAir',
+  '/masaha/books': 'Books',
+  '/masaha/about': 'About',
   '/on-air': 'OnAir',
-  '/verdict/movies': 'VerdictMovies',
-  '/verdict/series': 'VerdictSeries',
 };
 
 export function prefetchRoute(path) {
   // تحميل موسيقى أون إير مسبقاً عشان تبدأ فوراً لما تفتح الصفحة
-  if (path === '/on-air') preloadOnAirMusic()?.catch(() => {});
+  if (path === '/on-air' || path === '/masaha/on-air') preloadOnAirMusic()?.catch(() => {});
   if (!path || prefetchedRoutes.has(path)) return;
   prefetchedRoutes.add(path);
 

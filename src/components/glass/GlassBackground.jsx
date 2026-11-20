@@ -70,6 +70,29 @@ const SECTIONS_CONFIG = {
   },
 };
 
+// ✅ أداء: نسخ 1200px خفيفة (~30KB) للموبايل والشاشات الصغيرة بدل 2400px (~600KB)
+const RESPONSIVE_FRACTALS = new Set(['01', '08', '51', '106']);
+function fractalSrcSet(src) {
+  const m = /\/fractal\/optimized\/(\d+)\.webp$/.exec(src || '');
+  if (!m || !RESPONSIVE_FRACTALS.has(m[1])) return undefined;
+  return `${src.replace(/\.webp$/, '-1200.webp')} 1200w, ${src} 2400w`;
+}
+
+// اتصال بطيء أو وضع توفير البيانات → مانحمّلش خلفيات باقي الأقسام مسبقاً
+function isConstrainedNetwork() {
+  const c = typeof navigator !== 'undefined' ? navigator.connection : null;
+  if (!c) return false;
+  return Boolean(c.saveData) || /(^|-)(2g|3g)$/.test(c.effectiveType || '');
+}
+
+// نفس الصورة اللي المتصفح هيختارها من الـ srcset (عشان التحميل المسبق مايجيبش نسخة غلط)
+function pickVariant(src) {
+  const set = fractalSrcSet(src);
+  if (!set) return src;
+  const needed = Math.max(window.innerWidth, window.innerHeight) * 1.08 * (window.devicePixelRatio || 1);
+  return needed <= 1200 ? src.replace(/\.webp$/, '-1200.webp') : src;
+}
+
 export default function GlassBackground({ section }) {
   const { pathname } = useLocation();
   const containerRef = useRef(null);
@@ -107,7 +130,7 @@ export default function GlassBackground({ section }) {
     let cancelled = false;
     const img = new Image();
     img.decoding = 'async';
-    img.src = targetSource;
+    img.src = pickVariant(targetSource);
     const apply = () => {
       if (!cancelled) setResolvedSrc(targetSource);
     };
@@ -118,8 +141,9 @@ export default function GlassBackground({ section }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetSource]);
 
-  // ✅ أداء: تحميل خلفيات كل الأقسام مسبقاً في وقت فراغ المتصفح
+  // ✅ أداء: تحميل خلفيات كل الأقسام مسبقاً في وقت فراغ المتصفح (مش على النت البطيء)
   useEffect(() => {
+    if (isConstrainedNetwork()) return undefined;
     const sources = [
       ...new Set(
         Object.values(SECTIONS_CONFIG).map((c) =>
@@ -133,7 +157,7 @@ export default function GlassBackground({ section }) {
       sources.forEach((src) => {
         const img = new Image();
         img.decoding = 'async';
-        img.src = src;
+        img.src = pickVariant(src);
       });
     if ('requestIdleCallback' in window) {
       const id = window.requestIdleCallback(run, { timeout: 2500 });
@@ -270,6 +294,9 @@ export default function GlassBackground({ section }) {
           <img
             key={resolvedSrc}
             src={resolvedSrc}
+            srcSet={fractalSrcSet(resolvedSrc)}
+            sizes="108vmax"
+            fetchPriority="high"
             onError={() => {
               const fallback = assetUrl(activeConfig.fractal4k);
               if (resolvedSrc !== fallback) {
