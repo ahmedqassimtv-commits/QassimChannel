@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -27,3 +27,13 @@ jobs:
           name: dist
           path: dist
           retention-days: 7
+      # نسخة من البناء على فرع preview-dist (للمراجعة بـ git من أي مكان)
+      - name: Push build to preview-dist
+        run: |
+          cd dist
+          git init -q -b preview-dist
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A
+          git commit -q -m "preview build of ${GITHUB_REF_NAME} @ ${GITHUB_SHA::7}"
+          git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" preview-dist
