@@ -24,6 +24,8 @@ import { SPRING } from '../motion/Motion.jsx'
    - مع التمرير الكبسولة بتتقلص (CSS على data-compact).
    - تحت lg: شريط علوي صغير (لوجو + بحث + ثيم) والتنقل في التابات السفلية. */
 
+const IS_MAC = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)
+
 function useCompact(threshold = 40) {
   const [compact, setCompact] = useState(false)
   useEffect(() => {
@@ -257,7 +259,7 @@ export default function SiteHeader({ onOpenSearch }) {
               <button type="button" className="qz-search-btn" onClick={onOpenSearch} aria-label="بحث في الموقع (Ctrl+K)">
                 <Search className="size-4" aria-hidden="true" />
                 <span className="qz-search-label">بحث</span>
-                <kbd className="qz-kbd">⌘K</kbd>
+                <kbd className="qz-kbd">{IS_MAC ? '⌘K' : 'Ctrl K'}</kbd>
               </button>
               <DaylightThemeSwitch
                 theme={theme === 'gold' ? 'blue' : theme}
