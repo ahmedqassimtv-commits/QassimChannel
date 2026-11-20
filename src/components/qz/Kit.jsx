@@ -12,12 +12,20 @@ import YouTubeThumb from '../ui/YouTubeThumb.jsx'
 const fmtDate = (d) => {
   if (!d) return ''
   try {
-    return new Intl.DateTimeFormat('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(d))
+    return new Intl.DateTimeFormat('ar-EG-u-nu-latn', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(d))
   } catch {
     return d
   }
 }
 export { fmtDate }
+
+/* «دقيقة / دقيقتين / 3 دقائق / 11 دقيقة» — صيغة العدد العربي الصح */
+export function fmtMinutes(n) {
+  if (n <= 1) return 'دقيقة قراءة'
+  if (n === 2) return 'دقيقتين قراءة'
+  if (n <= 10) return `${n} دقائق قراءة`
+  return `${n} دقيقة قراءة`
+}
 
 /* عنوان الصفحة: رقم القسم + عين + عنوان ضخم بيطلع كلمة كلمة + مقدمة */
 export function PageHero({ index, eyebrow, title, lead, children, aside, className = '' }) {
@@ -233,7 +241,7 @@ export function ArticleRow({ article, index }) {
           {article.minutes ? (
             <>
               <span aria-hidden="true">·</span>
-              <span className="qz-num">{article.minutes} دقائق قراءة</span>
+              <span className="qz-num">{fmtMinutes(article.minutes)}</span>
             </>
           ) : null}
         </span>

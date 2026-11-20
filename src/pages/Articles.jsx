@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowUpLeft } from 'lucide-react'
 import { articles } from '../data/articles.js'
-import { ArticleRow, Filters, PageHero, fmtDate } from '../components/qz/Kit.jsx'
+import { ArticleRow, Filters, PageHero, fmtDate, fmtMinutes } from '../components/qz/Kit.jsx'
 import { Reveal, Stagger, StaggerItem } from '../components/motion/Motion.jsx'
 
 /* ══ المقالات ═════════════════════════════════════════════════════════
@@ -52,7 +52,7 @@ export default function Articles() {
               </div>
               <div className="flex items-center justify-between gap-4 text-sm text-[color:var(--qz-text-3)]">
                 <span className="qz-num">
-                  {fmtDate(featured.date)} · {featured.minutes} دقائق قراءة
+                  {fmtDate(featured.date)} · {fmtMinutes(featured.minutes)}
                 </span>
                 <ArrowUpLeft className="size-5 text-[color:var(--qz-accent)] transition-transform duration-500 group-hover:-translate-x-1 group-hover:-translate-y-1" aria-hidden="true" />
               </div>

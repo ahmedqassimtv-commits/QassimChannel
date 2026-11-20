@@ -8,7 +8,7 @@ import { ArrowRight, Check, Share2 } from 'lucide-react'
 import MarkerText from '../components/ui/MarkerText.jsx'
 import { articles, useArticle } from '../data/articles.js'
 import { assetUrl } from '../utils/assets.js'
-import { ArticleRow, fmtDate } from '../components/qz/Kit.jsx'
+import { ArticleRow, fmtDate, fmtMinutes } from '../components/qz/Kit.jsx'
 import { Reveal, SplitTitle } from '../components/motion/Motion.jsx'
 
 /* ══ صفحة المقال ═════════════════════════════════════════════════════
@@ -136,7 +136,7 @@ export default function ArticleView() {
         <Reveal delay={0.4} className="mt-8 flex flex-wrap items-center justify-center gap-3 text-sm text-[color:var(--qz-text-3)]">
           <span className="qz-num">{fmtDate(article.date)}</span>
           <span aria-hidden="true">·</span>
-          <span className="qz-num">{article.minutes} دقائق قراءة</span>
+          <span className="qz-num">{fmtMinutes(article.minutes)}</span>
           <ShareButton title={article.title} />
         </Reveal>
       </header>
