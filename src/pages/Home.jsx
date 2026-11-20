@@ -44,7 +44,7 @@ function Hero() {
   const latest = longVideos[0]
 
   return (
-    <section ref={ref} className="relative -mt-6 flex min-h-[calc(100svh-7rem)] flex-col justify-between pb-10 pt-4 lg:min-h-[calc(100svh-8rem)]">
+    <section ref={ref} className="relative flex flex-col pb-10 pt-4 lg:-mt-6 lg:min-h-[calc(100svh-8rem)] lg:justify-between">
       <motion.div style={{ y: titleY, opacity: fade }} className="relative z-10">
         <Reveal y={8} className="flex flex-wrap items-center gap-4">
           <span className="qz-eyebrow">قاسمز · منصة الصورة والحكاية</span>
@@ -75,7 +75,7 @@ function Hero() {
           initial={{ opacity: 0, scale: 0.92, rotate: 2, filter: 'blur(12px)' }}
           animate={{ opacity: 1, scale: 1, rotate: -2, filter: 'blur(0px)' }}
           transition={{ duration: 1.3, delay: 0.5, ease: EASE }}
-          className="absolute left-0 top-[14%] z-0 hidden w-[min(34vw,460px)] xl:block"
+          className="absolute left-0 top-[14%] z-0 hidden w-[min(30vw,440px)] 2xl:block min-[1360px]:block"
         >
           <button type="button" onClick={() => cinema.open(latest)} className="group qz-hover-zoom block w-full text-start" data-qz-silent aria-label={`شغّل ${latest.title}`}>
             <div className="relative">

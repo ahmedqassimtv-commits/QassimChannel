@@ -169,7 +169,8 @@
    ========================================================================== */
 :root {
   --font-quiver: 'Quiverleaf Arabic CF', 'Thmanyah Sans', system-ui, sans-serif;
-  --font-sans-ui: var(--font-quiver);
+  /* النصوص والفقرات بثمانية (Quiverleaf خط عرض: وصلاته الطويلة بتتعب العين في الأحجام الصغيرة) */
+  --font-sans-ui: 'Thmanyah Sans', system-ui, sans-serif;
   --font-display: var(--font-quiver);
   --font-text: 'Thmanyah Text', 'Thmanyah Sans', serif;
   /* ثمانية بنفس إعداداته الأصلية لأي مكان عايز يستخدمه صراحةً */

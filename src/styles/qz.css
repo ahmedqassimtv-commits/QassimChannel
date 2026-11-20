@@ -21,8 +21,8 @@
   --qz-line: rgb(var(--qz-mint-rgb) / 0.11);
   --qz-line-strong: rgb(var(--qz-mint-rgb) / 0.22);
   --qz-text: rgb(var(--qz-mint-rgb) / 0.96);
-  --qz-text-2: rgb(var(--qz-mint-rgb) / 0.7);
-  --qz-text-3: rgb(var(--qz-mint-rgb) / 0.5);
+  --qz-text-2: rgb(var(--qz-mint-rgb) / 0.8);
+  --qz-text-3: rgb(var(--qz-mint-rgb) / 0.58);
   --qz-accent: rgb(var(--qz-glow-rgb));
   --qz-header-h: 64px;
   --qz-tabbar-h: 64px;
@@ -126,11 +126,22 @@
   line-height: 1.9;
   color: var(--qz-text-2);
 }
+.qz-eyebrow,
+.qz-btn,
+.qz-link,
+.qz-filter,
+.qz-nav-item,
+.qz-tab,
+.qz-mega-title,
+.qz-index,
+.qz-search-group {
+  font-family: var(--font-quiver);
+}
 .qz-eyebrow {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-size: 0.8rem;
+  font-size: 0.92rem;
   font-weight: 600;
   color: var(--qz-accent);
 }
@@ -176,7 +187,7 @@
   background: var(--b-bg);
   color: var(--b-fg);
   font-weight: 600;
-  font-size: 0.98rem;
+  font-size: 1.05rem;
   white-space: nowrap;
   transition:
     transform 0.25s var(--qz-ease),
@@ -484,7 +495,7 @@
   padding-inline: 12px 14px;
   border-radius: 999px;
   color: var(--qz-text-2);
-  font-size: 0.92rem;
+  font-size: 1rem;
   font-weight: 600;
   white-space: nowrap;
   transition: color 0.2s ease;
@@ -798,7 +809,7 @@
   height: 52px;
   border-radius: 999px;
   color: var(--qz-text-3);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   transition: color 0.2s ease;
   -webkit-tap-highlight-color: transparent;

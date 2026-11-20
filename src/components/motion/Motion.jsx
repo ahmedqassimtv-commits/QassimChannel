@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 
 /* ══ نظام الحركة ══════════════════════════════════════════════════
@@ -77,10 +78,12 @@ export function SplitTitle({ as = 'h1', text, className = '', delay = 0, stagger
     <Tag className={className} aria-label={String(text).replace(/\n/g, ' ')} initial="hidden" animate="show">
       {lines.map((line, li) => (
         <span key={li} className="block" aria-hidden="true">
-          {line.split(' ').map((word, wi) => {
+          {line.split(' ').map((word, wi, words) => {
             const i = index++
             return (
-              <span key={wi} className="qz-word-mask">
+              // المسافة لازم تبقى برّه الـ inline-block: جوّاه بتتشال وتلزق الكلمات في بعض
+              <Fragment key={wi}>
+              <span className="qz-word-mask">
                 <motion.span
                   className="inline-block"
                   variants={{
@@ -96,8 +99,9 @@ export function SplitTitle({ as = 'h1', text, className = '', delay = 0, stagger
                 >
                   {word}
                 </motion.span>
-                {wi < line.split(' ').length - 1 ? ' ' : ''}
               </span>
+              {wi < words.length - 1 ? ' ' : null}
+              </Fragment>
             )
           })}
         </span>
