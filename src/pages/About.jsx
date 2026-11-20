@@ -2,23 +2,24 @@ import { motion } from 'framer-motion'
 import { ArrowUpLeft, Camera, Film, BookOpen, Radio, Clapperboard } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import GlassCard from '../components/glass/GlassCard.jsx'
+import { assetUrl } from '../utils/assets.js'
 
 const heroEase = [0.22, 1, 0.36, 1]
 const rise = (delay) => ({
-  initial: { opacity: 0, y: 24, filter: 'blur(6px)' },
-  whileInView: { opacity: 1, y: 0, filter: 'blur(0px)' },
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, margin: '-80px' },
-  transition: { duration: 0.8, delay, ease: heroEase },
+  transition: { duration: 0.7, delay, ease: heroEase },
 })
 
 // صور placeholder من YouTube thumbnails الموجودة
 const GALLERY = [
-  { src: 'https://i.ytimg.com/vi/aqz-KE-bpKQ/hqdefault.jpg', alt: 'حكاية مدينة لا تنام', caption: 'تصوير وثائقي، 2025', span: 'col-span-2 row-span-2' },
-  { src: 'https://i.ytimg.com/vi/ScMzIvxBSi4/hqdefault.jpg', alt: 'كيف نحكي بالصورة؟', caption: 'حديث عن السينما', span: 'col-span-1' },
-  { src: 'https://i.ytimg.com/vi/tFMo3UJ4B4g/hqdefault.jpg', alt: 'مراجعة Arrival', caption: 'الفِردِكت', span: 'col-span-1' },
-  { src: 'https://i.ytimg.com/vi/Way9Dexny3w/hqdefault.jpg', alt: 'مراجعة Dune: Part Two', caption: 'ملحمة الكثيب', span: 'col-span-1 row-span-2' },
-  { src: 'https://i.ytimg.com/vi/LXb3EKWsInQ/hqdefault.jpg', alt: 'ضوء آخر النهار', caption: 'لقطة قصيرة', span: 'col-span-1' },
-  { src: '/fractal/optimized/08.webp', alt: 'فن فراكتالي', caption: 'هوية بصرية', span: 'col-span-1' },
+  { src: 'https://i.ytimg.com/vi/aqz-KE-bpKQ/maxresdefault.jpg', alt: 'حكاية مدينة لا تنام', caption: 'تصوير وثائقي، 2025', span: 'col-span-2 row-span-2' },
+  { src: 'https://i.ytimg.com/vi/ScMzIvxBSi4/maxresdefault.jpg', alt: 'كيف نحكي بالصورة؟', caption: 'حديث عن السينما', span: 'col-span-1' },
+  { src: 'https://i.ytimg.com/vi/tFMo3UJ4B4g/maxresdefault.jpg', alt: 'مراجعة Arrival', caption: 'الفِردِكت', span: 'col-span-1' },
+  { src: 'https://i.ytimg.com/vi/Way9Dexny3w/maxresdefault.jpg', alt: 'مراجعة Dune: Part Two', caption: 'ملحمة الكثيب', span: 'col-span-1 row-span-2' },
+  { src: 'https://i.ytimg.com/vi/LXb3EKWsInQ/maxresdefault.jpg', alt: 'ضوء آخر النهار', caption: 'لقطة قصيرة', span: 'col-span-1' },
+  { src: assetUrl('/fractal/optimized/08.webp'), alt: 'فن فراكتالي', caption: 'هوية بصرية', span: 'col-span-1' },
 ]
 
 const MILESTONES = [
@@ -47,7 +48,7 @@ export default function About() {
         {/* خلفية فراكتالية */}
         <div className="absolute inset-0 z-0">
           <img
-            src="/fractal/optimized/01.webp"
+            src={assetUrl('/fractal/optimized/01.webp')}
             alt=""
             className="h-full w-full object-cover opacity-30"
           />

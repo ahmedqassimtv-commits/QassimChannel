@@ -162,9 +162,9 @@ const NAV_ITEMS = [
 ]
 
 const MASAHA_ITEMS = [
-  { to: '/masaha/on-air', label: 'أون إير', sub: 'البث المباشر والمحتوى الحيّ', icon: Radio },
-  { to: '/masaha/books', label: 'الكتب والقصص', sub: 'مكتبة القراءات والحكايات', icon: Library },
-  { to: '/masaha/about', label: 'عنّي', sub: 'وراء الصورة والحكاية', icon: User },
+  { to: '/masaha/on-air', label: 'أون إير', shortLabel: 'أون إير', sub: 'البث المباشر والمحتوى الحيّ', icon: Radio, fx: 'glow' },
+  { to: '/masaha/books', label: 'الكتب والقصص', shortLabel: 'الكتب', sub: 'مكتبة القراءات والحكايات', icon: Library, fx: 'pop' },
+  { to: '/masaha/about', label: 'عنّي', shortLabel: 'عنّي', sub: 'وراء الصورة والحكاية', icon: User, fx: 'wave' },
 ]
 
 // الترتيب الكامل لعناصر مسار الكبسولة المائية (Waterline Track) من اليمين لليسار
@@ -447,11 +447,66 @@ function VerdictPlanDropdown({
   )
 }
 
-// قائمة «مساحة» المنسدلة — البث والكتب وعنّي
-function MasahaDropdown({ onNavigateSection, onClose, onHoverSound }) {
+// قائمة «مساحة» المنسدلة — مرتبطة بقسم مساحة وبنفس تأثير كبسولات Waterline السائلة
+function MasahaDropdown({
+  currentPath,
+  waterPalette,
+  onNavigateSection,
+  onClose,
+  onHoverSound,
+}) {
+  const initialIdx = useMemo(() => {
+    const found = MASAHA_ITEMS.findIndex((it) => currentPath.startsWith(it.to))
+    return found >= 0 ? found : 0
+  }, [currentPath])
+
+  const [selectedIdx, setSelectedIdx] = useState(initialIdx)
+  const masahaRowRefs = useRef({})
+
+  useEffect(() => {
+    const found = MASAHA_ITEMS.findIndex((it) => currentPath.startsWith(it.to))
+    if (found >= 0) setSelectedIdx(found)
+  }, [currentPath])
+
+  const segWl = useWaterline({
+    activeIndex: selectedIdx,
+    itemCount: MASAHA_ITEMS.length,
+    tone: 'dark',
+    palette: waterPalette,
+    trackRim: 0.42,
+    ambient: 0.55,
+    wallInset: 4,
+    sound: false,
+  })
+
+  const activeItem = MASAHA_ITEMS[selectedIdx] || MASAHA_ITEMS[0]
+
+  const handlePick = (idx, fxKind) => {
+    segWl.triggerFx(idx, fxKind)
+    if (idx === selectedIdx) return
+    playGlassTap()
+    setSelectedIdx(idx)
+  }
+
   return (
-    <div className="relative z-10 p-3 text-right">
-      <div className="mb-2 flex items-center justify-between border-b border-white/10 px-2 pb-2">
+    <div
+      onKeyDown={(e) => {
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+          e.preventDefault()
+          const dir = e.key === 'ArrowLeft' ? 1 : -1
+          const nextIdx = (selectedIdx + dir + MASAHA_ITEMS.length) % MASAHA_ITEMS.length
+          handlePick(nextIdx, MASAHA_ITEMS[nextIdx].fx)
+        } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+          e.preventDefault()
+          const dir = e.key === 'ArrowDown' ? 1 : -1
+          const nextIdx = (selectedIdx + dir + MASAHA_ITEMS.length) % MASAHA_ITEMS.length
+          handlePick(nextIdx, MASAHA_ITEMS[nextIdx].fx)
+        }
+      }}
+      className="relative z-10 p-3 text-right"
+    >
+      {/* ترويسة تربط القائمة بصريًا بقسم مساحة */}
+      <div className="mb-2.5 flex items-center justify-between border-b border-white/10 px-2 pb-2">
         <span className="flex items-center gap-1.5 text-[11px] font-bold text-white/90">
           <Compass className="size-3.5 text-[color:var(--qz-mint)]" />
           <span>مساحة قاسم</span>
@@ -461,34 +516,136 @@ function MasahaDropdown({ onNavigateSection, onClose, onHoverSound }) {
         </span>
       </div>
 
-      <div className="flex flex-col gap-1">
-        {MASAHA_ITEMS.map((item) => (
-          <motion.button
-            key={item.to}
-            type="button"
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.97 }}
-            transition={{ type: 'spring', bounce: 0, duration: 0.3 }}
-            onMouseEnter={() => {
-              onHoverSound()
-              prefetchRoute(item.to)
-            }}
-            onClick={(e) => {
-              playGlassDropdown(false)
-              onClose()
-              onNavigateSection(e, item.to, 'masaha')
-            }}
-            className="group/item flex cursor-pointer items-center gap-3 rounded-2xl px-3 py-2.5 text-right transition-colors hover:bg-white/[0.08]"
-          >
-            <GlassIcon icon={item.icon} size="md" />
-            <span>
-              <span className="block text-xs font-bold text-white">{item.label}</span>
-              <span className="block text-[11px] text-[color:var(--qz-sage)]">{item.sub}</span>
-            </span>
-            <ArrowUpLeft className="mr-auto size-3.5 text-[color:var(--qz-sage)] opacity-0 transition-opacity group-hover/item:opacity-100" />
-          </motion.button>
-        ))}
+      {/* مسار كبسولة Waterline المائية لأقسام مساحة الثلاثة */}
+      <div
+        ref={segWl.trackRef}
+        role="radiogroup"
+        aria-label="أقسام مساحة"
+        onPointerMove={segWl.onPointerMove}
+        onPointerLeave={segWl.onPointerLeave}
+        onPointerDown={segWl.onPointerDown}
+        className="relative mb-2.5 flex items-center gap-1 rounded-full bg-white/[0.04] p-1"
+      >
+        <WaterlineLayers
+          canvasRef={segWl.canvasRef}
+          dropRef={segWl.dropRef}
+          glMode={segWl.glMode}
+          dropInsetY={4}
+        />
+
+        {MASAHA_ITEMS.map((item, idx) => {
+          const TabIcon = item.icon
+          const isCurrentTab = idx === selectedIdx
+          return (
+            <button
+              key={item.to}
+              ref={segWl.registerItem(idx)}
+              type="button"
+              role="radio"
+              aria-checked={isCurrentTab}
+              data-qz-active={isCurrentTab ? 'true' : undefined}
+              onMouseEnter={() => {
+                onHoverSound()
+                prefetchRoute(item.to)
+              }}
+              onClick={() => handlePick(idx, item.fx)}
+              className={`relative z-10 flex h-8.5 flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full px-2 text-[11px] font-medium transition-colors duration-200 ${
+                isCurrentTab
+                  ? 'text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)]'
+                  : 'text-white/70 hover:text-white'
+              }`}
+            >
+              <WaterlineIcon
+                fx={item.fx}
+                playing={segWl.fx.i === idx}
+                playKey={segWl.fx.n}
+                iconRef={segWl.registerIcon(idx)}
+              >
+                <TabIcon className="size-3.5" />
+              </WaterlineIcon>
+              <span className="whitespace-nowrap">{item.shortLabel}</span>
+            </button>
+          )
+        })}
       </div>
+
+      {/* قائمة عناصر مساحة مع مؤشر الكبسولة الزجاجي المتزامن */}
+      <div className="relative flex flex-col gap-1">
+        <SearchElasticHighlight
+          rowRefs={masahaRowRefs}
+          activeIndex={selectedIdx}
+          visible={MASAHA_ITEMS.length > 0}
+          itemCount={MASAHA_ITEMS.length}
+        />
+
+        {MASAHA_ITEMS.map((item, idx) => {
+          const isSelected = idx === selectedIdx
+          const isCurrentRoute = currentPath.startsWith(item.to)
+          return (
+            <button
+              key={item.to}
+              ref={(el) => {
+                if (el) masahaRowRefs.current[idx] = el
+              }}
+              type="button"
+              onMouseEnter={() => {
+                onHoverSound()
+                prefetchRoute(item.to)
+                if (selectedIdx !== idx) {
+                  setSelectedIdx(idx)
+                }
+              }}
+              onClick={(e) => {
+                segWl.triggerFx(idx, item.fx)
+                playGlassDropdown(false)
+                onClose()
+                onNavigateSection(e, item.to, 'masaha')
+              }}
+              className="group/item relative z-10 flex cursor-pointer items-center gap-3 rounded-2xl px-3 py-2.5 text-right transition-colors"
+            >
+              <GlassIcon icon={item.icon} size="md" active={isSelected || isCurrentRoute} />
+              <span className="min-w-0 flex-1">
+                <span className="flex items-center gap-2">
+                  <span className="block text-xs font-bold text-white">{item.label}</span>
+                  {isCurrentRoute && (
+                    <span className="rounded-full border border-emerald-300/30 bg-emerald-400/15 px-1.5 py-0.5 font-sans text-[8.5px] font-bold tracking-wider text-emerald-200">
+                      الحالي
+                    </span>
+                  )}
+                </span>
+                <span className="mt-0.5 block text-[11px] text-[color:var(--qz-sage)]">
+                  {item.sub}
+                </span>
+              </span>
+              <ArrowUpLeft
+                className={`mr-auto size-3.5 shrink-0 transition-all duration-200 ${
+                  isSelected
+                    ? 'translate-x-0 text-white opacity-100'
+                    : 'text-[color:var(--qz-sage)] opacity-45 group-hover/item:opacity-100'
+                }`}
+              />
+            </button>
+          )
+        })}
+      </div>
+
+      {/* زر انتقال سريع للقسم المحدد بكبسولة مساحة */}
+      <motion.button
+        type="button"
+        whileHover={{ scale: 1.015 }}
+        whileTap={{ scale: 0.96 }}
+        transition={{ type: 'spring', ...PLAN_POP }}
+        onMouseEnter={onHoverSound}
+        onClick={(e) => {
+          playGlassDropdown(false)
+          onClose()
+          onNavigateSection(e, activeItem.to, 'masaha')
+        }}
+        className="mt-2.5 flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-white py-2 text-xs font-bold text-[#051F20] shadow-[0_6px_18px_rgba(0,0,0,0.28)] transition-colors hover:bg-[color:var(--qz-mint)]"
+      >
+        <span>دخول {activeItem.label}</span>
+        <ArrowUpLeft className="size-3.5" />
+      </motion.button>
     </div>
   )
 }
@@ -566,23 +723,15 @@ function DesktopWaterlineTrack({
     <motion.div
       ref={bindTrackRef}
       aria-hidden={hidden || undefined}
-      inert={hidden ? '' : undefined}
-      animate={
-        hidden
-          ? { opacity: 0, scale: 0.96 }
-          : { opacity: 1, scale: 1 }
-      }
-      transition={{ duration: hidden ? 0.14 : 0.24, ease: [0.22, 1, 0.36, 1] }}
+      inert={Boolean(hidden)}
+      animate={{ scale: hidden ? 0.96 : 1 }}
+      transition={NAV_SHELL_SPRING}
       data-gl={wl.glMode}
       onKeyDown={handleTrackKeyDown}
       onPointerMove={hidden ? undefined : wl.onPointerMove}
       onPointerLeave={hidden ? undefined : wl.onPointerLeave}
       onPointerDown={hidden ? undefined : wl.onPointerDown}
-      className={`hidden items-center gap-0.5 rounded-full p-1 lg:flex xl:gap-1 ${
-        hidden
-          ? 'pointer-events-none invisible absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
-          : 'relative shrink-0'
-      }`}
+      className="relative flex shrink-0 items-center gap-0.5 rounded-full p-1 xl:gap-1"
     >
       {/* شيدر قطرة الماء والانشطار السائل وموجات النقر */}
       <WaterlineLayers
@@ -610,7 +759,9 @@ function DesktopWaterlineTrack({
         className={`group/link relative z-10 inline-flex h-10 items-center gap-2 rounded-full px-3.5 text-xs font-medium transition-colors duration-200 xl:px-4 xl:text-[13.5px] ${
           targetKey === '/'
             ? 'text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)]'
-            : 'text-white/74 hover:text-white'
+            : activeKey === '/'
+              ? 'bg-white/[0.06] text-white ring-1 ring-white/15'
+              : 'text-white/74 hover:text-white'
         }`}
       >
         <WaterlineIcon
@@ -649,7 +800,9 @@ function DesktopWaterlineTrack({
           className={`group/link relative inline-flex h-10 cursor-pointer items-center gap-2 rounded-full px-3.5 text-xs font-medium transition-colors duration-200 xl:px-4 xl:text-[13.5px] ${
             targetKey === 'verdict'
               ? 'text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)]'
-              : 'text-white/74 hover:text-white'
+              : activeKey === 'verdict'
+                ? 'bg-white/[0.06] text-white ring-1 ring-white/15'
+                : 'text-white/74 hover:text-white'
           }`}
         >
           <WaterlineIcon
@@ -671,6 +824,16 @@ function DesktopWaterlineTrack({
               }`}
             />
           </span>
+          {(verdictOpen || activeKey === 'verdict') && (
+            <span
+              aria-hidden="true"
+              className={`pointer-events-none absolute inset-x-4 -bottom-0.5 h-0.5 rounded-full transition-opacity duration-200 ${
+                verdictOpen
+                  ? 'bg-[color:var(--qz-mint)] opacity-90 shadow-[0_0_8px_rgb(var(--qz-glow-rgb)/0.8)]'
+                  : 'bg-[color:var(--qz-mint)]/60 opacity-60'
+              }`}
+            />
+          )}
         </button>
       </div>
 
@@ -678,6 +841,7 @@ function DesktopWaterlineTrack({
       {NAV_ITEMS.map(({ to, label, waterIcon, fx }, idx) => {
         const trackIdx = idx + 2
         const isCurrent = targetKey === to
+        const isRouteActive = activeKey === to
         return (
           <NavLink
             key={to}
@@ -696,7 +860,9 @@ function DesktopWaterlineTrack({
             className={`group/link relative z-10 inline-flex h-10 items-center gap-2 rounded-full px-3.5 text-xs font-medium transition-colors duration-200 xl:px-4 xl:text-[13.5px] ${
               isCurrent
                 ? 'text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)]'
-                : 'text-white/74 hover:text-white'
+                : isRouteActive
+                  ? 'bg-white/[0.06] text-white ring-1 ring-white/15'
+                  : 'text-white/74 hover:text-white'
             }`}
           >
             <WaterlineIcon
@@ -717,7 +883,10 @@ function DesktopWaterlineTrack({
         ref={bindMasahaRef}
         onPointerEnter={onMasahaEnter}
         onPointerLeave={onMasahaLeave}
-        onMouseEnter={onHoverSound}
+        onMouseEnter={() => {
+          MASAHA_ITEMS.forEach((item) => prefetchRoute(item.to))
+          onHoverSound()
+        }}
         className="relative z-10 rounded-full"
       >
         <button
@@ -733,7 +902,9 @@ function DesktopWaterlineTrack({
           className={`group/link relative inline-flex h-10 cursor-pointer items-center gap-2 rounded-full px-3.5 text-xs font-medium transition-colors duration-200 xl:px-4 xl:text-[13.5px] ${
             targetKey === 'masaha'
               ? 'text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.45)]'
-              : 'text-white/74 hover:text-white'
+              : activeKey === 'masaha'
+                ? 'bg-white/[0.06] text-white ring-1 ring-white/15'
+                : 'text-white/74 hover:text-white'
           }`}
         >
           <WaterlineIcon
@@ -752,6 +923,16 @@ function DesktopWaterlineTrack({
               }`}
             />
           </span>
+          {(masahaOpen || activeKey === 'masaha') && (
+            <span
+              aria-hidden="true"
+              className={`pointer-events-none absolute inset-x-4 -bottom-0.5 h-0.5 rounded-full transition-opacity duration-200 ${
+                masahaOpen
+                  ? 'bg-[color:var(--qz-mint)] opacity-90 shadow-[0_0_8px_rgb(var(--qz-glow-rgb)/0.8)]'
+                  : 'bg-[color:var(--qz-mint)]/60 opacity-60'
+              }`}
+            />
+          )}
         </button>
       </div>
     </motion.div>
@@ -766,21 +947,30 @@ export default function Navbar() {
   const waterPalette = resolveWaterPalette(theme)
 
   const [activeKey, setActiveKey] = useState(() => resolveRouteKey(location.pathname))
-  const [verdictOpen, setVerdictOpen] = useState(false)
-  const [masahaOpen, setMasahaOpen] = useState(false)
+  const [activeDropdown, setActiveDropdown] = useState(null)
+  const verdictOpen = activeDropdown === 'verdict'
+  const masahaOpen = activeDropdown === 'masaha'
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchExpanded, setSearchExpanded] = useState(false)
   const [searchSuggestionsOpen, setSearchSuggestionsOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [activeSearchIndex, setActiveSearchIndex] = useState(0)
   const [isCompact, setIsCompact] = useState(false)
+  const [brandWidth, setBrandWidth] = useState(126)
+  const [trackWidth, setTrackWidth] = useState(680)
   const [compactMaxWidth, setCompactMaxWidth] = useState(880)
+  const [brandAnimating, setBrandAnimating] = useState(false)
+  const [trackAnimating, setTrackAnimating] = useState(false)
   const [verdictAnchor, setVerdictAnchor] = useState({ right: 144, originX: 250 })
   const [masahaAnchor, setMasahaAnchor] = useState({ right: 16, originX: 160 })
   const [suggestionsHeight, setSuggestionsHeight] = useState(0)
+  const [pillPhase, setPillPhase] = useState('collapsed')
+  const pillWidthMv = useMotionValue(76)
+  const pillMaxWidthMv = useMotionValue(76)
 
   // مراجع العناصر (DOM Refs)
   const dropdownHostRef = useRef(null)
+  const brandMeasureRef = useRef(null)
   const trackContainerRef = useRef(null)
   const collapsedControlsWidthRef = useRef(196)
   const verdictBtnRef = useRef(null)
@@ -788,6 +978,10 @@ export default function Navbar() {
   const masahaBtnRef = useRef(null)
   const masahaMenuRef = useRef(null)
   const searchBoxRef = useRef(null)
+  const searchPillRef = useRef(null)
+  const collapsedPillWidthRef = useRef(76)
+  const expandedPillWidthRef = useRef(268)
+  const pillAnimRef = useRef(null)
   const searchDropdownRef = useRef(null)
   const searchListInnerRef = useRef(null)
   const searchRowRefs = useRef({})
@@ -796,23 +990,24 @@ export default function Navbar() {
   const mobileMenuRef = useRef(null)
 
   // مراجع المؤقتات والحالات الفورية
-  const verdictCloseTimerRef = useRef(null)
-  const masahaCloseTimerRef = useRef(null)
+  const dropdownCloseTimerRef = useRef(null)
   const searchSuggestionsCloseTimerRef = useRef(null)
   const mobileCloseTimerRef = useRef(null)
   const focusTimerRef = useRef(null)
+  const navFrameRef = useRef(null)
   const lastHoverSoundAtRef = useRef(0)
 
   const searchExpandedRef = useRef(searchExpanded)
+  const prevSearchExpandedRef = useRef(searchExpanded)
+  const pillPhaseRef = useRef(pillPhase)
   const searchSuggestionsOpenRef = useRef(searchSuggestionsOpen)
-  const verdictOpenRef = useRef(verdictOpen)
-  const masahaOpenRef = useRef(masahaOpen)
+  const activeDropdownRef = useRef(activeDropdown)
   const mobileMenuOpenRef = useRef(mobileMenuOpen)
 
   searchExpandedRef.current = searchExpanded
+  pillPhaseRef.current = pillPhase
   searchSuggestionsOpenRef.current = searchSuggestionsOpen
-  verdictOpenRef.current = verdictOpen
-  masahaOpenRef.current = masahaOpen
+  activeDropdownRef.current = activeDropdown
   mobileMenuOpenRef.current = mobileMenuOpen
 
   const triggerHoverSound = useCallback(() => {
@@ -822,12 +1017,132 @@ export default function Navbar() {
     playGlassHover()
   }, [])
 
+  // قياس عرض الشعار ومسار الأقسام وعناصر التحكم لضمان انتقال متزامن بدون قفزات
+  useLayoutEffect(() => {
+    const updateMetrics = () => {
+      const brandEl = brandMeasureRef.current
+      if (brandEl && brandEl.offsetWidth > 0) {
+        const bw = Math.ceil(brandEl.offsetWidth)
+        setBrandWidth((prev) => (prev !== bw ? bw : prev))
+      }
+
+      const trackEl = trackContainerRef.current
+      let nextTrackW = null
+      if (trackEl && trackEl.offsetWidth > 0) {
+        nextTrackW = Math.ceil(trackEl.offsetWidth)
+        setTrackWidth((prev) => (prev !== nextTrackW ? nextTrackW : prev))
+      }
+
+      const pillEl = searchPillRef.current
+      if (pillEl && pillEl.offsetWidth > 0) {
+        const pw = pillEl.offsetWidth
+        if (searchExpandedRef.current) {
+          expandedPillWidthRef.current = pw
+        } else if (pillPhaseRef.current === 'collapsed') {
+          collapsedPillWidthRef.current = Math.ceil(pw)
+        }
+      }
+
+      if (
+        !searchExpandedRef.current &&
+        pillPhaseRef.current === 'collapsed' &&
+        searchBoxRef.current &&
+        searchBoxRef.current.offsetWidth > 0
+      ) {
+        collapsedControlsWidthRef.current = Math.ceil(searchBoxRef.current.offsetWidth)
+      }
+
+      if (nextTrackW && nextTrackW > 0) {
+        const nextCompact = Math.max(760, nextTrackW + collapsedControlsWidthRef.current + 44)
+        setCompactMaxWidth((prev) => (prev !== nextCompact ? nextCompact : prev))
+      }
+    }
+
+    updateMetrics()
+    const ro = new ResizeObserver(updateMetrics)
+    if (brandMeasureRef.current) ro.observe(brandMeasureRef.current)
+    if (trackContainerRef.current) ro.observe(trackContainerRef.current)
+    if (searchBoxRef.current) ro.observe(searchBoxRef.current)
+    if (searchPillRef.current) ro.observe(searchPillRef.current)
+    window.addEventListener('resize', updateMetrics, { passive: true })
+    return () => {
+      ro.disconnect()
+      window.removeEventListener('resize', updateMetrics)
+    }
+  }, [isCompact, searchExpanded])
+
+  // تحريك عرض كبسولة البحث بسلاسة متزامنة مع NAV_SHELL_SPRING عند الفتح والإغلاق
+  useLayoutEffect(() => {
+    const wasExpanded = prevSearchExpandedRef.current
+    prevSearchExpandedRef.current = searchExpanded
+    if (wasExpanded === searchExpanded) return undefined
+
+    pillAnimRef.current?.stop()
+    const horizPad = window.innerWidth >= 640 ? 40 : 20
+    const maxAvailW = Math.min(672, Math.max(200, window.innerWidth - horizPad))
+
+    if (searchExpanded) {
+      const startW =
+        pillPhaseRef.current === 'closing'
+          ? pillWidthMv.get()
+          : collapsedPillWidthRef.current || 76
+      expandedPillWidthRef.current = Math.min(
+        expandedPillWidthRef.current || maxAvailW,
+        maxAvailW
+      )
+      pillMaxWidthMv.set(startW)
+      setPillPhase('opening')
+      pillAnimRef.current = animate(pillMaxWidthMv, maxAvailW, {
+        ...NAV_SHELL_SPRING,
+        onComplete: () => {
+          if (searchExpandedRef.current) {
+            setPillPhase('expanded')
+          }
+        },
+      })
+    } else {
+      const measuredW = searchPillRef.current?.offsetWidth || 0
+      const rawExpandedW =
+        pillPhaseRef.current === 'opening'
+          ? Math.min(measuredW || pillMaxWidthMv.get(), pillMaxWidthMv.get(), maxAvailW)
+          : Math.min(measuredW || expandedPillWidthRef.current || 268, maxAvailW)
+      const startW = Math.max(collapsedPillWidthRef.current || 76, rawExpandedW)
+      expandedPillWidthRef.current = startW
+      const targetW = collapsedPillWidthRef.current || 76
+      pillWidthMv.set(startW)
+      setPillPhase('closing')
+      pillAnimRef.current = animate(pillWidthMv, targetW, {
+        ...NAV_SHELL_SPRING,
+        onComplete: () => {
+          if (!searchExpandedRef.current) {
+            setPillPhase('collapsed')
+          }
+        },
+      })
+    }
+
+    return undefined
+  }, [searchExpanded, pillMaxWidthMv, pillWidthMv])
+
+  // إزالة خصائص العرض المضمّنة المتبقية من Framer Motion عند تغيّر مرحلة الكبسولة
+  useLayoutEffect(() => {
+    const pillEl = searchPillRef.current
+    if (!pillEl) return
+    if (pillPhase !== 'opening') {
+      pillEl.style.maxWidth = ''
+    }
+    if (pillPhase !== 'closing') {
+      pillEl.style.width = ''
+    }
+  }, [pillPhase])
+
+  useEffect(() => () => pillAnimRef.current?.stop(), [])
+
   // تحديث المسار النشط عند تغير الرابط
   useLayoutEffect(() => {
     const nextRouteKey = resolveRouteKey(location.pathname)
     setActiveKey(nextRouteKey)
-    setVerdictOpen(false)
-    setMasahaOpen(false)
+    setActiveDropdown(null)
     setMobileMenuOpen(false)
     setSearchSuggestionsOpen(false)
     setSearchExpanded(false)
@@ -914,15 +1229,10 @@ export default function Navbar() {
     }
   }, [])
 
-  // دوال إدارة المؤقتات المستقلة لكل قائمة منسدلة
-  const clearVerdictTimer = useCallback(() => {
-    window.clearTimeout(verdictCloseTimerRef.current)
-    verdictCloseTimerRef.current = null
-  }, [])
-
-  const clearMasahaTimer = useCallback(() => {
-    window.clearTimeout(masahaCloseTimerRef.current)
-    masahaCloseTimerRef.current = null
+  // دوال إدارة المؤقتات الموحدة للقوائم المنسدلة
+  const clearDropdownTimer = useCallback(() => {
+    window.clearTimeout(dropdownCloseTimerRef.current)
+    dropdownCloseTimerRef.current = null
   }, [])
 
   const clearSearchSuggestionsTimer = useCallback(() => {
@@ -938,49 +1248,55 @@ export default function Navbar() {
   const handleVerdictEnter = useCallback(
     (event) => {
       if (event?.pointerType && event.pointerType !== 'mouse') return
-      clearVerdictTimer()
+      clearDropdownTimer()
     },
-    [clearVerdictTimer]
+    [clearDropdownTimer]
   )
 
   const handleVerdictLeave = useCallback(
     (event) => {
       if (event?.pointerType && event.pointerType !== 'mouse') return
-      if (!verdictOpenRef.current) return
-      clearVerdictTimer()
-      verdictCloseTimerRef.current = window.setTimeout(() => {
-        verdictCloseTimerRef.current = null
-        setVerdictOpen((open) => {
-          if (open) playGlassDropdown(false)
-          return false
+      if (activeDropdownRef.current !== 'verdict') return
+      clearDropdownTimer()
+      dropdownCloseTimerRef.current = window.setTimeout(() => {
+        dropdownCloseTimerRef.current = null
+        setActiveDropdown((cur) => {
+          if (cur === 'verdict') {
+            playGlassDropdown(false)
+            return null
+          }
+          return cur
         })
       }, DROPDOWN_CLOSE_DELAY)
     },
-    [clearVerdictTimer]
+    [clearDropdownTimer]
   )
 
   const handleMasahaEnter = useCallback(
     (event) => {
       if (event?.pointerType && event.pointerType !== 'mouse') return
-      clearMasahaTimer()
+      clearDropdownTimer()
     },
-    [clearMasahaTimer]
+    [clearDropdownTimer]
   )
 
   const handleMasahaLeave = useCallback(
     (event) => {
       if (event?.pointerType && event.pointerType !== 'mouse') return
-      if (!masahaOpenRef.current) return
-      clearMasahaTimer()
-      masahaCloseTimerRef.current = window.setTimeout(() => {
-        masahaCloseTimerRef.current = null
-        setMasahaOpen((open) => {
-          if (open) playGlassDropdown(false)
-          return false
+      if (activeDropdownRef.current !== 'masaha') return
+      clearDropdownTimer()
+      dropdownCloseTimerRef.current = window.setTimeout(() => {
+        dropdownCloseTimerRef.current = null
+        setActiveDropdown((cur) => {
+          if (cur === 'masaha') {
+            playGlassDropdown(false)
+            return null
+          }
+          return cur
         })
       }, DROPDOWN_CLOSE_DELAY)
     },
-    [clearMasahaTimer]
+    [clearDropdownTimer]
   )
 
   const handleSearchAreaEnter = useCallback(
@@ -1033,18 +1349,13 @@ export default function Navbar() {
   )
 
   const openInlineSearch = useCallback(() => {
-    clearVerdictTimer()
-    clearMasahaTimer()
+    clearDropdownTimer()
     clearMobileTimer()
     clearSearchSuggestionsTimer()
 
-    if (verdictOpenRef.current) {
+    if (activeDropdownRef.current) {
       playGlassDropdown(false)
-      setVerdictOpen(false)
-    }
-    if (masahaOpenRef.current) {
-      playGlassDropdown(false)
-      setMasahaOpen(false)
+      setActiveDropdown(null)
     }
     if (mobileMenuOpenRef.current) {
       setMobileMenuOpen(false)
@@ -1059,7 +1370,7 @@ export default function Navbar() {
     focusTimerRef.current = window.requestAnimationFrame(() => {
       searchInputRef.current?.focus()
     })
-  }, [clearMasahaTimer, clearMobileTimer, clearSearchSuggestionsTimer, clearVerdictTimer])
+  }, [clearDropdownTimer, clearMobileTimer, clearSearchSuggestionsTimer])
 
   const closeInlineSearch = useCallback(() => {
     clearSearchSuggestionsTimer()
@@ -1077,23 +1388,23 @@ export default function Navbar() {
     const handleClickOutside = (event) => {
       const target = event.target
 
-      if (verdictOpenRef.current) {
+      if (activeDropdownRef.current === 'verdict') {
         const insideVerdict =
           verdictBtnRef.current?.contains(target) || verdictMenuRef.current?.contains(target)
-        if (!insideVerdict) {
-          clearVerdictTimer()
+        const onMasahaBtn = masahaBtnRef.current?.contains(target)
+        if (!insideVerdict && !onMasahaBtn) {
+          clearDropdownTimer()
           playGlassDropdown(false)
-          setVerdictOpen(false)
+          setActiveDropdown(null)
         }
-      }
-
-      if (masahaOpenRef.current) {
+      } else if (activeDropdownRef.current === 'masaha') {
         const insideMasaha =
           masahaBtnRef.current?.contains(target) || masahaMenuRef.current?.contains(target)
-        if (!insideMasaha) {
-          clearMasahaTimer()
+        const onVerdictBtn = verdictBtnRef.current?.contains(target)
+        if (!insideMasaha && !onVerdictBtn) {
+          clearDropdownTimer()
           playGlassDropdown(false)
-          setMasahaOpen(false)
+          setActiveDropdown(null)
         }
       }
 
@@ -1118,7 +1429,7 @@ export default function Navbar() {
 
     document.addEventListener('pointerdown', handleClickOutside)
     return () => document.removeEventListener('pointerdown', handleClickOutside)
-  }, [clearMasahaTimer, clearMobileTimer, clearVerdictTimer, closeInlineSearch])
+  }, [clearDropdownTimer, clearMobileTimer, closeInlineSearch])
 
   // اختصارات لوحة المفاتيح العامة: Ctrl+K / Cmd+K و Escape
   useEffect(() => {
@@ -1137,15 +1448,10 @@ export default function Navbar() {
         if (searchExpandedRef.current || searchSuggestionsOpenRef.current) {
           closeInlineSearch()
         }
-        if (verdictOpenRef.current) {
-          clearVerdictTimer()
+        if (activeDropdownRef.current) {
+          clearDropdownTimer()
           playGlassDropdown(false)
-          setVerdictOpen(false)
-        }
-        if (masahaOpenRef.current) {
-          clearMasahaTimer()
-          playGlassDropdown(false)
-          setMasahaOpen(false)
+          setActiveDropdown(null)
         }
         if (mobileMenuOpenRef.current) {
           clearMobileTimer()
@@ -1157,11 +1463,11 @@ export default function Navbar() {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [clearMasahaTimer, clearMobileTimer, clearVerdictTimer, closeInlineSearch, openInlineSearch])
+  }, [clearDropdownTimer, clearMobileTimer, closeInlineSearch, openInlineSearch])
 
   // إغلاق البحث والقوائم المنسدلة عند التمرير الفعلي للصفحة
   useEffect(() => {
-    if (!verdictOpen && !masahaOpen && !searchExpanded && !searchSuggestionsOpen && !mobileMenuOpen) {
+    if (!activeDropdown && !searchExpanded && !searchSuggestionsOpen && !mobileMenuOpen) {
       return undefined
     }
     const anchorY = window.scrollY
@@ -1173,15 +1479,10 @@ export default function Navbar() {
         rafId = null
         if (Math.abs(window.scrollY - anchorY) < 10) return
 
-        if (verdictOpenRef.current) {
-          clearVerdictTimer()
+        if (activeDropdownRef.current) {
+          clearDropdownTimer()
           playGlassDropdown(false)
-          setVerdictOpen(false)
-        }
-        if (masahaOpenRef.current) {
-          clearMasahaTimer()
-          playGlassDropdown(false)
-          setMasahaOpen(false)
+          setActiveDropdown(null)
         }
         if (searchExpandedRef.current || searchSuggestionsOpenRef.current) {
           closeInlineSearch()
@@ -1200,13 +1501,11 @@ export default function Navbar() {
       if (rafId) window.cancelAnimationFrame(rafId)
     }
   }, [
-    verdictOpen,
-    masahaOpen,
+    activeDropdown,
     searchExpanded,
     searchSuggestionsOpen,
     mobileMenuOpen,
-    clearVerdictTimer,
-    clearMasahaTimer,
+    clearDropdownTimer,
     clearMobileTimer,
     closeInlineSearch,
   ])
@@ -1214,29 +1513,29 @@ export default function Navbar() {
   // تنظيف جميع المؤقتات عند تفكيك المكون
   useEffect(
     () => () => {
-      window.clearTimeout(verdictCloseTimerRef.current)
-      window.clearTimeout(masahaCloseTimerRef.current)
+      window.clearTimeout(dropdownCloseTimerRef.current)
       window.clearTimeout(searchSuggestionsCloseTimerRef.current)
       window.clearTimeout(mobileCloseTimerRef.current)
-      window.clearTimeout(focusTimerRef.current)
+      window.cancelAnimationFrame(focusTimerRef.current)
+      window.cancelAnimationFrame(navFrameRef.current)
     },
     []
   )
 
-  // التنقل السلس بين الأقسام
+  // التنقل السلس بين الأقسام — إغلاق القائمة وتحريك الكبسولة فوراً ثم بدء الانتقال في الإطار التالي
   const handleSectionSelect = useCallback(
     (event, targetPath, sectionKey = targetPath) => {
       event.preventDefault()
 
-      clearVerdictTimer()
-      clearMasahaTimer()
+      const hadDropdownOpen = Boolean(activeDropdownRef.current)
+      clearDropdownTimer()
       clearMobileTimer()
       clearSearchSuggestionsTimer()
+      window.cancelAnimationFrame(navFrameRef.current)
 
       const isRouteChange = location.pathname !== targetPath
       setActiveKey(sectionKey)
-      setVerdictOpen(false)
-      setMasahaOpen(false)
+      setActiveDropdown(null)
       setMobileMenuOpen(false)
       setSearchSuggestionsOpen(false)
       setSearchExpanded(false)
@@ -1244,44 +1543,48 @@ export default function Navbar() {
       playGlassTap()
 
       if (isRouteChange) {
-        startTransition(() => {
-          navigate(targetPath)
-        })
+        const runNav = () => {
+          startTransition(() => {
+            navigate(targetPath)
+          })
+        }
+        if (hadDropdownOpen) {
+          navFrameRef.current = window.requestAnimationFrame(runNav)
+        } else {
+          runNav()
+        }
       }
     },
     [
+      clearDropdownTimer,
       clearMobileTimer,
       clearSearchSuggestionsTimer,
-      clearMasahaTimer,
-      clearVerdictTimer,
       location.pathname,
       navigate,
     ]
   )
 
   const handleToggleVerdict = useCallback(() => {
-    clearVerdictTimer()
-    const next = !verdictOpenRef.current
+    clearDropdownTimer()
+    const next = activeDropdownRef.current === 'verdict' ? null : 'verdict'
     if (next) {
       if (searchExpandedRef.current) closeInlineSearch()
       setMobileMenuOpen(false)
-      setMasahaOpen(false)
     }
-    playGlassDropdown(next)
-    setVerdictOpen(next)
-  }, [clearVerdictTimer, closeInlineSearch])
+    playGlassDropdown(Boolean(next))
+    setActiveDropdown(next)
+  }, [clearDropdownTimer, closeInlineSearch])
 
   const handleToggleMasaha = useCallback(() => {
-    clearMasahaTimer()
-    const next = !masahaOpenRef.current
+    clearDropdownTimer()
+    const next = activeDropdownRef.current === 'masaha' ? null : 'masaha'
     if (next) {
       if (searchExpandedRef.current) closeInlineSearch()
       setMobileMenuOpen(false)
-      setVerdictOpen(false)
     }
-    playGlassDropdown(next)
-    setMasahaOpen(next)
-  }, [clearMasahaTimer, closeInlineSearch])
+    playGlassDropdown(Boolean(next))
+    setActiveDropdown(next)
+  }, [clearDropdownTimer, closeInlineSearch])
 
   const filteredSearch = useMemo(() => {
     const q = searchQuery.trim().toLowerCase()
@@ -1342,19 +1645,19 @@ export default function Navbar() {
         material="clear"
         refraction={26}
         bezel={26}
-        dispersion={0.18}
-        blur={1}
-        fallbackBlur={20}
+        dispersion={0.14}
+        blur={2.8}
+        fallbackBlur={24}
       >
         <motion.nav
           aria-label="التنقل الرئيسي"
           initial={false}
           animate={{ maxWidth: targetNavMaxWidth }}
           transition={NAV_SHELL_SPRING}
-          className="qassimz-liquid-nav group/nav relative z-20 mx-auto flex w-full items-center justify-between gap-2 rounded-full bg-[rgb(var(--qz-deep-rgb)/0.14)] px-2.5 py-1.5 transition-[background-color] duration-300"
+          className="qassimz-liquid-nav group/nav relative z-20 mx-auto flex w-full items-center justify-between gap-2 rounded-full bg-[rgb(var(--qz-deep-rgb)/0.19)] px-2.5 py-1.5 transition-[background-color] duration-300"
         >
           <div className="relative z-20 flex w-full items-center justify-between gap-2">
-            {/* الهوية واللوجو — غلاف داخلي ثابت العرض يمنع أي مطّ أو قصّ على جانبي الشعار أثناء السكرول */}
+            {/* الهوية واللوجو — عرض مقاس متزامن مع نابض النوف بار لمنع أي قصّ أو ارتداد */}
             <AnimatePresence initial={false}>
               {!isCompact && !searchExpanded && (
                 <motion.div
@@ -1362,14 +1665,14 @@ export default function Navbar() {
                   initial={{ opacity: 0, width: 0, x: 8, scale: 0.94 }}
                   animate={{
                     opacity: 1,
-                    width: 'auto',
+                    width: brandWidth,
                     x: 0,
                     scale: 1,
                     transition: {
-                      width: { duration: 0.34, ease: [0.22, 1, 0.36, 1] },
-                      opacity: { duration: 0.22, delay: 0.08, ease: 'easeOut' },
-                      x: { duration: 0.3, ease: [0.22, 1, 0.36, 1] },
-                      scale: { duration: 0.3, ease: [0.22, 1, 0.36, 1] },
+                      width: NAV_SHELL_SPRING,
+                      x: NAV_SHELL_SPRING,
+                      scale: NAV_SHELL_SPRING,
+                      opacity: { duration: 0.22, delay: 0.06, ease: 'easeOut' },
                     },
                   }}
                   exit={{
@@ -1378,18 +1681,19 @@ export default function Navbar() {
                     x: 8,
                     scale: 0.94,
                     transition: {
-                      opacity: { duration: 0.12, ease: 'easeOut' },
-                      width: {
-                        duration: searchExpanded ? 0.18 : 0.28,
-                        ease: [0.22, 1, 0.36, 1],
-                      },
-                      x: { duration: 0.16, ease: 'easeIn' },
-                      scale: { duration: 0.16, ease: 'easeIn' },
+                      opacity: { duration: 0.14, ease: 'easeOut' },
+                      width: NAV_SHELL_SPRING,
+                      x: { duration: 0.18, ease: 'easeIn' },
+                      scale: { duration: 0.18, ease: 'easeIn' },
                     },
                   }}
-                  className="shrink-0 overflow-hidden"
+                  onAnimationStart={() => setBrandAnimating(true)}
+                  onAnimationComplete={() => setBrandAnimating(false)}
+                  className={`shrink-0 ${
+                    brandAnimating || isCompact || searchExpanded ? 'overflow-hidden' : 'overflow-visible'
+                  }`}
                 >
-                  <div className="w-max shrink-0">
+                  <div ref={brandMeasureRef} className="w-max shrink-0">
                     <button
                       type="button"
                       onMouseEnter={triggerHoverSound}
@@ -1411,25 +1715,46 @@ export default function Navbar() {
               )}
             </AnimatePresence>
 
-            {/* مسار الأقسام الستة مع كبسولة الماء السائلة — يبقى سياق WebGL دافئاً دون تدمير أثناء البحث */}
-            <DesktopWaterlineTrack
-              activeKey={activeKey}
-              verdictOpen={verdictOpen}
-              masahaOpen={masahaOpen}
-              waterPalette={waterPalette}
-              hidden={searchExpanded}
-              trackContainerRef={trackContainerRef}
-              verdictBtnRef={verdictBtnRef}
-              masahaBtnRef={masahaBtnRef}
-              onVerdictEnter={handleVerdictEnter}
-              onVerdictLeave={handleVerdictLeave}
-              onToggleVerdict={handleToggleVerdict}
-              onMasahaEnter={handleMasahaEnter}
-              onMasahaLeave={handleMasahaLeave}
-              onToggleMasaha={handleToggleMasaha}
-              onSectionSelect={handleSectionSelect}
-              onHoverSound={triggerHoverSound}
-            />
+            {/* مسار الأقسام الستة مع كبسولة الماء السائلة — ينكمش ويتوسع بتزامن مع نابض النوف بار دون قفز */}
+            <motion.div
+              initial={false}
+              animate={{
+                width: searchExpanded ? 0 : trackWidth,
+                opacity: searchExpanded ? 0 : 1,
+              }}
+              transition={{
+                width: NAV_SHELL_SPRING,
+                opacity: { duration: searchExpanded ? 0.14 : 0.22, ease: 'easeOut' },
+              }}
+              onAnimationStart={() => setTrackAnimating(true)}
+              onAnimationComplete={() => setTrackAnimating(false)}
+              className={`hidden shrink-0 items-center lg:flex ${
+                searchExpanded
+                  ? 'pointer-events-none overflow-hidden'
+                  : trackAnimating
+                    ? 'overflow-hidden'
+                    : 'overflow-visible'
+              }`}
+            >
+              <DesktopWaterlineTrack
+                activeKey={activeKey}
+                verdictOpen={verdictOpen}
+                masahaOpen={masahaOpen}
+                waterPalette={waterPalette}
+                hidden={searchExpanded}
+                trackContainerRef={trackContainerRef}
+                verdictBtnRef={verdictBtnRef}
+                masahaBtnRef={masahaBtnRef}
+                onVerdictEnter={handleVerdictEnter}
+                onVerdictLeave={handleVerdictLeave}
+                onToggleVerdict={handleToggleVerdict}
+                onMasahaEnter={handleMasahaEnter}
+                onMasahaLeave={handleMasahaLeave}
+                onToggleMasaha={handleToggleMasaha}
+                onSectionSelect={handleSectionSelect}
+                onHoverSound={triggerHoverSound}
+              />
+            </motion.div>
 
             {/* مجموعة البحث ومبدّل الثيم والقائمة المحمولة */}
             <div
@@ -1437,15 +1762,23 @@ export default function Navbar() {
               onPointerEnter={handleSearchAreaEnter}
               onPointerLeave={handleSearchAreaLeave}
               className={`flex items-center gap-2 ${
-                searchExpanded ? 'min-w-0 flex-1' : 'shrink-0'
+                searchExpanded ? 'min-w-0 flex-1 justify-end' : 'shrink-0'
               }`}
             >
               {/* كبسولة البحث الموحدة — تتوسع وتنكمش بسلاسة متزامنة مع نابض النوف بار دون شدّ أو تشوّه */}
-              <div
+              <motion.div
+                ref={searchPillRef}
                 role="combobox"
                 aria-expanded={searchExpanded && searchSuggestionsOpen}
                 aria-haspopup="listbox"
                 aria-owns="qz-search-listbox"
+                style={
+                  pillPhase === 'opening'
+                    ? { maxWidth: pillMaxWidthMv }
+                    : pillPhase === 'closing'
+                      ? { width: pillWidthMv }
+                      : undefined
+                }
                 onMouseEnter={() => {
                   if (!searchExpanded) triggerHoverSound()
                 }}
@@ -1460,8 +1793,8 @@ export default function Navbar() {
                 }}
                 className={`relative flex h-10 items-center overflow-hidden rounded-full border px-3.5 transition-colors duration-200 ${
                   searchExpanded
-                    ? 'w-full border-white/18 bg-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]'
-                    : 'cursor-pointer border-white/14 bg-white/[0.04] shadow-[inset_0_1px_0_rgba(255,255,255,0.14)] hover:border-white/22 hover:bg-white/[0.09]'
+                    ? 'w-full min-w-0 flex-1 border-white/18 bg-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]'
+                    : 'shrink-0 cursor-pointer border-white/14 bg-white/[0.04] shadow-[inset_0_1px_0_rgba(255,255,255,0.14)] hover:border-white/22 hover:bg-white/[0.09]'
                 }`}
               >
                 <Search className="size-3.5 shrink-0 text-[color:var(--qz-mint)]" />
@@ -1519,14 +1852,20 @@ export default function Navbar() {
                     </motion.button>
                   </>
                 ) : (
-                  <span className="mr-2 flex items-center gap-1.5 whitespace-nowrap text-xs font-medium text-white/90 [text-shadow:0_1px_2px_rgba(0,0,0,0.45)]">
+                  <motion.span
+                    key="search-collapsed-label"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.16, ease: 'easeOut' }}
+                    className="mr-2 flex items-center gap-1.5 whitespace-nowrap text-xs font-medium text-white/90 [text-shadow:0_1px_2px_rgba(0,0,0,0.45)]"
+                  >
                     <span>بحث</span>
                     <kbd className="hidden rounded-md bg-white/12 px-1.5 py-0.5 font-sans text-[8.5px] text-[color:var(--qz-mint)] 2xl:inline">
                       Ctrl K
                     </kbd>
-                  </span>
+                  </motion.span>
                 )}
-              </div>
+              </motion.div>
 
               {/* خانة تبديل الثيمات الثلاثة (الزمردي • الجمري • الذهبي) */}
               <div
@@ -1544,29 +1883,40 @@ export default function Navbar() {
               </div>
 
               {/* زر قائمة الموبايل */}
-              {!searchExpanded && (
-                <button
-                  ref={mobileBtnRef}
-                  type="button"
-                  onMouseEnter={triggerHoverSound}
-                  onClick={() => {
-                    clearMobileTimer()
-                    const next = !mobileMenuOpen
-                    if (next) {
-                      setVerdictOpen(false)
-                      setMasahaOpen(false)
-                      setSearchSuggestionsOpen(false)
-                    }
-                    playGlassDropdown(next)
-                    setMobileMenuOpen(next)
-                  }}
-                  className="grid size-9 shrink-0 cursor-pointer place-items-center rounded-full border border-white/14 bg-white/[0.04] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.14)] transition-colors hover:bg-white/[0.1] lg:hidden"
-                  aria-label={mobileMenuOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
-                  aria-expanded={mobileMenuOpen}
-                >
-                  <MenuMorphIcon open={mobileMenuOpen} size={16} />
-                </button>
-              )}
+              <AnimatePresence initial={false}>
+                {!searchExpanded && (
+                  <motion.div
+                    key="mobile-menu-btn"
+                    initial={{ opacity: 0, width: 0, scale: 0.85 }}
+                    animate={{ opacity: 1, width: 36, scale: 1 }}
+                    exit={{ opacity: 0, width: 0, scale: 0.85 }}
+                    transition={NAV_SHELL_SPRING}
+                    className="shrink-0 overflow-hidden lg:hidden"
+                  >
+                    <button
+                      ref={mobileBtnRef}
+                      type="button"
+                      onMouseEnter={triggerHoverSound}
+                      onClick={() => {
+                        clearMobileTimer()
+                        const next = !mobileMenuOpen
+                        if (next) {
+                          clearDropdownTimer()
+                          setActiveDropdown(null)
+                          setSearchSuggestionsOpen(false)
+                        }
+                        playGlassDropdown(next)
+                        setMobileMenuOpen(next)
+                      }}
+                      className="grid size-9 shrink-0 cursor-pointer place-items-center rounded-full border border-white/14 bg-white/[0.04] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.14)] transition-colors hover:bg-white/[0.1]"
+                      aria-label={mobileMenuOpen ? 'إغلاق القائمة' : 'فتح القائمة'}
+                      aria-expanded={mobileMenuOpen}
+                    >
+                      <MenuMorphIcon open={mobileMenuOpen} size={16} />
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </motion.nav>
@@ -1577,9 +1927,9 @@ export default function Navbar() {
         ref={dropdownHostRef}
         className="pointer-events-none relative z-30 mx-auto max-w-[78rem]"
       >
-        {/* 1. قائمة الفِردِكت المنسدلة */}
-        <AnimatePresence>
-          {verdictOpen && !searchExpanded && (
+        {/* 1 و 2: قوائم الفِردِكت ومساحة المنسدلة في AnimatePresence موحّد لمنع التداخل */}
+        <AnimatePresence mode="wait">
+          {activeDropdown === 'verdict' && !searchExpanded && (
             <motion.div
               key="verdict-dropdown"
               ref={verdictMenuRef}
@@ -1613,19 +1963,16 @@ export default function Navbar() {
                   waterPalette={waterPalette}
                   onNavigateSection={handleSectionSelect}
                   onClose={() => {
-                    clearVerdictTimer()
-                    setVerdictOpen(false)
+                    clearDropdownTimer()
+                    setActiveDropdown(null)
                   }}
                   onHoverSound={triggerHoverSound}
                 />
               </LiquidGlass>
             </motion.div>
           )}
-        </AnimatePresence>
 
-        {/* 2. قائمة مساحة المنسدلة */}
-        <AnimatePresence>
-          {masahaOpen && !searchExpanded && (
+          {activeDropdown === 'masaha' && !searchExpanded && (
             <motion.div
               key="masaha-dropdown"
               ref={masahaMenuRef}
@@ -1655,10 +2002,12 @@ export default function Navbar() {
                 className="rounded-[28px] bg-[rgb(var(--qz-ink-rgb)/0.68)] text-right shadow-[0_24px_60px_rgba(0,0,0,0.52)]"
               >
                 <MasahaDropdown
+                  currentPath={location.pathname}
+                  waterPalette={waterPalette}
                   onNavigateSection={handleSectionSelect}
                   onClose={() => {
-                    clearMasahaTimer()
-                    setMasahaOpen(false)
+                    clearDropdownTimer()
+                    setActiveDropdown(null)
                   }}
                   onHoverSound={triggerHoverSound}
                 />

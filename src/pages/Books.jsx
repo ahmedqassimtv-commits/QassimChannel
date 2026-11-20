@@ -3,12 +3,13 @@ import { Library, BookOpen, Bookmark, ArrowUpLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import GlassCard from '../components/glass/GlassCard.jsx'
 import Typewriter from '../components/ui/Typewriter.jsx'
+import { assetUrl } from '../utils/assets.js'
 
 const heroEase = [0.22, 1, 0.36, 1]
 const rise = (delay) => ({
-  initial: { opacity: 0, y: 18, filter: 'blur(4px)' },
-  animate: { opacity: 1, y: 0, filter: 'blur(0px)' },
-  transition: { duration: 0.7, delay, ease: heroEase },
+  initial: { opacity: 0, y: 18 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.65, delay, ease: heroEase },
 })
 
 // بيانات الكتب والقصص — محتوى حقيقي placeholder
@@ -18,7 +19,7 @@ const BOOKS = [
     title: 'في مديح البطء',
     author: 'كارل أونوريه',
     category: 'قراءة',
-    cover: '/fractal/optimized/15.webp',
+    cover: assetUrl('/fractal/optimized/15.webp'),
     excerpt: 'كتاب يدعونا للتوقف عن الركض المحموم والتأمل في تفاصيل الحياة التي نمر عليها مرور الكرام.',
     rating: 4,
   },
@@ -27,7 +28,7 @@ const BOOKS = [
     title: 'عن التصوير الفوتوغرافي',
     author: 'سوزان سونتاغ',
     category: 'قراءة',
-    cover: '/fractal/optimized/51.webp',
+    cover: assetUrl('/fractal/optimized/51.webp'),
     excerpt: 'تأملات فلسفية عميقة في الصورة وعلاقتنا بها — كيف نرى العالم من خلال العدسة.',
     rating: 5,
   },
@@ -36,7 +37,7 @@ const BOOKS = [
     title: 'حكايات من خلف الكاميرا',
     author: 'قاسم',
     category: 'قصة',
-    cover: '/fractal/optimized/70.webp',
+    cover: assetUrl('/fractal/optimized/70.webp'),
     excerpt: 'مجموعة قصصية قصيرة تروي لحظات من كواليس صناعة المحتوى — الأخطاء، المفاجآت، والدهشة.',
     rating: null,
   },
@@ -45,7 +46,7 @@ const BOOKS = [
     title: 'ضوء آخر النهار',
     author: 'قاسم',
     category: 'قصة',
-    cover: '/fractal/optimized/86.webp',
+    cover: assetUrl('/fractal/optimized/86.webp'),
     excerpt: 'تفاصيل صغيرة من أيام طويلة — مكتوبة بلغة الصورة قبل أن تكون كلمات.',
     rating: null,
   },

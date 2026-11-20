@@ -741,6 +741,20 @@ function overlayURL(w: number, h: number, radius: number, o: PlaneOptions): stri
   });
 }
 
+function capsuleTemplateOverlayURL(h: number, radius: number, o: PlaneOptions): { url: string; capCss: number; capSlice: number } {
+  const capCss = Math.round(h / 2 + 2);
+  const bw = h * 3 + 4;
+  const bh = h + 4;
+  const ok = pixelScale(bw, bh);
+  const capSlice = Math.max(1, Math.round(capCss * ok));
+  const url = remember(
+    overlayCache,
+    `cap-tpl|h${h}r${radius}b${o.bezel}${o.dark ? "d" : "l"}${o.tint ?? ""}`,
+    () => capsuleBake(h, radius, o).overlay?.toDataURL("image/png") ?? ""
+  );
+  return { url, capCss, capSlice };
+}
+
 function capsuleBake(h: number, radius: number, o: PlaneOptions): MapCanvases {
   const key = `bake|h${h}|r${radius}|b${o.bezel}|${o.dark ? "d" : "l"}|${o.tint ?? ""}`;
   let baked = bakeCache.get(key);
@@ -783,6 +797,10 @@ function acquireFilter(id: string, markup: string): void {
   }
   const filter = document.createElementNS("http://www.w3.org/2000/svg", "filter");
   filter.setAttribute("id", id);
+  filter.setAttribute("x", "0%");
+  filter.setAttribute("y", "0%");
+  filter.setAttribute("width", "100%");
+  filter.setAttribute("height", "100%");
   filter.setAttribute("color-interpolation-filters", "sRGB");
   filter.innerHTML = markup;
   host().appendChild(filter);
@@ -800,23 +818,29 @@ function releaseFilter(id: string): void {
 
 function filterMarkup(opts: {
   w: number; h: number; field: string; material: GlassMaterial; appearance: GlassAppearance;
-  refraction: number; dispersion: number; tint?: [number, number, number]; nested: boolean;
+  refraction: number; dispersion: number; blur: number; tint?: [number, number, number]; nested: boolean;
 }): string {
-  const { w, h, field, material, appearance, refraction, dispersion, tint, nested } = opts;
+  const { field, material, appearance, refraction, dispersion, blur, tint, nested } = opts;
   const dark = appearance === "dark";
   const spec = material === "regular" ? (dark ? MATERIALS.regular.dark : MATERIALS.regular.light) : null;
   const parts: string[] = [
-    `<feImage href="${field}" x="0" y="0" width="${w}" height="${h}" preserveAspectRatio="none" result="field"/>`,
+    `<feImage href="${field}" x="0%" y="0%" width="100%" height="100%" preserveAspectRatio="none" result="field"/>`,
   ];
   let base = "SourceGraphic";
   if (spec) {
+    const frostSigma = Math.max(MATERIALS.regular.blur, blur);
     parts.push(
-      `<feGaussianBlur in="SourceGraphic" stdDeviation="${MATERIALS.regular.blur}" result="frost"/>`,
+      `<feGaussianBlur in="SourceGraphic" stdDeviation="${frostSigma}" result="frost"/>`,
       `<feGaussianBlur in="SourceGraphic" stdDeviation="${spec.fillSigma}" result="fill"/>`,
       `<feBlend in="frost" in2="fill" mode="${dark ? "darken" : "lighten"}" result="blend"/>`,
       `<feComposite in="blend" in2="frost" operator="arithmetic" k2="${spec.fillOpacity}" k3="${1 - spec.fillOpacity}" result="mix"/>`
     );
     base = "mix";
+  } else if (blur > 0) {
+    parts.push(
+      `<feGaussianBlur in="SourceGraphic" stdDeviation="${blur}" result="clearBlur"/>`
+    );
+    base = "clearBlur";
   }
   if (dispersion > 0) {
     const s = refraction * 2;
@@ -1091,6 +1115,10 @@ function attachInteraction(element: HTMLElement, motion: () => GlassMotion): { d
 interface MapState {
   field: string;
   overlay: string;
+  capsuleOverlay?: string;
+  capCss?: number;
+  capSlice?: number;
+  isCapsule?: boolean;
   clip: string;
   w: number;
   h: number;
@@ -1156,8 +1184,12 @@ function useLiquidGlass(options: LiquidGlassOptions, rootRef: React.RefObject<HT
     const build = (w: number, h: number, radius: number) => {
       const bz = Math.round(bezel ?? Math.min(32, Math.min(w, h) / 2));
       const planes = { bezel: bz, dark, tint: tintRGB };
-      const outline = squircleOutline(w, h, radius);
-      const overlay = overlayURL(w, h, radius, planes);
+      const isCapsule = capsuleShape(w, h, radius);
+      const outline = isCapsule ? null : squircleOutline(w, h, radius);
+      const clipPoly = outline ? outline.polygon : "";
+      const capTpl = isCapsule ? capsuleTemplateOverlayURL(h, radius, planes) : null;
+      const overlay = isCapsule ? "" : overlayURL(w, h, radius, planes);
+
       if (mode !== "refract") {
         if (heldFilter) {
           releaseFilter(heldFilter);
@@ -1167,16 +1199,27 @@ function useLiquidGlass(options: LiquidGlassOptions, rootRef: React.RefObject<HT
           const id = `frost|${w}|${h}|${radius}|${appearance}|${material}|${tint ?? ""}`;
           return prev && prev.filterId === id
             ? prev
-            : { field: "", overlay, clip: outline.polygon, w, h, filterId: id };
+            : {
+                field: "",
+                overlay,
+                capsuleOverlay: capTpl?.url,
+                capCss: capTpl?.capCss,
+                capSlice: capTpl?.capSlice,
+                isCapsule,
+                clip: clipPoly,
+                w,
+                h,
+                filterId: id,
+              };
         });
         return;
       }
       const field = fieldURL(w, h, radius, planes);
-      const filterId = `lgf${w}x${h}r${radius}b${bz}f${Math.round(amount * 10)}${appearance === "dark" ? "d" : "l"}${material === "regular" ? "R" : "C"}${tint ?? ""}p${Math.round(dispersion * 100)}${nested ? "n" : ""}`
+      const filterId = `lgf${w}x${h}r${radius}b${bz}f${Math.round(amount * 10)}bl${Math.round(blur * 10)}${appearance === "dark" ? "d" : "l"}${material === "regular" ? "R" : "C"}${tint ?? ""}p${Math.round(dispersion * 100)}${nested ? "n" : ""}`
         .replace(/[^a-zA-Z0-9-]/g, "");
       if (field) {
         const markup = filterMarkup({
-          w, h, field, material, appearance, refraction: amount, dispersion, tint: tintRGB, nested,
+          w, h, field, material, appearance, refraction: amount, dispersion, blur, tint: tintRGB, nested,
         });
         if (heldFilter && heldFilter !== filterId) releaseFilter(heldFilter);
         acquireFilter(filterId, markup);
@@ -1188,7 +1231,18 @@ function useLiquidGlass(options: LiquidGlassOptions, rootRef: React.RefObject<HT
       setMap((prev) =>
         prev && prev.filterId === filterId
           ? prev
-          : { field, overlay, clip: outline.polygon, w, h, filterId }
+          : {
+              field,
+              overlay,
+              capsuleOverlay: capTpl?.url,
+              capCss: capTpl?.capCss,
+              capSlice: capTpl?.capSlice,
+              isCapsule,
+              clip: clipPoly,
+              w,
+              h,
+              filterId,
+            }
       );
     };
 
@@ -1202,8 +1256,6 @@ function useLiquidGlass(options: LiquidGlassOptions, rootRef: React.RefObject<HT
       const radius = Math.round(resolveRadius(getComputedStyle(lens).borderTopLeftRadius, w, h));
       const prev = mapRef.current;
 
-      // أثناء تغير الأبعاد المتسارع (سكرول النوف بار / توسّع البحث / تغيّر ارتفاع القائمة):
-      // نؤجل إعادة خبز خرائط الـ Canvas وفلتر الـ SVG حتى تستقر الحركة لتفادي التقطيع والمط الجانبي
       if (
         !immediate &&
         !fluidRef.current?.fluid &&
@@ -1224,7 +1276,7 @@ function useLiquidGlass(options: LiquidGlassOptions, rootRef: React.RefObject<HT
             build(fw, fh, fr);
           }
           setResizing(false);
-        }, 110);
+        }, 95);
         return;
       }
 
@@ -1273,21 +1325,22 @@ function useLiquidGlass(options: LiquidGlassOptions, rootRef: React.RefObject<HT
       window.clearTimeout(settleTimer);
       if (heldFilter) releaseFilter(heldFilter);
     };
-  }, [mode, bezel, appearance, material, tint, dark, tintRGB, refraction, dispersion, fluid, motion, rootRef]);
+  }, [mode, bezel, appearance, material, tint, dark, tintRGB, refraction, dispersion, blur, fluid, motion, rootRef]);
 
   React.useEffect(() => {
     mapRef.current = map;
   }, [map]);
 
   const refracting = mode === "refract" && map !== null && map.field !== "";
-  const activeRefract = refracting && !resizing;
+  // الكبسولات الدائرية تحتفظ بالانكسار مفعّلاً طوال الحركة لأن feImage يمتد 100% وحافتها 3-slice لا تتمطط
+  const activeRefract = refracting && (Boolean(map?.isCapsule) || !resizing);
   const spec = material === "regular" ? (dark ? MATERIALS.regular.dark : MATERIALS.regular.light) : null;
 
   const cssTone = `saturate(${saturation}) brightness(${dark ? brightness * 0.88 : brightness})`;
   const engineBlur =
     engine === "webkit" ? Math.min(fallbackBlur, 16) : fallbackBlur;
   const backdrop = activeRefract
-    ? `url(#${map!.filterId})${blur > 0 ? ` blur(${blur}px)` : ""}`
+    ? `url(#${map!.filterId})${blur > 0 ? ` blur(${Math.min(4, blur * 0.6).toFixed(2)}px)` : ""}`
     : material === "regular"
       ? `blur(${Math.max(2, engineBlur * 0.5)}px) ${cssTone}`
       : `blur(${engineBlur}px) ${cssTone}`;
@@ -1310,45 +1363,66 @@ function useLiquidGlass(options: LiquidGlassOptions, rootRef: React.RefObject<HT
           pointerEvents: "none",
           backdropFilter: backdrop,
           WebkitBackdropFilter: backdrop,
-          clipPath: activeRefract ? map?.clip : undefined,
+          clipPath: activeRefract && !map?.isCapsule && map?.clip ? map.clip : undefined,
           transform: fluidTransform,
           transformOrigin: "0 0",
         } as React.CSSProperties}
       />
       {map ? (
         <>
-          {/* حافة زجاجية مرنة عبر CSS تظهر أثناء تغيّر الأبعاد فقط لتفادي مطّ صورة الحافة المخبوزة */}
-          <span
-            aria-hidden
-            style={{
-              position: "absolute",
-              inset: 0,
-              zIndex: -1,
-              borderRadius: "inherit",
-              pointerEvents: "none",
-              opacity: resizing ? 1 : 0,
-              transition: "opacity 140ms ease",
-              boxShadow: dark
-                ? "inset 0 1px 0 rgba(255, 255, 255, 0.24), inset 0 -1px 0 rgba(255, 255, 255, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.14)"
-                : "inset 0 1px 0 rgba(255, 255, 255, 0.65), inset 0 0 0 1px rgba(255, 255, 255, 0.35)",
-            }}
-          />
-          <span
-            aria-hidden
-            style={{
-              position: "absolute",
-              inset: -2,
-              zIndex: -1,
-              pointerEvents: "none",
-              opacity: resizing ? 0 : 1,
-              transition: "opacity 140ms ease",
-              backgroundImage: `url(${map.overlay})`,
-              backgroundSize: "100% 100%",
-              backgroundRepeat: "no-repeat",
-              transform: fluidTransform,
-              transformOrigin: "0 0",
-            }}
-          />
+          {map.isCapsule && map.capsuleOverlay ? (
+            <span
+              aria-hidden
+              style={{
+                position: "absolute",
+                inset: -2,
+                zIndex: -1,
+                pointerEvents: "none",
+                borderStyle: "solid",
+                borderColor: "transparent",
+                borderWidth: `0 ${map.capCss}px`,
+                borderImageSource: `url(${map.capsuleOverlay})`,
+                borderImageSlice: `0 ${map.capSlice} fill`,
+                borderImageRepeat: "stretch",
+                transform: fluidTransform,
+                transformOrigin: "0 0",
+              } as React.CSSProperties}
+            />
+          ) : (
+            <>
+              <span
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  zIndex: -1,
+                  borderRadius: "inherit",
+                  pointerEvents: "none",
+                  opacity: resizing ? 1 : 0,
+                  transition: "opacity 140ms ease",
+                  boxShadow: dark
+                    ? "inset 0 1px 0 rgba(255, 255, 255, 0.24), inset 0 -1px 0 rgba(255, 255, 255, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.14)"
+                    : "inset 0 1px 0 rgba(255, 255, 255, 0.65), inset 0 0 0 1px rgba(255, 255, 255, 0.35)",
+                }}
+              />
+              <span
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  inset: -2,
+                  zIndex: -1,
+                  pointerEvents: "none",
+                  opacity: resizing ? 0 : 1,
+                  transition: "opacity 140ms ease",
+                  backgroundImage: `url(${map.overlay})`,
+                  backgroundSize: "100% 100%",
+                  backgroundRepeat: "no-repeat",
+                  transform: fluidTransform,
+                  transformOrigin: "0 0",
+                }}
+              />
+            </>
+          )}
           {!activeRefract && (material === "regular" || dark) ? (
             <span
               aria-hidden
