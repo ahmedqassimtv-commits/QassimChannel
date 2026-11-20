@@ -1,150 +1,80 @@
-import { motion } from 'framer-motion'
-import { Library, BookOpen, Bookmark, ArrowUpLeft } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import GlassCard from '../components/glass/GlassCard.jsx'
-import Typewriter from '../components/ui/Typewriter.jsx'
-import { assetUrl } from '../utils/assets.js'
+import { books } from '../data/books.js'
+import { PageHero, SectionHead } from '../components/qz/Kit.jsx'
+import { Stagger, StaggerItem } from '../components/motion/Motion.jsx'
 
-const heroEase = [0.22, 1, 0.36, 1]
-const rise = (delay) => ({
-  initial: { opacity: 0, y: 18 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.65, delay, ease: heroEase },
-})
+/* ══ الكتب والقصص ═════════════════════════════════════════════════════
+   رف كتب: كل غلاف كتاب له عمق حقيقي (CSS 3D: وش + كعب + سُمك صفحات)،
+   مايل شوية، ومع الماوس بيلف ويواجهك. قسمين: قراءات قاسم، وقصصه هو. */
 
-// بيانات الكتب والقصص — محتوى حقيقي placeholder
-const BOOKS = [
-  {
-    id: 'book-1',
-    title: 'في مديح البطء',
-    author: 'كارل أونوريه',
-    category: 'قراءة',
-    cover: assetUrl('/fractal/optimized/15.webp'),
-    excerpt: 'كتاب يدعونا للتوقف عن الركض المحموم والتأمل في تفاصيل الحياة التي نمر عليها مرور الكرام.',
-    rating: 4,
-  },
-  {
-    id: 'book-2',
-    title: 'عن التصوير الفوتوغرافي',
-    author: 'سوزان سونتاغ',
-    category: 'قراءة',
-    cover: assetUrl('/fractal/optimized/51.webp'),
-    excerpt: 'تأملات فلسفية عميقة في الصورة وعلاقتنا بها — كيف نرى العالم من خلال العدسة.',
-    rating: 5,
-  },
-  {
-    id: 'book-3',
-    title: 'حكايات من خلف الكاميرا',
-    author: 'قاسم',
-    category: 'قصة',
-    cover: assetUrl('/fractal/optimized/70.webp'),
-    excerpt: 'مجموعة قصصية قصيرة تروي لحظات من كواليس صناعة المحتوى — الأخطاء، المفاجآت، والدهشة.',
-    rating: null,
-  },
-  {
-    id: 'book-4',
-    title: 'ضوء آخر النهار',
-    author: 'قاسم',
-    category: 'قصة',
-    cover: assetUrl('/fractal/optimized/86.webp'),
-    excerpt: 'تفاصيل صغيرة من أيام طويلة — مكتوبة بلغة الصورة قبل أن تكون كلمات.',
-    rating: null,
-  },
-]
-
-function StarRating({ rating }) {
-  if (!rating) return null
+function Rating({ value }) {
+  if (!value) return null
   return (
-    <div className="flex gap-0.5" aria-label={`تقييم ${rating} من 5`}>
+    <span className="flex gap-1" aria-label={`تقييم ${value} من 5`}>
       {Array.from({ length: 5 }, (_, i) => (
-        <span
-          key={i}
-          className={`text-sm ${i < rating ? 'text-emerald-300' : 'text-[color:var(--qz-sage)]/30'}`}
-        >
-          ★
-        </span>
+        <span key={i} className={`h-1 w-5 rounded-full ${i < value ? 'bg-[color:var(--qz-accent)]' : 'bg-[rgb(var(--qz-mint-rgb)/0.14)]'}`} />
       ))}
-    </div>
+    </span>
+  )
+}
+
+function Book({ book }) {
+  return (
+    <article className="group">
+      <div className="qz-book mx-auto w-[min(220px,70%)]">
+        <div className="qz-book-body">
+          <img src={book.cover} alt="" loading="lazy" className="qz-book-cover" />
+          <span className="qz-book-title">{book.title}</span>
+          <span className="qz-book-spine" aria-hidden="true" />
+          <span className="qz-book-pages" aria-hidden="true" />
+        </div>
+      </div>
+      <div className="mt-8 text-center">
+        <h3 className="qz-h3">{book.title}</h3>
+        <p className="mt-1 text-sm text-[color:var(--qz-accent)]">{book.author}</p>
+        <p className="qz-body mx-auto mt-3 max-w-xs text-[0.95rem]">{book.excerpt}</p>
+        <div className="mt-4 flex justify-center">
+          <Rating value={book.rating} />
+        </div>
+      </div>
+    </article>
   )
 }
 
 export default function Books() {
+  const reads = books.filter((b) => b.category !== 'قصة')
+  const tales = books.filter((b) => b.category === 'قصة')
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-    >
-      {/* ترويسة الصفحة */}
-      <header className="liquid-glass mb-10 rounded-3xl p-6 sm:p-10">
-        <div className="flex items-center gap-2.5">
-          <span className="grid size-9 place-items-center rounded-xl border border-emerald-400/30 bg-[color:var(--qz-ink)] text-emerald-300">
-            <Library className="size-4" />
-          </span>
-          <span className="font-mono text-xs font-bold tracking-[0.2em] text-emerald-300">
-            LIBRARY • مكتبة ومساحة قراءة
-          </span>
-        </div>
-
-        <h1 className="font-history mt-4 text-4xl font-black text-[color:var(--qz-mint)] sm:text-5xl">
-          الكتب والقصص
-        </h1>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-[color:var(--qz-sage)] sm:text-base">
-          <Typewriter text="مساحة للقراءات المُلهمة، والقصص التي تستحق أن تُحكى." />
-        </p>
-      </header>
-
-      {/* الكتب */}
-      <div className="grid gap-6 md:grid-cols-2">
-        {BOOKS.map((book, i) => (
-          <motion.div key={book.id} {...rise(i * 0.1)}>
-            <GlassCard className="liquid-glass-hover group h-full p-0">
-              <div className="flex h-full flex-col sm:flex-row">
-                {/* غلاف */}
-                <div className="relative aspect-[3/4] w-full shrink-0 overflow-hidden rounded-t-3xl sm:w-40 sm:rounded-r-3xl sm:rounded-tl-none">
-                  <img
-                    src={book.cover}
-                    alt={book.title}
-                    loading="lazy"
-                    className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[color:var(--qz-ink)]/60 to-transparent sm:bg-gradient-to-l" />
-                  <span className="absolute top-3 right-3 rounded-full border border-emerald-300/30 bg-[color:var(--qz-ink)]/80 px-3 py-1 text-[10px] font-bold text-emerald-200 backdrop-blur-md">
-                    {book.category}
-                  </span>
-                </div>
-
-                {/* تفاصيل */}
-                <div className="flex flex-1 flex-col justify-between p-6">
-                  <div>
-                    <div className="flex items-start justify-between gap-3">
-                      <h3 className="text-xl font-black text-white">{book.title}</h3>
-                      <Bookmark className="size-5 shrink-0 text-[color:var(--qz-sage)]/50 transition-colors group-hover:text-emerald-300" />
-                    </div>
-                    <p className="mt-1 text-xs text-emerald-200">{book.author}</p>
-                    <p className="mt-3 text-sm leading-7 text-[color:var(--qz-sage)]">
-                      {book.excerpt}
-                    </p>
-                  </div>
-                  <div className="mt-4 flex items-center justify-between">
-                    <StarRating rating={book.rating} />
-                    <span className="text-xs text-[color:var(--qz-sage)]/60">
-                      {book.rating ? 'قراءة مُكتملة' : 'قصة أصلية'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </GlassCard>
-          </motion.div>
-        ))}
-      </div>
-
-      {/* CTA */}
-      <motion.div {...rise(0.4)} className="mt-16 text-center">
-        <p className="text-sm text-[color:var(--qz-sage)]">
-          المكتبة تتوسع باستمرار — ترقب قراءات ومراجعات كتب جديدة قريباً.
-        </p>
-      </motion.div>
-    </motion.div>
+    <div>
+      <PageHero
+        index="—"
+        eyebrow="مساحة · مكتبة"
+        title="الكتب والقصص"
+        lead="قراءات غيّرت طريقة الشوف، وقصص مكتوبة بلغة الصورة قبل ما تبقى كلام."
+      />
+      {reads.length > 0 && (
+        <section className="qz-section">
+          <SectionHead index="01" eyebrow="على الرف" title="قراءات" />
+          <Stagger className="grid gap-x-10 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
+            {reads.map((b) => (
+              <StaggerItem key={b.id}>
+                <Book book={b} />
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </section>
+      )}
+      {tales.length > 0 && (
+        <section className="qz-section pt-0">
+          <SectionHead index="02" eyebrow="بقلم قاسم" title="قصص" />
+          <Stagger className="grid gap-x-10 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
+            {tales.map((b) => (
+              <StaggerItem key={b.id}>
+                <Book book={b} />
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </section>
+      )}
+    </div>
   )
 }

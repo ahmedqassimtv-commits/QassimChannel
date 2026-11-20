@@ -1,125 +1,135 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { Film, Tv, Sparkles } from 'lucide-react'
-import ReviewCard from '../components/cards/ReviewCard.jsx'
-import LiquidSegmented from '../components/ui/LiquidSegmented.jsx'
-import WeightWave from '../components/ui/WeightWave.jsx'
-import PlanSwitch from '../components/ui/PlanSwitch.jsx'
+import { useNavigate } from 'react-router-dom'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Play } from 'lucide-react'
 import { reviews } from '../data/reviews.js'
+import { Filters, PageHero, RatingRing, VerdictTile, fmtDate } from '../components/qz/Kit.jsx'
+import { Reveal, SPRING } from '../components/motion/Motion.jsx'
+import { useCinema } from '../components/qz/CinemaPlayer.jsx'
+import YouTubeThumb from '../components/ui/YouTubeThumb.jsx'
 
-const SECTION_OPTIONS = [
-  { value: 'فيلم', label: 'مراجعات الأفلام', to: '/verdict/movies' },
-  { value: 'مسلسل', label: 'مراجعات المسلسلات', to: '/verdict/series' },
-  { value: 'حلقات', label: 'المواسم والحلقات', to: '/verdict/series?view=episodes' },
+/* ══ الفِردِكت ═════════════════════════════════════════════════════════
+   أحكام قاسم على الأفلام والمسلسلات. أعلى عمل تقييماً في القسم بيتعرض
+   كـ«حُكم الأسبوع» بعرض الشاشة ورقم ضخم، والباقي شبكة. التبديل بين
+   الأفلام والمسلسلات بيغيّر المسار (/verdict/movies ↔ /verdict/series)
+   من غير انتقال صفحة كامل — الشبكة بس بتعيد ترتيب نفسها. */
+
+const SECTIONS = [
+  { value: 'فيلم', label: 'أفلام', to: '/verdict/movies' },
+  { value: 'مسلسل', label: 'مسلسلات', to: '/verdict/series' },
 ]
+
+const asVideo = (r) => ({ youtubeId: r.youtubeId, title: r.titleAr || r.title, category: `الفِردِكت · ${r.mediaType}`, summary: r.verdict })
 
 export default function Reviews({ defaultTab = 'فيلم' }) {
   const navigate = useNavigate()
-  const location = useLocation()
-  const [selectedTag, setSelectedTag] = useState('الكل')
-  // الفقاعة بتتحرك فوراً، والتنقل بيحصل في نفس اللحظة (الصفحة نفسها مش بتتشال فالفقاعة بتكمل حركتها)
-  const activeSection = new URLSearchParams(location.search).get('view') === 'episodes' ? 'حلقات' : defaultTab
+  const cinema = useCinema()
+  const [tag, setTag] = useState('الكل')
+  useEffect(() => setTag('الكل'), [defaultTab])
 
-  // إعادة ضبط فلتر التصنيف عند التنقل بين الأفلام والمسلسلات
-  useEffect(() => {
-    setSelectedTag('الكل')
-  }, [defaultTab])
-
-  const isMovies = defaultTab === 'فيلم'
-
-  // فلترة الأعمال حسب القسم (أفلام فقط أو مسلسلات فقط)
-  const sectionItems = useMemo(
-    // لا توجد مراجعات بنوع 'حلقة' في البيانات؛ وضع «حلقات» يعرض المسلسلات
-    // (الحلقات جزء من المسلسل) بدل قائمة فارغة دائماً.
-    () => activeSection === 'حلقات' ? reviews.filter((item) => item.mediaType === 'مسلسل') : reviews.filter((item) => item.mediaType === defaultTab),
-    [defaultTab, activeSection]
-  )
-
-  // استخراج التصنيفات الموجودة داخل هذا القسم فقط
-  const availableTags = useMemo(() => {
-    const tagsSet = new Set()
-    sectionItems.forEach((item) => item.tags?.forEach((tag) => tagsSet.add(tag)))
-    return ['الكل', ...Array.from(tagsSet)]
-  }, [sectionItems])
-
-  // الفلترة النهائية بالتصنيف المختار
-  const filteredItems = useMemo(() => {
-    if (selectedTag === 'الكل') return sectionItems
-    return sectionItems.filter((item) => item.tags?.includes(selectedTag))
-  }, [sectionItems, selectedTag])
+  const section = useMemo(() => reviews.filter((r) => r.mediaType === defaultTab), [defaultTab])
+  const tags = useMemo(() => ['الكل', ...new Set(section.flatMap((r) => r.tags ?? []))], [section])
+  const list = tag === 'الكل' ? section : section.filter((r) => r.tags?.includes(tag))
+  const top = [...section].sort((a, b) => b.rating - a.rating)[0]
+  const grid = tag === 'الكل' ? list.filter((r) => r !== top) : list
 
   return (
     <div>
-      {/* ترويسة القسم بستايل هوليوودي (THE VERDICT) */}
-      <header className="mb-10 rounded-3xl border border-[color:var(--qz-sage)]/20 bg-[color:var(--qz-deep)]/55 p-6 backdrop-blur-md sm:p-8">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <span className="grid size-9 place-items-center rounded-xl border border-[color:var(--qz-sage)]/30 bg-[color:var(--qz-ink)] text-[color:var(--qz-sage)]">
-              {isMovies ? <Film className="size-4" /> : <Tv className="size-4" />}
-            </span>
-            <span className="font-mono text-xs font-bold tracking-[0.22em] text-[color:var(--qz-sage)]">
-              THE VERDICT • {isMovies ? 'CINEMA' : 'SERIES'}
-            </span>
-          </div>
-
-          {/* تبديل الأفلام/المسلسلات بفقاعة liquidGL */}
-          <PlanSwitch
-            options={SECTION_OPTIONS}
-            value={activeSection}
-            onChange={(next) => {
-              const target = SECTION_OPTIONS.find((o) => o.value === next)
-              if (target) navigate(target.to)
-            }}
-          />
-        </div>
-
-        <h1 className="font-cinema mt-4 text-5xl leading-[1.35] text-[color:var(--qz-mint)] sm:text-6xl">
-          <WeightWave text={activeSection === 'حلقات' ? 'المواسم والحلقات' : isMovies ? 'حُكم السينما' : 'حُكم المسلسلات'} />
-        </h1>
-        <p className="mt-3 max-w-2xl text-sm leading-7 text-[color:var(--qz-sage)] sm:text-base">
-          {isMovies
-            ? 'قراءات نقدية وتقييمات صريحة لأبرز الأفلام السينمائية، بلا حرق قدر الإمكان.'
-            : 'تحليل درامي وتقييم شامل للمواسم والحلقات التي تستحق وقتك أمام الشاشة.'}
-        </p>
-      </header>
-
-      <motion.div
-        key={defaultTab}
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+      <PageHero
+        index="—"
+        eyebrow="THE VERDICT"
+        title="الفِردِكت"
+        lead="أحكام صادقة على السينما والمسلسلات: إيه اللي نجح، وإيه اللي وقع، وليه يستاهل وقتك أو لأ."
       >
-
-      {/* شريط التصنيفات الداخلية */}
-      {availableTags.length > 1 && (
-        <LiquidSegmented
-          id="verdict-tags"
-          className="mb-8"
-          size="sm"
-          ariaLabel="تصفية حسب النوع"
-          options={availableTags.map((tag) => ({ value: tag, label: tag }))}
-          value={selectedTag}
-          onChange={setSelectedTag}
+        <Filters
+          id="verdict-section"
+          items={SECTIONS}
+          value={defaultTab}
+          onChange={(v) => navigate(SECTIONS.find((s) => s.value === v).to)}
+          label="نوع العمل"
         />
+      </PageHero>
+
+      <AnimatePresence mode="wait">
+        {top && tag === 'الكل' && (
+          <motion.section
+            key={top.id}
+            initial={{ opacity: 0, y: 20, filter: 'blur(10px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)', transitionEnd: { filter: 'none' } }}
+            exit={{ opacity: 0, y: -10, filter: 'blur(8px)' }}
+            transition={SPRING}
+            className="mt-14"
+          >
+            <button
+              type="button"
+              onClick={() => cinema.open(asVideo(top))}
+              className="qz-panel group qz-hover-zoom grid w-full overflow-hidden text-start lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]"
+              data-qz-silent
+            >
+              <div className="qz-media relative !rounded-none aspect-video lg:aspect-auto lg:min-h-[440px]">
+                <YouTubeThumb youtubeId={top.youtubeId} alt="" loading="eager" />
+                <span className="absolute inset-0 grid place-items-center">
+                  <span className="qz-play !size-20">
+                    <Play className="size-7 fill-current" aria-hidden="true" />
+                  </span>
+                </span>
+              </div>
+              <div className="flex flex-col justify-between gap-8 p-7 sm:p-10">
+                <div>
+                  <p className="qz-eyebrow">حُكم القسم الأعلى</p>
+                  <p className="qz-latin mt-6 text-xs text-[color:var(--qz-text-3)]">{top.title}</p>
+                  <h2 className="qz-h2 mt-2">{top.titleAr || top.title}</h2>
+                  <p className="mt-6 border-s-2 border-[color:var(--qz-accent)] ps-5 font-[family-name:var(--font-quiver)] text-xl font-light leading-loose text-[color:var(--qz-text)]">
+                    {top.verdict}
+                  </p>
+                </div>
+                <div className="flex items-end justify-between gap-6">
+                  <div className="flex flex-wrap gap-2">
+                    {(top.tags ?? []).map((t) => (
+                      <span key={t} className="qz-chip">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="flex items-end gap-4">
+                    <RatingRing value={top.rating} size={64} />
+                    <p className="qz-num font-[family-name:var(--font-quiver)] text-7xl font-light leading-none text-[color:var(--qz-accent)]">
+                      {top.rating}
+                      <span className="text-2xl text-[color:var(--qz-text-3)]">/10</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </button>
+            {top.date && <p className="qz-num mt-3 text-xs text-[color:var(--qz-text-3)]">{fmtDate(top.date)}</p>}
+          </motion.section>
+        )}
+      </AnimatePresence>
+
+      {tags.length > 2 && (
+        <Reveal className="mt-16">
+          <Filters id="verdict-tags" items={tags} value={tag} onChange={setTag} label="التصنيف" />
+        </Reveal>
       )}
 
-      {/* شبكة البطاقات */}
-      {filteredItems.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-2">
-          {filteredItems.map((review) => (
-            <ReviewCard key={review.id} review={review} />
+      <motion.div layout className="mt-12 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+        <AnimatePresence mode="popLayout">
+          {grid.map((r) => (
+            <motion.div
+              key={r.id}
+              layout
+              initial={{ opacity: 0, scale: 0.96, filter: 'blur(8px)' }}
+              animate={{ opacity: 1, scale: 1, filter: 'blur(0px)', transitionEnd: { filter: 'none' } }}
+              exit={{ opacity: 0, scale: 0.96, filter: 'blur(8px)' }}
+              transition={SPRING}
+            >
+              <VerdictTile review={r} onPlay={() => cinema.open(asVideo(r))} />
+            </motion.div>
           ))}
-        </div>
-      ) : (
-        <div className="rounded-3xl border border-[color:var(--qz-sage)]/15 bg-[color:var(--qz-deep)]/40 p-12 text-center">
-          <Sparkles className="mx-auto mb-3 size-6 text-[color:var(--qz-sage)]" />
-          <p className="text-sm text-[color:var(--qz-mint)]">
-            لا توجد مراجعات منشورة في قسم {activeSection === 'حلقات' ? 'المواسم والحلقات' : isMovies ? 'الأفلام' : 'المسلسلات'} حالياً.
-          </p>
-        </div>
-      )}
+        </AnimatePresence>
       </motion.div>
+
+      {section.length === 0 && <p className="qz-body mt-16 text-center">لسه مفيش أحكام هنا. قريب.</p>}
     </div>
   )
 }
