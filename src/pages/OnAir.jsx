@@ -27,7 +27,7 @@ function OnAirPlayer() {
 
   return (
     <div
-      className="inline-flex flex-wrap items-center gap-3 rounded-[28px] border border-[color:var(--qz-mint)]/20 bg-[color:var(--qz-ink)]/60 py-1.5 pe-4 ps-2 text-xs text-[color:var(--qz-sage)] backdrop-blur-md"
+      className="inline-flex max-w-full flex-wrap items-center gap-3 rounded-[28px] border border-[color:var(--qz-mint)]/20 bg-[color:var(--qz-ink)]/60 py-1.5 pe-4 ps-2 text-xs text-[color:var(--qz-sage)] backdrop-blur-md"
       role="group"
       aria-label="مشغل موسيقى أون إير"
     >
@@ -45,7 +45,7 @@ function OnAirPlayer() {
 
       <span className="flex items-center gap-1.5" aria-live="polite">
         <Waves className={`size-3.5 text-emerald-300 ${status === 'playing' ? 'animate-pulse' : 'opacity-50'}`} />
-        <span className="whitespace-nowrap">{STATUS_LABELS[status] ?? STATUS_LABELS.idle}</span>
+        <span className="sm:whitespace-nowrap">{STATUS_LABELS[status] ?? STATUS_LABELS.idle}</span>
       </span>
     </div>
   )

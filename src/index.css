@@ -1398,6 +1398,13 @@ button,
   cursor: default;
   -webkit-tap-highlight-color: transparent;
 }
+/* على الموبايل الورقة نفسها (وهي مايلة) بتطلع أعرض من صندوقها شوية،
+   فبنصغّر الصندوق عشان ماتخرجش برّه الكارت */
+@media (max-width: 639.98px) {
+  .fbill {
+    width: 250px;
+  }
+}
 .fbill-gl {
   display: block;
   position: absolute;
