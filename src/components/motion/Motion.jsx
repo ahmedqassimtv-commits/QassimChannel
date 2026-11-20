@@ -20,7 +20,7 @@ export function Reveal({ as = 'div', delay = 0, y = 22, className = '', children
     <Tag
       className={className}
       initial={reduce ? { opacity: 0 } : { opacity: 0, y, filter: 'blur(8px)' }}
-      whileInView={reduce ? { opacity: 1 } : { opacity: 1, y: 0, filter: 'blur(0px)' }}
+      whileInView={reduce ? { opacity: 1 } : { opacity: 1, y: 0, filter: 'blur(0px)', transitionEnd: { filter: 'none' } }}
       viewport={{ once: true, margin: '0px 0px -12% 0px' }}
       transition={{ duration: reduce ? 0.2 : 0.85, delay, ease: EASE }}
       {...rest}
@@ -57,7 +57,7 @@ export function StaggerItem({ as = 'div', className = '', children, ...rest }) {
         hidden: reduce ? { opacity: 0 } : { opacity: 0, y: 26, filter: 'blur(6px)' },
         show: reduce
           ? { opacity: 1, transition: { duration: 0.2 } }
-          : { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.8, ease: EASE } },
+          : { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.8, ease: EASE }, transitionEnd: { filter: 'none' } },
       }}
       {...rest}
     >
@@ -116,6 +116,10 @@ export const pageVariants = {
     scale: 1,
     filter: 'blur(0px)',
     transition: { duration: 0.7, ease: EASE },
+    /* لازم filter يرجع none بعد الدخول: أي filter (حتى blur(0px)) بيخلّي
+       الصفحة «containing block» لأي عنصر position: fixed جواها، فشريط القراءة
+       والنوافذ المنبثقة كانوا هيتحركوا مع الصفحة بدل ما يثبتوا على الشاشة */
+    transitionEnd: { filter: 'none' },
   },
   exit: {
     opacity: 0,
