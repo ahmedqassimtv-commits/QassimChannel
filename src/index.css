@@ -1343,45 +1343,44 @@ button,
 }
 
 /* ==========================================================================
-   خلفية النوف بار — تمويه متدرّج (Progressive blur) بأسلوب bencho.dev
-   مفيش لون خلفية للشريط: 3 طبقات backdrop-filter (1.5 / 5 / 14px) كل واحدة
-   محصورة في شريحة بماسك متدرّج، فالتمويه بيزيد كل ما تطلع لفوق ويدوب
-   في الصفحة من غير خط فاصل.
+   النوف بار على الموبايل والتابلت (أقل من lg) — بيتقلص عند التمرير
+   زي bencho.dev على الموبايل: الكبسولة بتصغر في الارتفاع والعرض واللوجو بيصغر،
+   بنابض ناعم (0.38s cubic-bezier(0.22, 1, 0.36, 1)). الديسكتوب له سلوكه الخاص.
    ========================================================================== */
-.qz-nav-edge {
-  position: fixed;
-  inset: 0 0 auto 0;
-  height: 96px;
-  z-index: 60;
-  pointer-events: none;
-  transition: opacity 0.2s;
+@media (max-width: 1023.98px) {
+  .qz-nav-header {
+    transition:
+      top 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+      padding 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .qz-nav-header .qassimz-liquid-nav {
+    transition:
+      padding 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 0.3s ease;
+  }
+  .qz-nav-header .qz-nav-brand {
+    transition:
+      height 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.3s ease;
+  }
+  .qz-nav-header[data-compact='true'] {
+    top: 8px;
+    padding-inline: 22px;
+  }
+  .qz-nav-header[data-compact='true'] .qassimz-liquid-nav {
+    padding-block: 3px;
+    padding-inline: 6px;
+  }
+  .qz-nav-header[data-compact='true'] .qz-nav-brand {
+    height: 22px;
+  }
 }
-.qz-nav-edge i {
-  position: absolute;
-  inset: 0;
-  background: color-mix(in srgb, var(--qz-ink) 1%, transparent);
-}
-.qz-nav-edge i:nth-child(1) {
-  -webkit-backdrop-filter: blur(1.5px);
-  backdrop-filter: blur(1.5px);
-  -webkit-mask-image: linear-gradient(transparent 25%, #000 50%, #000 75%, transparent 100%);
-  mask-image: linear-gradient(transparent 25%, #000 50%, #000 75%, transparent 100%);
-}
-.qz-nav-edge i:nth-child(2) {
-  -webkit-backdrop-filter: blur(5px);
-  backdrop-filter: blur(5px);
-  -webkit-mask-image: linear-gradient(transparent 0%, #000 25%, #000 50%, transparent 75%);
-  mask-image: linear-gradient(transparent 0%, #000 25%, #000 50%, transparent 75%);
-}
-.qz-nav-edge i:nth-child(3) {
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  -webkit-mask-image: linear-gradient(#000 0%, #000 25%, transparent 50%);
-  mask-image: linear-gradient(#000 0%, #000 25%, transparent 50%);
-}
-/* أول الصفحة مفيش حاجة ورا الشريط تتموّه، فالطبقات بتظهر مع التمرير بس */
-.qz-nav-edge[data-scroll='top'] {
-  opacity: 0;
+@media (max-width: 1023.98px) and (prefers-reduced-motion: reduce) {
+  .qz-nav-header,
+  .qz-nav-header .qassimz-liquid-nav,
+  .qz-nav-header .qz-nav-brand {
+    transition: none;
+  }
 }
 
 /* ==========================================================================

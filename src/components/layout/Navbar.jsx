@@ -770,7 +770,7 @@ function DesktopWaterlineTrack({
           playKey={wl.fx.n}
           iconRef={wl.registerIcon(0)}
         >
-          {NimbusIcons.home}
+          <GlassIcon icon={Home} size="sm" active={targetKey === '/' || activeKey === '/'} />
         </WaterlineIcon>
         <span className="whitespace-nowrap">الرئيسية</span>
       </NavLink>
@@ -811,7 +811,7 @@ function DesktopWaterlineTrack({
             playKey={wl.fx.n}
             iconRef={wl.registerIcon(1)}
           >
-            {NimbusIcons.verdict}
+            <GlassIcon icon={Scale} size="sm" active={targetKey === 'verdict' || activeKey === 'verdict' || verdictOpen} />
           </WaterlineIcon>
           <span className="flex items-center gap-1.5 whitespace-nowrap">
             <span>الفِردِكت</span>
@@ -838,7 +838,7 @@ function DesktopWaterlineTrack({
       </div>
 
       {/* 3، 4، 5: أرشيف الحكايات، الفيديوهات، المقالات */}
-      {NAV_ITEMS.map(({ to, label, waterIcon, fx }, idx) => {
+      {NAV_ITEMS.map(({ to, label, icon, fx }, idx) => {
         const trackIdx = idx + 2
         const isCurrent = targetKey === to
         const isRouteActive = activeKey === to
@@ -871,7 +871,7 @@ function DesktopWaterlineTrack({
               playKey={wl.fx.n}
               iconRef={wl.registerIcon(trackIdx)}
             >
-              {waterIcon}
+              <GlassIcon icon={icon} size="sm" active={isCurrent || isRouteActive} />
             </WaterlineIcon>
             <span className="whitespace-nowrap">{label}</span>
           </NavLink>
@@ -913,7 +913,7 @@ function DesktopWaterlineTrack({
             playKey={wl.fx.n}
             iconRef={wl.registerIcon(5)}
           >
-            {NimbusIcons.compass}
+            <GlassIcon icon={Compass} size="sm" active={targetKey === 'masaha' || activeKey === 'masaha' || masahaOpen} />
           </WaterlineIcon>
           <span className="flex items-center gap-1.5 whitespace-nowrap">
             <span>مساحة</span>
@@ -956,6 +956,17 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('')
   const [activeSearchIndex, setActiveSearchIndex] = useState(0)
   const [isCompact, setIsCompact] = useState(false)
+  // الموبايل والتابلت (أقل من lg): النوف بار بيتقلص عند التمرير بدل ما اللوجو يختفي
+  const [isDesktop, setIsDesktop] = useState(() =>
+    typeof window === 'undefined' ? true : window.matchMedia('(min-width: 1024px)').matches,
+  )
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)')
+    const onChange = () => setIsDesktop(mq.matches)
+    onChange()
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
+  }, [])
   const [brandWidth, setBrandWidth] = useState(126)
   const [trackWidth, setTrackWidth] = useState(680)
   const [compactMaxWidth, setCompactMaxWidth] = useState(880)
@@ -1634,16 +1645,11 @@ export default function Navbar() {
   const targetNavMaxWidth = searchExpanded ? 672 : isCompact ? compactMaxWidth : 1248
 
   return (
-    <>
-    {/* خلفية الشريط: تمويه متدرّج بأسلوب bencho.dev (الطبقات في index.css › .qz-nav-edge) */}
-    <div className="qz-nav-edge" data-scroll={isCompact ? 'moved' : 'top'} aria-hidden="true">
-      <i />
-      <i />
-      <i />
-    </div>
     <header
       dir="rtl"
-      className="fixed inset-x-0 top-3.5 z-[70] isolation-isolate px-2.5 sm:top-4 sm:px-5"
+      data-qz-nav=""
+      data-compact={isCompact ? 'true' : undefined}
+      className="qz-nav-header fixed inset-x-0 top-3.5 z-[70] isolation-isolate px-2.5 sm:top-4 sm:px-5"
     >
       {/* كبسولة النوف بار الرئيسية — سطح LiquidGlass البصري مع انتقال عرض ناعم بنابض متزن */}
       <LiquidGlass
@@ -1666,7 +1672,7 @@ export default function Navbar() {
           <div className="relative z-20 flex w-full items-center justify-between gap-2">
             {/* الهوية واللوجو — عرض مقاس متزامن مع نابض النوف بار لمنع أي قصّ أو ارتداد */}
             <AnimatePresence initial={false}>
-              {!isCompact && !searchExpanded && (
+              {(!isCompact || !isDesktop) && !searchExpanded && (
                 <motion.div
                   key="brand-identity"
                   initial={{ opacity: 0, width: 0, x: 8, scale: 0.94 }}
@@ -1697,7 +1703,7 @@ export default function Navbar() {
                   onAnimationStart={() => setBrandAnimating(true)}
                   onAnimationComplete={() => setBrandAnimating(false)}
                   className={`shrink-0 ${
-                    brandAnimating || isCompact || searchExpanded ? 'overflow-hidden' : 'overflow-visible'
+                    brandAnimating || (isCompact && isDesktop) || searchExpanded ? 'overflow-hidden' : 'overflow-visible'
                   }`}
                 >
                   <div ref={brandMeasureRef} className="w-max shrink-0">
@@ -1714,7 +1720,7 @@ export default function Navbar() {
                       <BrandLogo
                         variant="glass"
                         title="قاسمز"
-                        className="h-7 w-auto shrink-0 transition-transform duration-300 group-hover:scale-[1.04] sm:h-8"
+                        className="qz-nav-brand h-7 w-auto shrink-0 transition-[transform,height] duration-300 group-hover:scale-[1.04] sm:h-8"
                       />
                     </button>
                   </div>
@@ -2207,7 +2213,7 @@ export default function Navbar() {
                 refraction={18}
                 dispersion={0.08}
                 fallbackBlur={22}
-                className="rounded-3xl bg-[rgb(var(--qz-ink-rgb)/0.76)] text-right shadow-2xl"
+                className="qz-mobile-menu rounded-3xl bg-[rgb(var(--qz-ink-rgb)/0.94)] text-right shadow-2xl"
               >
                 <div className="relative overflow-hidden rounded-3xl p-3">
                   <GlassHoverBubble containerRef={mobileMenuRef} radius={12} insetX={4} insetY={3} />
@@ -2302,6 +2308,5 @@ export default function Navbar() {
         </AnimatePresence>
       </div>
     </header>
-    </>
   )
 }

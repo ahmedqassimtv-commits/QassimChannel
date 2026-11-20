@@ -10,10 +10,16 @@ import { useEffect, useRef } from 'react'
    امسك نقطة وحرّكها والباقي بيتبعها لأن الزنبركات مابتتمطّش — ده كل
    سر الطيّ.
 
-   ── الحفر هو اسم «أون إير» ─────────────────────────────────
-   بدل الدولار الأصلي، الحفر مرسوم على canvas وقت التشغيل: إطار،
-   علامة بث، و ON AIR / أون إير بخطوط ثمانية. بيتحوّل لخريطة ارتفاع
-   (bump) فالحروف بارزة من الزجاج، وخريطة خشونة فالخطوط «مصنفرة».
+   ── الحفر هو هوية قاسمز ────────────────────────────────────
+   بدل الدولار الأصلي، الحفر مرسوم على canvas وقت التشغيل: إطار مزدوج،
+   نقش خطوط ناعم زي العملات، علامة بث، ولوجو قاسمز نفسه (نفس مسار
+   qassimz-logo.svg). بيتحوّل لخريطة ارتفاع (bump) فاللوجو بارز من
+   الزجاج، وخريطة خشونة فالخطوط «مصنفرة».
+
+   ── لونه من الثيم ──────────────────────────────────────────
+   لون الزجاج والأوضة اللي بيعكسها بيتقروا من متغيرات الثيم
+   (--qz-mint / --qz-sage / --qz-ink)، وبيتحدّثوا لوحدهم لما الثيم
+   يتغير (أخضر / جمري / ذهبي).
 
    ── أداء ──────────────────────────────────────────────────
    three.js (~600KB) بيتحمّل من CDN أول مرة الورقة تظهر بس — مش مع
@@ -37,8 +43,9 @@ function loadThree(): Promise<Three> {
 
 export const BILL_W = 340
 export const BILL_H = 240
-/* الـ canvas أكبر من الصندوق بالمعامل ده عشان الورقة لما تتسحب برّه ماتتقصش */
-const SPILL = 2
+/* الـ canvas أكبر من الصندوق بالمعامل ده عشان الورقة لما تتسحب أو تتطوي
+   برّه الصندوق ماتتقصش عند حافة الرسم (كانت 2 وكانت بتتقص) */
+const SPILL = 2.8
 
 const SPEC = {
   nx: 46,
@@ -55,11 +62,23 @@ type Link = { a: number; b: number; len: number; k: number }
 
 /* أبعد مسافة الإيد تسحب فيها نقطة قبل ما السحب يبقى «مطاط»،
    وأحدّ طيّة مسموحة (كنسبة من طول وصلة الانحناء) */
-const REACH = 1.5
+const REACH = 1.25
 const CREASE = 0.55
 
-/* الزجاج: أبيض مايل للنعناعي عشان يركب على ثيم قاسمز الزمردي */
-const ICE = 0xdcefe6
+/* ── ألوان الثيم ──
+   الزجاج = لون --qz-mint ممزوج بربع --qz-sage، والأوضة = --qz-ink */
+function cssColor(name: string, fallback: string) {
+  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+  return v || fallback
+}
+function themeColors(THREE: Three) {
+  const glass = new THREE.Color(cssColor('--qz-mint', '#DAF1DE')).lerp(
+    new THREE.Color(cssColor('--qz-sage', '#8EB69B')),
+    0.25,
+  )
+  const room = new THREE.Color(cssColor('--qz-ink', '#051F20')).lerp(new THREE.Color(0x101010), 0.35)
+  return { glass, room }
+}
 
 /* ── الأركان المدوّرة ── */
 const CORNER = 0.09
@@ -88,92 +107,110 @@ function outline(W: number, H: number): HTMLCanvasElement {
 /* ── حفر «أون إير» ────────────────────────────────────────
    حبر أسود على ورق أبيض بنفس مقاس مسح الدولار الأصلي (1024×437)
    ونفس نسب الإطار، فكل حسابات الإطار والحافة المنفوخة تفضل زي ما هي. */
-const ART_W = 1024
-const ART_H = 437
+/* ضعف دقة مسح الدولار الأصلي (1024×437) عشان الحفر يطلع حاد على شاشات الريتنا */
+const ART_W = 2048
+const ART_H = 874
 const FRAME = { l: 0.0234, r: 0.9736, t: 0.0503, b: 0.9474 }
 
-async function onAirArt(): Promise<HTMLCanvasElement> {
-  // نستنى خطوط ثمانية (بحد أقصى ثانية ونص) عشان الحروف تتحفر بالخط الصح
-  try {
-    await Promise.race([
-      Promise.all([
-        document.fonts.load('900 150px "Thmanyah Display"'),
-        document.fonts.load('900 90px "Thmanyah Sans"'),
-        document.fonts.load('500 26px "Thmanyah Sans"'),
-      ]),
-      new Promise((resolve) => setTimeout(resolve, 1500)),
-    ])
-  } catch {
-    /* الخط الاحتياطي يكفي */
-  }
+/* مسار لوجو قاسمز (public/images/qassimz-logo.svg، viewBox 1483×558) */
+const LOGO_VB = { w: 1483, h: 558 }
+const LOGO_PATH =
+  'M946,459 L945,456 L940,455 L784,490 L780,494 L781,505 L783,509 L791,510 L928,501 L932,498Z M6,496 L118,551 L124,551 L239,414 L248,418 L429,411 L434,407 L441,292 L443,283 L515,297 L509,327 L504,330 L463,326 L460,329 L458,409 L461,413 L657,420 L708,369 L734,425 L744,422 L814,381 L834,411 L837,413 L1036,400 L1038,396 L1008,255 L1000,207 L997,202 L991,203 L921,244 L921,253 L934,325 L933,330 L877,334 L875,332 L865,243 L861,241 L788,264 L783,267 L782,272 L794,337 L789,340 L762,346 L736,270 L732,270 L638,335 L573,335 L572,334 L601,256 L600,251 L522,223 L423,184 L414,182 L358,240 L357,328 L238,346 L217,298 L212,298 L182,311 L179,316 L166,384 L7,492Z M209,148 L198,153 L126,198 L120,204 L172,266 L179,264 L254,215 L252,207Z M1435,139 L1386,103 L1379,105 L1347,142 L1340,136 L1339,133 L1315,119 L1302,109 L1297,109 L1256,161 L1254,166 L1258,171 L1310,193 L1317,192 L1337,165 L1357,172 L1391,188 L1399,188 L1420,166 L1433,148Z M1064,86 L1063,125 L1069,416 L1072,419 L1473,427 L1476,425 L1448,202 L1444,200 L1257,210 L1191,289 L1187,297 L1263,350 L1227,351 L1136,349 L1135,344 L1167,67 L1165,63Z M1301,283 L1305,281 L1377,270 L1379,275 L1375,346 L1373,347 L1309,292Z M1412,8 L1410,6 L1406,6 L1254,80 L1253,86 L1259,92 L1264,94 L1405,45 L1409,42Z'
 
+function siteArt(): HTMLCanvasElement {
   const c = document.createElement('canvas')
   c.width = ART_W
   c.height = ART_H
   const g = c.getContext('2d')!
+  const S = ART_W / 1024 // كل المقاسات تحت مكتوبة على مقاس 1024
   g.fillStyle = '#fff'
   g.fillRect(0, 0, ART_W, ART_H)
   g.strokeStyle = '#000'
   g.fillStyle = '#000'
   g.lineCap = 'round'
+  g.lineJoin = 'round'
 
-  // الإطار المزدوج بنفس نسب إطار الورقة
   const l = ART_W * FRAME.l
   const r = ART_W * FRAME.r
   const t = ART_H * FRAME.t
   const b = ART_H * FRAME.b
   const rad = Math.max(4, CORNER * ART_H - t)
-  g.lineWidth = 7
+
+  // نقش خطوط رفيعة زي خلفية العملات: موجات أفقية خفيفة (رمادي فاتح = بروز بسيط)
+  g.save()
   g.beginPath()
-  g.roundRect(l + 4, t + 4, r - l - 8, b - t - 8, rad)
+  g.roundRect(l + 26 * S, t + 26 * S, r - l - 52 * S, b - t - 52 * S, Math.max(2, rad - 20 * S))
+  g.clip()
+  g.strokeStyle = 'rgba(0,0,0,0.5)'
+  g.lineWidth = 1.4 * S
+  for (let k = 0; k < 34; k++) {
+    const y0 = t + 30 * S + k * 11 * S
+    g.beginPath()
+    for (let x = l; x <= r; x += 6 * S) {
+      const y = y0 + Math.sin(x / (38 * S) + k * 0.55) * 5 * S
+      if (x === l) g.moveTo(x, y)
+      else g.lineTo(x, y)
+    }
+    g.stroke()
+  }
+  g.restore()
+
+  // الإطار المزدوج بنفس نسب إطار الورقة
+  g.lineWidth = 7 * S
+  g.beginPath()
+  g.roundRect(l + 4 * S, t + 4 * S, r - l - 8 * S, b - t - 8 * S, rad)
   g.stroke()
-  g.lineWidth = 2
+  g.lineWidth = 2 * S
   g.beginPath()
-  g.roundRect(l + 20, t + 20, r - l - 40, b - t - 40, Math.max(2, rad - 14))
+  g.roundRect(l + 20 * S, t + 20 * S, r - l - 40 * S, b - t - 40 * S, Math.max(2, rad - 14 * S))
   g.stroke()
 
-  // علامة البث: نقطة «على الهوا» وموجتين على كل جنب
-  const cx = 215
+  // ميدالية البث على الشمال: دايرة بيضا تقطع النقش، ونقطة وموجات جواها
+  const cx = 200 * S
   const cy = ART_H / 2
+  g.fillStyle = '#fff'
   g.beginPath()
-  g.arc(cx, cy, 30, 0, Math.PI * 2)
+  g.arc(cx, cy, 138 * S, 0, Math.PI * 2)
   g.fill()
-  g.lineWidth = 12
-  for (const radius of [62, 98]) {
+  g.fillStyle = '#000'
+  g.lineWidth = 3 * S
+  g.beginPath()
+  g.arc(cx, cy, 138 * S, 0, Math.PI * 2)
+  g.stroke()
+  g.lineWidth = 1.5 * S
+  g.beginPath()
+  g.arc(cx, cy, 124 * S, 0, Math.PI * 2)
+  g.stroke()
+  g.beginPath()
+  g.arc(cx, cy, 28 * S, 0, Math.PI * 2)
+  g.fill()
+  g.lineWidth = 12 * S
+  for (const radius of [60, 94]) {
     for (const side of [0, Math.PI]) {
       g.beginPath()
-      g.arc(cx, cy, radius, side - 0.7, side + 0.7)
+      g.arc(cx, cy, radius * S, side - 0.7, side + 0.7)
       g.stroke()
     }
   }
-  g.lineWidth = 3
-  g.beginPath()
-  g.arc(cx, cy, 140, 0, Math.PI * 2)
-  g.stroke()
 
-  // الاسم
-  g.textAlign = 'center'
-  g.textBaseline = 'alphabetic'
-  const textX = 650
-  g.direction = 'ltr'
-  g.font = '900 148px "Thmanyah Display", "Thmanyah Sans", serif'
-  g.fillText('ON AIR', textX, 215)
-  g.direction = 'rtl'
-  g.font = '900 92px "Thmanyah Sans", system-ui, sans-serif'
-  g.fillText('أون إير', textX, 325)
-
-  // خط فاصل رفيع + سطر صغير زي أرقام العملة
-  g.lineWidth = 2
+  // لوجو قاسمز في النص، على لوحة بيضا عشان يبان فوق النقش
+  const logoW = 560 * S
+  const scale = logoW / LOGO_VB.w
+  const logoH = LOGO_VB.h * scale
+  const lx = 650 * S - logoW / 2
+  const ly = cy - logoH / 2
+  g.fillStyle = '#fff'
   g.beginPath()
-  g.moveTo(textX - 230, 248)
-  g.lineTo(textX + 230, 248)
+  g.roundRect(lx - 34 * S, ly - 30 * S, logoW + 68 * S, logoH + 60 * S, 26 * S)
+  g.fill()
+  g.lineWidth = 2 * S
   g.stroke()
-  g.direction = 'ltr'
-  g.font = '500 24px "Thmanyah Sans", system-ui, sans-serif'
-  g.textAlign = 'left'
-  g.fillText('QZ 24/7 LIVE', l + 34, t + 48)
-  g.textAlign = 'right'
-  g.fillText('QASSIMZ', r - 34, b - 30)
+  g.save()
+  g.translate(lx, ly)
+  g.scale(scale, scale)
+  g.fillStyle = '#000'
+  g.fill(new Path2D(LOGO_PATH), 'evenodd')
+  g.restore()
 
   return c
 }
@@ -235,7 +272,7 @@ function engraving(art: HTMLCanvasElement | null): HTMLCanvasElement {
   g.fillRect(0, 0, W, H)
   if (art) g.drawImage(art, 0, 0)
   const d = g.getImageData(0, 0, W, H)
-  const RIM = 34
+  const RIM = 34 * (W / 1024)
   for (let y = 0; y < H; y++)
     for (let x = 0; x < W; x++) {
       const i = (y * W + x) * 4
@@ -250,18 +287,18 @@ function engraving(art: HTMLCanvasElement | null): HTMLCanvasElement {
   out.width = W
   out.height = H
   const o = out.getContext('2d')!
-  o.filter = 'blur(0.8px)'
+  o.filter = `blur(${(0.8 * W) / 1024}px)`
   o.drawImage(c, 0, 0)
   return out
 }
 
 /* استوديو يعكسه الزجاج: أوضة غامقة وصناديق إضاءة ناعمة */
-function studio(THREE: Three, pmrem: Three) {
+function studio(THREE: Three, pmrem: Three, roomColor: Three) {
   const room = new THREE.Scene()
   room.add(
     new THREE.Mesh(
       new THREE.BoxGeometry(40, 40, 40),
-      new THREE.MeshBasicMaterial({ color: 0x0f1c18, side: THREE.BackSide }),
+      new THREE.MeshBasicMaterial({ color: roomColor, side: THREE.BackSide }),
     ),
   )
   const panel = (w: number, h: number, x: number, y: number, z: number, glow: number) => {
@@ -318,8 +355,11 @@ export function FoldingBill({
   function mount(THREE: Three, el: HTMLDivElement) {
     const spec = SPEC
     const light = window.matchMedia('(pointer: coarse), (max-width: 760px)').matches
-    const renderer = new THREE.WebGLRenderer({ antialias: !light, alpha: true })
-    renderer.setPixelRatio(Math.min(devicePixelRatio, light ? 1.25 : 2))
+    /* جودة: antialias دايماً ودقة لحد 2x حتى على الموبايل (كانت 1.25 من غير
+       antialias فالحواف والحفر كانوا مشرشرين). الحلقة بتنام لما الورقة تهدى
+       فالتكلفة بتبقى وقت اللمس بس. */
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2))
     renderer.setSize(spec.fw * SPILL, spec.fh * SPILL, false)
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1.25
@@ -337,7 +377,8 @@ export function FoldingBill({
 
     const scene = new THREE.Scene()
     const pmrem = new THREE.PMREMGenerator(renderer)
-    scene.environment = studio(THREE, pmrem)
+    let colors = themeColors(THREE)
+    scene.environment = studio(THREE, pmrem, colors.room)
     const camera = new THREE.PerspectiveCamera(
       (2 * Math.atan(SPILL * Math.tan((15 * Math.PI) / 180)) * 180) / Math.PI,
       spec.fw / spec.fh,
@@ -375,7 +416,7 @@ export function FoldingBill({
       }
 
     const mat = new THREE.MeshPhysicalMaterial({
-      color: ICE,
+      color: colors.glass,
       metalness: 0.3,
       roughness: 0.2,
       clearcoat: 0.45,
@@ -398,8 +439,10 @@ export function FoldingBill({
     let bump: Three = null
     let ink: Three = null
     let frost: Three = null
-    onAirArt().then((art) => {
+    // الحفر بيتعمل بعد أول فريم (مش بيستنى خطوط) عشان مايأخرش ظهور الورقة
+    requestAnimationFrame(() => {
       if (disposed) return
+      const art = siteArt()
       bump = new THREE.CanvasTexture(engraving(art))
       bump.colorSpace = THREE.NoColorSpace
       bump.anisotropy = anisotropy
@@ -418,10 +461,12 @@ export function FoldingBill({
       wake()
     })
 
-    const cut = new THREE.CanvasTexture(outline(512, Math.round(512 / 2.35)))
+    const cut = new THREE.CanvasTexture(outline(1024, Math.round(1024 / 2.35)))
     cut.colorSpace = THREE.NoColorSpace
     mat.alphaMap = cut
     mat.alphaTest = 0.5
+    // حواف ناعمة للأركان المدوّرة مع الـ MSAA بدل حافة مشرشرة
+    mat.alphaToCoverage = true
     const mesh = new THREE.Mesh(geo, mat)
     mesh.rotation.set(...spec.tilt)
     scene.add(mesh)
@@ -515,6 +560,17 @@ export function FoldingBill({
     el.addEventListener('pointerup', up)
     el.addEventListener('pointercancel', up)
 
+    /* ── متابعة الثيم: أول ما data-theme يتغير، الزجاج والأوضة بيتلوّنوا من جديد ── */
+    const themeWatch = new MutationObserver(() => {
+      colors = themeColors(THREE)
+      mat.color.copy(colors.glass)
+      const old = scene.environment
+      scene.environment = studio(THREE, pmrem, colors.room)
+      old?.dispose()
+      redraw()
+    })
+    themeWatch.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+
     /* ── الحلقة ── */
     const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     let raf = 0
@@ -601,6 +657,12 @@ export function FoldingBill({
       if (seen && !sleep) raf = requestAnimationFrame(frame)
       else running = false
     }
+    // رسمة واحدة حتى لو الحلقة نايمة (لتغيير الثيم مثلاً)
+    function redraw() {
+      if (disposed) return
+      if (running) return
+      renderer.render(scene, camera)
+    }
     function wake() {
       if (running || !seen || disposed) return
       running = true
@@ -618,6 +680,7 @@ export function FoldingBill({
       disposed = true
       cancelAnimationFrame(raf)
       io.disconnect()
+      themeWatch.disconnect()
       el.removeEventListener('pointerdown', down)
       el.removeEventListener('pointermove', move)
       el.removeEventListener('pointerup', up)
@@ -642,7 +705,7 @@ export function FoldingBill({
       ref={host}
       className={`fbill ${className}`}
       role="img"
-      aria-label="ورقة زجاجية محفور عليها «أون إير» — اسحبها واطويها"
+      aria-label="ورقة زجاجية محفور عليها لوجو قاسمز — اسحبها واطويها"
     />
   )
 }
