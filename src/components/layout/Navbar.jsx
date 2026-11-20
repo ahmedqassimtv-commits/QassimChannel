@@ -1634,6 +1634,13 @@ export default function Navbar() {
   const targetNavMaxWidth = searchExpanded ? 672 : isCompact ? compactMaxWidth : 1248
 
   return (
+    <>
+    {/* خلفية الشريط: تمويه متدرّج بأسلوب bencho.dev (الطبقات في index.css › .qz-nav-edge) */}
+    <div className="qz-nav-edge" data-scroll={isCompact ? 'moved' : 'top'} aria-hidden="true">
+      <i />
+      <i />
+      <i />
+    </div>
     <header
       dir="rtl"
       className="fixed inset-x-0 top-3.5 z-[70] isolation-isolate px-2.5 sm:top-4 sm:px-5"
@@ -2295,5 +2302,6 @@ export default function Navbar() {
         </AnimatePresence>
       </div>
     </header>
+    </>
   )
 }
