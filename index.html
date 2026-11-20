@@ -3,9 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300..900&display=swap" rel="stylesheet" />
+    <!-- خطوط ثمانية المحلية: تحميل مسبق للوزنين الأكثر استخداماً (النص العادي والعناوين) -->
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/thmanyahsans/woff2/thmanyahsans-Regular.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/thmanyahserifdisplay/woff2/thmanyahserifdisplay-Bold.woff2" crossorigin />
     <meta name="theme-color" content="#051F20" />
     <meta name="color-scheme" content="dark" />
     <meta name="description" content="منصة قاسم للأفلام والوثائقيات والمراجعات والمقالات." />
@@ -25,8 +25,16 @@
     <meta name="twitter:description" content="منصة قاسم للأفلام والوثائقيات والمراجعات والمقالات." />
     <meta name="twitter:image" content="/images/qassimz-logo.svg" />
 
-    <!-- تحميل مسبق لخلفية الصفحة الرئيسية -->
-    <link rel="preload" as="image" href="/fractal/optimized/08.webp" type="image/webp" />
+    <!-- تحميل مسبق لخلفية الصفحة الرئيسية (نسخة 1200px للموبايل و 2400px للشاشات الكبيرة) -->
+    <link
+      rel="preload"
+      as="image"
+      type="image/webp"
+      href="%BASE_URL%fractal/optimized/08.webp"
+      imagesrcset="%BASE_URL%fractal/optimized/08-1200.webp 1200w, %BASE_URL%fractal/optimized/08.webp 2400w"
+      imagesizes="108vmax"
+      fetchpriority="high"
+    />
 
     <!-- تطبيق الثيم المحفوظ قبل تحميل React (مفيش وميض) -->
     <script>

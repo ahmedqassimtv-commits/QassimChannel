@@ -5,6 +5,7 @@ import GlassCard from '../components/glass/GlassCard.jsx'
 import VideoCard from '../components/cards/VideoCard.jsx'
 import ReviewCard from '../components/cards/ReviewCard.jsx'
 import YouTubeThumb from '../components/ui/YouTubeThumb.jsx'
+import ImageCompare from '../components/home/ImageCompare.jsx'
 import { videos } from '../data/videos.js'
 import { reviews } from '../data/reviews.js'
 import { articles } from '../data/articles.js'
@@ -218,6 +219,33 @@ export default function Home() {
             <ReviewCard key={review.id} review={review} />
           ))}
         </div>
+      </section>
+
+      {/* من الأرشيف للصورة — مقارنة بخط جيلي تسحبه (أسلوب Image compare من bencho.dev) */}
+      <section>
+        <SectionHeading eyebrow="أرشيف الحكايات" title="من الأرشيف إلى الصورة" to="/stories" />
+        <GlassCard hover={false} className="p-5 sm:p-8">
+          <div className="flex flex-col items-center gap-8 md:flex-row md:items-center md:gap-12">
+            <ImageCompare
+              alt="حوار الحجر والضوء عبر آلاف السنين"
+              beforeLabel="الأرشيف"
+              afterLabel="اليوم"
+            />
+            <div className="max-w-md text-center md:text-start">
+              <p className="text-xs font-semibold tracking-[0.2em] text-emerald-300">1968 · ستينيات القرن العشرين</p>
+              <h3 className="mt-3 text-2xl font-bold text-white">حوار الحجر والضوء عبر آلاف السنين</h3>
+              <p className="mt-3 leading-8 text-neutral-400">
+                اسحب الخط يمين وشمال: على جنب الصورة زي ما اتحفظت في الأرشيف، وعلى الجنب التاني بألوانها النهارده. ارمِ الخط بسرعة وهو يكمّل لوحده للحافة.
+              </p>
+              <Link
+                to="/stories"
+                className="mt-5 inline-block text-sm text-emerald-200 transition hover:text-emerald-100"
+              >
+                باقي الحكايات ←
+              </Link>
+            </div>
+          </div>
+        </GlassCard>
       </section>
 
       <section>

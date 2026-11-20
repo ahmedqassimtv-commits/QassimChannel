@@ -79,7 +79,7 @@ export default function CommandSearch({ open, onClose }) {
               </button>
             </div>
 
-            <div className="max-h-80 overflow-y-auto p-3">
+            <div className="max-h-80 overflow-y-auto overscroll-contain p-3">
               {filtered.length === 0 ? (
                 <p className="py-10 text-center text-sm text-[color:var(--qz-sage)]/70">
                   لا توجد نتائج مطابقة لـ «{query}»

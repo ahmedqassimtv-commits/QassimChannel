@@ -230,7 +230,7 @@ export default function Stories() {
                 </button>
               </div>
 
-              <div className="relative flex-1 overflow-y-auto bg-[color:var(--qz-ink)]">
+              <div className="relative flex-1 overflow-y-auto overscroll-contain bg-[color:var(--qz-ink)]">
                 <img
                   loading="lazy"
                   decoding="async"

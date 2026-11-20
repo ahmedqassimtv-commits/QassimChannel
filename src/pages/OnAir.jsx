@@ -2,6 +2,7 @@ import { useEffect, useSyncExternalStore } from 'react'
 import { motion } from 'framer-motion'
 import { AudioLines, Play, Radio, Waves } from 'lucide-react'
 import GlassSwitch from '../components/ui/GlassSwitch.jsx'
+import { FoldingBill } from '../components/onair/FoldingBill.tsx'
 import {
   getOnAirState,
   startOnAirAmbient,
@@ -63,7 +64,14 @@ export default function OnAir() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.28 }}
     >
-      <header className="liquid-glass rounded-3xl p-6 sm:p-10">
+      <header className="liquid-glass grid items-center gap-8 rounded-3xl p-6 sm:p-10 lg:grid-cols-[minmax(0,1fr)_auto]">
+        {/* ورقة «أون إير» الزجاجية — اسحبها واطويها (three.js بيتحمّل مع الصفحة دي بس) */}
+        <div className="flex flex-col items-center gap-2 lg:order-last">
+          <FoldingBill />
+          <span className="text-[11px] text-[color:var(--qz-sage)]/80">اسحب الورقة واطويها</span>
+        </div>
+
+        <div className="min-w-0">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <span className="grid size-9 place-items-center rounded-xl border border-emerald-400/30 bg-[color:var(--qz-ink)] text-emerald-300">
@@ -84,6 +92,7 @@ export default function OnAir() {
         <p className="mt-3 max-w-2xl text-sm leading-7 text-[color:var(--qz-sage)] sm:text-base">
           مساحة متجددة تجمع منشورات قاسم اليومية، مقتطفاته السريعة، وتحديثاته عبر منصات التواصل الاجتماعي في مكان واحد.
         </p>
+        </div>
       </header>
     </motion.div>
   )

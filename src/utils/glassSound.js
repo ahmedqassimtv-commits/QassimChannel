@@ -8,7 +8,10 @@
  * - لما الموسيقى شغالة، أصوات الواجهة بتوطى أوتوماتيك (Ducking) عشان مايتخانقوش
  */
 
-const ON_AIR_SRC = '/sounds/on-air-chill.mp3'
+import { assetUrl } from './assets.js'
+
+// ✅ إصلاح: المسار لازم يمر على assetUrl عشان يشتغل على GitHub Pages (/QassimChannel/)
+const ON_AIR_SRC = assetUrl('/sounds/on-air-chill.mp3')
 const ON_AIR_VOLUME_KEY = 'qassimz:on-air-volume'
 const DEFAULT_MUSIC_VOLUME = 0.5
 const FADE_IN_S = 2.4
