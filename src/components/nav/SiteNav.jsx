@@ -3,14 +3,15 @@ import { Link, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDown, Search } from 'lucide-react'
 import BrandLogo from '../brand/BrandLogo.jsx'
+import DaylightThemeSwitch from '../ui/DaylightThemeSwitch.jsx'
 import { LiquidGlass } from '../glass/LiquidGlass.tsx'
 import NavDropdown from './NavDropdown.jsx'
 import NavIcon from './NavIcon.jsx'
 import RollText from './RollText.jsx'
-import ThemeOrb from './ThemeOrb.jsx'
 import useCompact from './useCompact.js'
 import { NAV, sectionKey } from './navConfig.js'
 import { prefetchRoute } from '../../utils/liquidGlassEngine.js'
+import { setThemeWithWipe, useTheme } from '../../utils/theme.js'
 import { playGlassDropdown, playGlassTap } from '../../utils/glassSound.js'
 import { SPRING } from '../motion/Motion.jsx'
 
@@ -19,7 +20,8 @@ import { SPRING } from '../motion/Motion.jsx'
    - كل قسم: أيقونة بتتحرك + اسم بيلفّ لفوق لما الماوس يقف عليه.
    - فقاعة واحدة بتتزحلق تحت العنصر اللي عليه الماوس، وخط منوّر تحت النشط.
    - الفِردِكت ومساحة بيفتحوا قائمة زجاج من تحت الزرار (NavDropdown).
-   - البحث زرار أيقونة، والثيم زرار مدوّر واحد بيلف على التلات ثيمات.
+   - البحث زرار أيقونة، وسويتش الثيم (DaylightThemeSwitch) والثيم الجديد
+     بيفرش على الصفحة كدايرة طالعة من السويتش (setThemeWithWipe).
    - مع التمرير الكبسولة بتصغر. تحت lg: لوجو + بحث + ثيم بس،
      والتنقل في التابات السفلية (MobileTabBar). */
 
@@ -32,6 +34,8 @@ export default function SiteNav({ onOpenSearch }) {
   const { pathname } = useLocation()
   const active = sectionKey(pathname)
   const compact = useCompact()
+  const theme = useTheme()
+  const switchRef = useRef(null)
   const [hover, setHover] = useState(null)
   const [open, setOpen] = useState(null)
   const [anchor, setAnchor] = useState({ top: 0, center: 0 })
@@ -238,7 +242,15 @@ export default function SiteNav({ onOpenSearch }) {
                 <Search className="size-[18px]" aria-hidden="true" />
                 <kbd className="qz-kbd">{IS_MAC ? '⌘K' : 'Ctrl K'}</kbd>
               </button>
-              <ThemeOrb />
+              <span ref={switchRef} className="qz-island-switch">
+                <DaylightThemeSwitch
+                  theme={theme === 'gold' ? 'blue' : theme}
+                  onCycleTheme={(next) =>
+                    setThemeWithWipe(next === 'blue' ? 'gold' : next, switchRef.current)
+                  }
+                  className="qz-theme-switch"
+                />
+              </span>
             </div>
           </div>
         </LiquidGlass>
