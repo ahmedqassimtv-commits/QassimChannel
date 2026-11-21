@@ -1,0 +1,12 @@
+/* الفوتر — اتنقل من qz.css */
+
+/* ══ الفوتر ═══════════════════════════════════════════════════════════ */
+.qz-footer-word {
+  font-family: var(--font-quiver);
+  font-weight: 300;
+  font-size: clamp(4.5rem, 17vw, 15rem);
+  line-height: 1;
+  color: transparent;
+  -webkit-text-stroke: 1px rgb(var(--qz-mint-rgb) / 0.22);
+  user-select: none;
+}

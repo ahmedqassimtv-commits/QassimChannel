@@ -40,11 +40,11 @@ export function getTheme() {
   return theme
 }
 
-export function setTheme(next) {
+export function setTheme(next, { fade = true } = {}) {
   if (!THEMES.includes(next) || next === theme) return
   theme = next
   const root = document.documentElement
-  root.classList.add('qz-theme-switching')
+  if (fade) root.classList.add('qz-theme-switching')
   root.dataset.theme = next
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content', META_COLORS[next])
   try {
@@ -54,6 +54,40 @@ export function setTheme(next) {
   }
   window.setTimeout(() => root.classList.remove('qz-theme-switching'), 650)
   listeners.forEach((fn) => fn(theme))
+}
+
+/*
+ * تغيير الثيم بدايرة بتفرش على الصفحة كلها طالعة من العنصر اللي اتداس
+ * (زرار الثيم). بيستخدم View Transitions API، والمتصفحات اللي مابتدعمهاش
+ * أو تقليل الحركة: تبديل عادي بالـ fade القديم.
+ */
+export function setThemeWithWipe(next, originEl) {
+  if (!THEMES.includes(next) || next === theme) return
+  const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+  if (!document.startViewTransition || reduce || !originEl) {
+    setTheme(next)
+    return
+  }
+  const r = originEl.getBoundingClientRect()
+  const x = r.left + r.width / 2
+  const y = r.top + r.height / 2
+  const end = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y))
+  const root = document.documentElement
+  root.classList.add('qz-vt-theme')
+  const vt = document.startViewTransition(() => setTheme(next, { fade: false }))
+  vt.ready
+    .then(() => {
+      root.animate(
+        { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${end}px at ${x}px ${y}px)`] },
+        {
+          duration: 850,
+          easing: 'cubic-bezier(0.65, 0, 0.35, 1)',
+          pseudoElement: '::view-transition-new(root)',
+        },
+      )
+    })
+    .catch(() => {})
+  vt.finished.finally(() => root.classList.remove('qz-vt-theme'))
 }
 
 export function toggleTheme() {
