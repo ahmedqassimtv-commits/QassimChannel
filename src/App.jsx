@@ -3,8 +3,8 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-route
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import Lenis from 'lenis'
 import LiquidScene from './components/scene/LiquidScene.jsx'
-import SiteHeader from './components/layout/SiteHeader.jsx'
-import MobileTabBar from './components/layout/MobileTabBar.jsx'
+import SiteNav from './components/nav/SiteNav.jsx'
+import MobileTabBar from './components/nav/MobileTabBar.jsx'
 import SearchOverlay from './components/layout/SearchOverlay.jsx'
 import Footer from './components/layout/Footer.jsx'
 import BackToTop from './components/ui/BackToTop.jsx'
@@ -172,7 +172,7 @@ export default function App() {
           </a>
           <LiquidGlassFilters />
           <LiquidScene />
-          <SiteHeader onOpenSearch={() => setSearchOpen(true)} />
+          <SiteNav onOpenSearch={() => setSearchOpen(true)} />
           <main id="main" className="qz-main relative z-10 mx-auto min-h-[80vh] w-full max-w-[1320px] px-[var(--qz-page-x)] pb-24 pt-28 lg:pt-32">
             <AnimatedRoutes />
           </main>

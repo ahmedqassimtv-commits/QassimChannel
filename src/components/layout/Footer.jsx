@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { ArrowUpLeft } from 'lucide-react'
 import BrandLogo from '../brand/BrandLogo.jsx'
-import { NAV } from './navConfig.js'
+import { NAV } from '../nav/navConfig.js'
 import { YOUTUBE_CONFIG } from '../../data/youtubeConfig.js'
 import { Reveal } from '../motion/Motion.jsx'
 

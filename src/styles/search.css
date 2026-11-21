@@ -1,0 +1,105 @@
+/* البحث — اتنقل من qz.css */
+
+/* ══ البحث ════════════════════════════════════════════════════════════ */
+.qz-search-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgb(var(--qz-ink-rgb) / 0.55);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.qz-search {
+  position: fixed;
+  z-index: 91;
+  top: min(12vh, 110px);
+  left: 50%;
+  width: min(680px, calc(100% - 24px));
+  translate: -50% 0;
+  border-radius: 28px;
+  border: 1px solid var(--qz-line-strong);
+  background: var(--qz-glass-3);
+  -webkit-backdrop-filter: blur(30px) saturate(160%);
+  backdrop-filter: blur(30px) saturate(160%);
+  box-shadow:
+    0 50px 120px -30px rgb(0 0 0 / 0.8),
+    inset 0 1px 0 rgb(var(--qz-mint-rgb) / 0.14);
+  overflow: hidden;
+}
+.qz-search-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 20px;
+  height: 66px;
+  border-bottom: 1px solid var(--qz-line);
+}
+.qz-search-field input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  background: transparent;
+  outline: none;
+  color: var(--qz-text);
+  font-size: 1.15rem;
+}
+.qz-search-field input::placeholder {
+  color: var(--qz-text-3);
+}
+.qz-search-results {
+  max-height: min(60vh, 520px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 8px;
+}
+.qz-search-group {
+  padding: 12px 12px 6px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--qz-text-3);
+}
+.qz-search-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 16px;
+  text-align: start;
+  color: var(--qz-text);
+}
+.qz-search-item[data-active='true'] {
+  background: rgb(var(--qz-mint-rgb) / 0.08);
+}
+.qz-search-thumb {
+  flex: 0 0 auto;
+  width: 64px;
+  height: 40px;
+  border-radius: 10px;
+  object-fit: cover;
+  background: var(--qz-deep);
+  outline: 1px solid oklch(1 0 0 / 0.1);
+  outline-offset: -1px;
+}
+.qz-search-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--qz-text-3);
+}
+.qz-search-foot {
+  display: flex;
+  gap: 16px;
+  padding: 10px 20px;
+  border-top: 1px solid var(--qz-line);
+  font-size: 0.75rem;
+  color: var(--qz-text-3);
+}
+@media (max-width: 640px) {
+  .qz-search {
+    top: 10px;
+    border-radius: 24px;
+  }
+  .qz-search-foot {
+    display: none;
+  }
+}
