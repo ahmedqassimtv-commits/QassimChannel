@@ -448,7 +448,7 @@
     inset 0 1px 0 rgb(var(--qz-mint-rgb) / 0.16);
 }
 .qz-header-glass {
-  background-color: rgb(var(--qz-ink-rgb) / 0.42);
+  background-color: rgb(var(--qz-ink-rgb) / 0.55);
 }
 .qz-header-row {
   display: flex;
