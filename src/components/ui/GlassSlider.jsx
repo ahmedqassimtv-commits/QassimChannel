@@ -398,7 +398,7 @@ export default function GlassSlider({
       <canvas ref={canvasRef} className="qz-gs-canvas" aria-hidden="true" />
       <div className="qz-gs-scrim" aria-hidden="true" />
 
-      <div className="qz-gs-count qz-latin" aria-hidden="true">
+      <div className="qz-gs-count qz-latin" dir="ltr" aria-hidden="true">
         <span>{String(index + 1).padStart(2, '0')}</span>
         <span className="qz-gs-count-total">/ {String(slides.length).padStart(2, '0')}</span>
       </div>
