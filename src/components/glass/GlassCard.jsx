@@ -1,5 +1,4 @@
 import React, { useRef } from 'react';
-import { assetUrl } from '../../utils/assets.js';
 
 /**
  * GlassCard — 4K Fractal Haze & Botanical Emerald Edition
@@ -15,7 +14,6 @@ export default function GlassCard({
   ...props
 }) {
   const cardRef = useRef(null);
-  const resolvedTexture = fractalTexture ? assetUrl(fractalTexture) : '';
 
   const handleMouseMove = (e) => {
     const el = cardRef.current;
@@ -39,7 +37,7 @@ export default function GlassCard({
       onMouseLeave={hover ? handleMouseLeave : undefined}
       onClick={onClick}
       style={{ '--cx': '-500px', '--cy': '-500px' }}
-      className={`qz-glass-card group relative overflow-hidden rounded-2xl border border-[color:var(--qz-sage)]/20 bg-[color:var(--qz-ink)]/72 backdrop-blur-2xl backdrop-saturate-150 shadow-[0_22px_55px_rgb(var(--qz-ink-rgb)/0.85),inset_0_1px_0_0_rgb(var(--qz-mint-rgb)/0.16)] transition-[transform,border-color,background-color,box-shadow] duration-300 ease-out ${
+      className={`group relative overflow-hidden rounded-2xl border border-[color:var(--qz-sage)]/20 bg-[color:var(--qz-ink)]/72 backdrop-blur-2xl backdrop-saturate-150 shadow-[0_22px_55px_rgb(var(--qz-ink-rgb)/0.85),inset_0_1px_0_0_rgb(var(--qz-mint-rgb)/0.16)] transition-all duration-300 ease-out ${
         hover
           ? 'hover:-translate-y-1 hover:border-[color:var(--qz-sage)]/40 hover:bg-[color:var(--qz-deep)]/80 hover:shadow-[0_28px_65px_rgb(var(--qz-ink-rgb)/0.95),0_0_32px_rgb(var(--qz-moss-rgb)/0.3)]'
           : ''
@@ -84,14 +82,14 @@ export default function GlassCard({
       />
 
       {/* 4. خامة Fractal Haze الـ 4K محفورة بنعومة داخل سطح الزجاج */}
-      {resolvedTexture && (
+      {fractalTexture && (
         <div
           aria-hidden="true"
           className={`pointer-events-none absolute inset-0 z-0 bg-cover bg-center opacity-[0.045] mix-blend-screen transition-opacity duration-500 group-hover:opacity-[0.095] ${
-            resolvedTexture.includes('/optimized/') ? '' : 'grayscale contrast-150'
+            fractalTexture.includes('/optimized/') ? '' : 'grayscale contrast-150'
           }`}
           style={{
-            backgroundImage: `url('${resolvedTexture}')`,
+            backgroundImage: `url('${fractalTexture}')`,
           }}
         />
       )}
