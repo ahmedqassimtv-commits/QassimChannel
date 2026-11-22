@@ -1354,7 +1354,7 @@ const CSS = `
 .ht-face-gloss{position:absolute;inset:0;border-radius:50%;background:radial-gradient(60% 34% at 32% 18%,rgba(255,255,255,.55),transparent 70%),radial-gradient(40% 20% at 70% 86%,rgba(255,255,255,.18),transparent);pointer-events:none}
 .ht-face.ht-k-clear{--ring1:#f7f5ea;--ring2:#e9e3c9;--rim:#cfc39a;--lab:var(--ht-lime);--labink:var(--ht-ink)}
 .ht-face.ht-k-print{--ring1:var(--ht-lime2);--ring2:var(--ht-lime);--rim:var(--ht-lime3);--lab:var(--ht-ink);--labink:var(--ht-lime)}
-.ht-face.ht-k-masking{--ring1:#efdfb1;--ring2:#e1cc92;--rim:#c2a868;--lab:var(--ht-orange);--labink:var(--ht-paper)}
+.ht-face.ht-k-masking{--ring1:#1d2422;--ring2:#121715;--rim:#060807;--lab:var(--ht-grass2);--labink:var(--ht-lime)}
 .ht-face.ht-k-washi{--ring1:#ffd51f;--ring2:#ffbf1f;--rim:#e09d00;--lab:var(--ht-pink);--labink:var(--ht-paper)}
 .ht-face.ht-k-duct{--ring1:#d4d9de;--ring2:#a9b1b8;--rim:#7d868e;--lab:var(--ht-cocoa);--labink:var(--ht-peach)}
 
@@ -1392,7 +1392,7 @@ const CSS = `
 
 .ht-join{position:absolute;left:-6%;width:112%;top:0;height:clamp(40px,4.4cqw,64px);transform:translateY(-50%) rotate(-1.6deg);z-index:7;pointer-events:none}
 .ht-join-in{position:absolute;inset:0;display:block;transform-origin:0 50%}
-.ht-join-masking .ht-join-in{background:repeating-linear-gradient(118deg,rgba(150,115,50,.14) 0 1px,transparent 1px 4px),linear-gradient(180deg,#f2e4bd,#e3cf98 50%,#d4bc80);box-shadow:0 6px 10px rgba(80,20,0,.3)}
+.ht-join-masking .ht-join-in{background:radial-gradient(circle,var(--ht-paper) 0 2.2px,transparent 2.6px) 6px 5px/14px 100% repeat-x,radial-gradient(circle,var(--ht-paper) 0 2.2px,transparent 2.6px) 6px calc(100% - 5px)/14px 100% repeat-x,linear-gradient(180deg,#121715,#1d2422 50%,#0c100f);box-shadow:0 6px 12px rgba(0,0,0,.4)}
 .ht-join-duct{transform:translateY(-50%) rotate(1.4deg)}
 .ht-join-duct .ht-join-in{background:repeating-linear-gradient(45deg,rgba(255,255,255,.18) 0 1px,transparent 1px 4px),repeating-linear-gradient(-45deg,rgba(0,0,0,.08) 0 1px,transparent 1px 4px),linear-gradient(180deg,#e7ebee,#b2b9c0 45%,#cdd2d7 70%,#8f979e);box-shadow:0 6px 10px rgba(60,20,0,.35)}
 
