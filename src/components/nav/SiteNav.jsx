@@ -492,7 +492,6 @@ export default function SiteNav({ searchOpen, setSearchOpen }) {
                 >
                   <NavGlyph name="search" />
                   <span className="qz-nav-search-ph">ابحث</span>
-                  <kbd className="qz-kbd">{IS_MAC ? '⌘K' : 'Ctrl K'}</kbd>
                 </button>
                 <div className="qz-nav-search-field">
                   <NavGlyph name="search" />
