@@ -24,6 +24,7 @@ import {
   Video,
   BookOpen,
   Radio,
+  UserRound,
   Film,
   Tv,
   ChevronDown,
@@ -168,6 +169,7 @@ const SEARCH_INDEX = [
   { title: 'الفيديوهات', sub: 'حلقات وثائقية ولقطات قصيرة', to: '/videos', icon: Video },
   { title: 'المقالات', sub: 'قراءات ومقالات متأنية', to: '/articles', icon: BookOpen },
   { title: 'أون إير — ON AIR', sub: 'منشورات وحضور قاسم الحيّ', to: '/on-air', icon: Radio },
+  { title: 'عن أحمد', sub: 'الملف التعريفي', to: '/about', icon: UserRound },
 ]
 
 const NAV_ITEMS = [
@@ -175,6 +177,7 @@ const NAV_ITEMS = [
   { to: '/videos', label: 'الفيديوهات', icon: Video },
   { to: '/articles', label: 'المقالات', icon: BookOpen },
   { to: '/on-air', label: 'أون إير', badge: 'ON AIR', icon: Radio },
+  { to: '/about', label: 'عن أحمد', icon: UserRound },
 ]
 
 function resolveRouteKey(pathname) {
@@ -184,6 +187,7 @@ function resolveRouteKey(pathname) {
   if (pathname.startsWith('/videos')) return '/videos'
   if (pathname.startsWith('/articles')) return '/articles'
   if (pathname.startsWith('/on-air')) return '/on-air'
+  if (pathname.startsWith('/about')) return '/about'
   return '/'
 }
 
