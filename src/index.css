@@ -12,6 +12,7 @@
 @import "./styles/books.css";
 @import "./styles/footer.css";
 @import "./styles/about.css";
+@import "./styles/glass-slider.css";
 @import "./styles/a11y.css";
 
 @custom-variant dark (&:is(.dark *));

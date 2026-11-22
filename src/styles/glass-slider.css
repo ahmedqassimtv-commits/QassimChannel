@@ -1,0 +1,176 @@
+/* ══ سلايدر الزجاج (WebGL) — src/components/ui/GlassSlider.jsx ═══════ */
+
+.qz-gs {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  width: 100vw;
+  margin-inline: calc(50% - 50vw);
+  height: min(92svh, 920px);
+  min-height: 560px;
+  background: var(--qz-ink);
+  color: #fff;
+}
+.qz-gs-fallback,
+.qz-gs-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.qz-gs-fallback {
+  object-fit: cover;
+  z-index: -2;
+  transition: opacity 0.6s ease;
+}
+.qz-gs-canvas {
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+.qz-gs[data-ready='true'] .qz-gs-canvas {
+  opacity: 1;
+}
+.qz-gs[data-ready='true'] .qz-gs-fallback {
+  opacity: 0;
+}
+.qz-gs-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(0deg, rgb(0 0 0 / 0.72) 0%, rgb(0 0 0 / 0.15) 45%, transparent 70%),
+    linear-gradient(270deg, rgb(0 0 0 / 0.35), transparent 55%);
+}
+
+/* العدّاد */
+.qz-gs-count {
+  position: absolute;
+  z-index: 1;
+  top: 40px;
+  inset-inline-end: var(--qz-page-x);
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
+.qz-gs-count-total {
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
+  opacity: 0.6;
+}
+
+/* العنوان والوصف */
+.qz-gs-content {
+  position: absolute;
+  z-index: 1;
+  inset-inline-start: var(--qz-page-x);
+  bottom: 140px;
+  max-width: min(760px, calc(100% - 2 * var(--qz-page-x)));
+}
+.qz-gs-meta {
+  margin-bottom: 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--qz-accent);
+}
+.qz-gs-title {
+  font-family: var(--font-quiver);
+  font-weight: 700;
+  font-size: clamp(2.4rem, 6vw, 5.4rem);
+  line-height: 1.25;
+  perspective: 600px;
+}
+.qz-gs-word {
+  display: inline-block;
+  will-change: transform, opacity, filter;
+}
+.qz-gs-desc {
+  margin-top: 16px;
+  max-width: 34rem;
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: rgb(255 255 255 / 0.78);
+}
+
+/* شريط الاختيار تحت */
+.qz-gs-nav {
+  position: absolute;
+  z-index: 1;
+  inset-inline: var(--qz-page-x);
+  bottom: 40px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 18px;
+}
+.qz-gs-nav-item {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: rgb(255 255 255 / 0.55);
+  text-align: start;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.qz-gs-nav-item[aria-current='true'],
+.qz-gs-nav-item:hover {
+  color: #fff;
+}
+.qz-gs-nav-item:focus-visible {
+  outline: 2px solid var(--qz-accent);
+  outline-offset: 6px;
+  border-radius: 4px;
+}
+.qz-gs-line {
+  position: relative;
+  display: block;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: rgb(255 255 255 / 0.22);
+}
+.qz-gs-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--qz-accent);
+  transform-origin: right center;
+  box-shadow: 0 0 10px var(--qz-accent);
+  transition: transform 0.1s linear;
+}
+.qz-gs-nav-title {
+  overflow: hidden;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 1023.98px) {
+  .qz-gs {
+    height: 78svh;
+  }
+  .qz-gs-content {
+    bottom: 110px;
+  }
+  .qz-gs-nav {
+    bottom: 32px;
+    gap: 8px;
+  }
+  .qz-gs-nav-title {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .qz-gs-canvas,
+  .qz-gs-fallback,
+  .qz-gs-fill {
+    transition: none;
+  }
+}
