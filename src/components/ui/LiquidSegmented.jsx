@@ -4,6 +4,7 @@ import { springs } from '../../lib/springs'
 import GlassLayer from '../glass/GlassLayer.jsx'
 import GlassIcon from './GlassIcon.jsx'
 import useLiquidElement from '../../hooks/useLiquidElement.js'
+import { playGlassSegment } from '../../utils/glassSound.js'
 import { useTheme } from '../../utils/theme.js'
 
 /*
@@ -177,6 +178,7 @@ export default function LiquidSegmented({
             onClick={() => {
               if (selected) return
               setMoving(true)
+              playGlassSegment()
               onChange(option.value)
             }}
             className={`relative z-[1] inline-flex items-center gap-1.5 whitespace-nowrap rounded-full transition-colors duration-300 ${pad} ${

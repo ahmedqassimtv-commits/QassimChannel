@@ -8,8 +8,8 @@ export default function PortraitLiquidReveal() {
     const context = element.getContext('2d')
     if (!context) return undefined
     const reduced = matchMedia('(prefers-reduced-motion: reduce)')
-    const base = new Image(); base.src = '/images/about-base.png'
-    const reveal = new Image(); reveal.src = '/images/about-logo.png'
+    const base = new Image(); base.src = import.meta.env.BASE_URL + 'images/about-base.png'
+    const reveal = new Image(); reveal.src = import.meta.env.BASE_URL + 'images/about-logo.png'
     let width = 0, height = 0, frame = 0, previous = 0
     const point = { x: 0.5, y: 0.5, targetX: 0.5, targetY: 0.5, vx: 0, vy: 0 }
     const resize = () => { const rect = element.getBoundingClientRect(); width = rect.width; height = rect.height; const ratio = Math.min(devicePixelRatio || 1, 2); element.width = width * ratio; element.height = height * ratio; context.setTransform(ratio, 0, 0, ratio, 0, 0) }

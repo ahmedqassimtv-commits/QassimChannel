@@ -1,80 +1,14 @@
-import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowUpLeft } from 'lucide-react'
+import { motion } from 'framer-motion'
+import GlassCard from '../components/glass/GlassCard.jsx'
 import { articles } from '../data/articles.js'
-import { ArticleRow, Filters, PageHero, fmtDate, fmtMinutes } from '../components/qz/Kit.jsx'
-import { Reveal, Stagger, StaggerItem } from '../components/motion/Motion.jsx'
-
-/* ══ المقالات ═════════════════════════════════════════════════════════
-   فهرس تحريري: أحدث مقال كغلاف كبير، وتحته باقي المقالات كسطور مرقّمة
-   زي فهرس مجلة، مع فلاتر بالتصنيف. */
 
 export default function Articles() {
-  const categories = useMemo(() => ['الكل', ...new Set(articles.map((a) => a.category))], [])
-  const [active, setActive] = useState('الكل')
-  const list = active === 'الكل' ? articles : articles.filter((a) => a.category === active)
-  const [featured, ...rest] = list
-
   return (
-    <div>
-      <PageHero
-        index="—"
-        eyebrow="دفتر الملاحظات"
-        title="المقالات"
-        lead="قراءات طويلة ومتأنية في الصورة والسينما والحكاية، تتقري على مهل."
-      />
-
-      {categories.length > 2 && (
-        <div className="mt-12">
-          <Filters id="articles" items={categories} value={active} onChange={setActive} label="تصنيفات المقالات" />
-        </div>
-      )}
-
-      {featured && (
-        <Reveal className="mt-12">
-          <Link to={`/articles/${featured.slug}`} className="qz-panel group qz-hover-zoom grid overflow-hidden lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
-            <div className="qz-media !rounded-none min-h-[240px] lg:min-h-[420px]">
-              {featured.cover ? (
-                <img src={featured.cover} alt="" loading="eager" />
-              ) : (
-                <div className="absolute inset-0 bg-[radial-gradient(80%_70%_at_70%_30%,rgb(var(--qz-moss-rgb)/0.9),transparent_70%),radial-gradient(60%_60%_at_20%_90%,rgb(var(--qz-glow-rgb)/0.25),transparent_70%)]">
-                  <span className="absolute inset-0 grid place-items-center font-[family-name:var(--font-quiver)] text-[clamp(6rem,14vw,12rem)] font-light text-[rgb(var(--qz-mint-rgb)/0.12)]">
-                    ”
-                  </span>
-                </div>
-              )}
-            </div>
-            <div className="flex flex-col justify-between gap-8 p-7 sm:p-10">
-              <div>
-                <p className="qz-eyebrow">الأحدث · {featured.category}</p>
-                <h2 className="qz-h2 mt-5 transition-colors duration-300 group-hover:text-[color:var(--qz-accent)]">{featured.title}</h2>
-                {featured.excerpt && <p className="qz-lead mt-5">{featured.excerpt}</p>}
-              </div>
-              <div className="flex items-center justify-between gap-4 text-sm text-[color:var(--qz-text-3)]">
-                <span className="qz-num">
-                  {fmtDate(featured.date)} · {fmtMinutes(featured.minutes)}
-                </span>
-                <ArrowUpLeft className="size-5 text-[color:var(--qz-accent)] transition-transform duration-500 group-hover:-translate-x-1 group-hover:-translate-y-1" aria-hidden="true" />
-              </div>
-            </div>
-          </Link>
-        </Reveal>
-      )}
-
-      {rest.length > 0 && (
-        <section className="mt-16">
-          <Stagger>
-            {rest.map((a, i) => (
-              <StaggerItem key={a.slug}>
-                <ArticleRow article={a} index={i + 2} />
-              </StaggerItem>
-            ))}
-          </Stagger>
-          <div className="qz-rule" />
-        </section>
-      )}
-
-      {list.length === 0 && <p className="qz-body mt-16 text-center">مفيش مقالات في التصنيف ده لسه.</p>}
-    </div>
+    <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+      <header className="mb-9"><p className="mb-2 text-xs tracking-[0.2em] text-emerald-300">مساحة للقراءة والتأمل</p><h1 className="text-4xl font-black text-white">المقالات</h1><p className="mt-3 text-neutral-400">خواطر وحكايات عن السينما والصورة.</p></header>
+      <div className="grid gap-5 md:grid-cols-2">{articles.map((article) => <GlassCard key={article.slug} className="liquid-glass-hover p-7"><div className="flex items-center gap-3 text-xs text-emerald-200"><span>{article.category}</span><span className="text-neutral-600">•</span><time>{article.date}</time></div><h2 className="mt-4 text-2xl font-bold text-white">{article.title}</h2><p className="mt-3 leading-8 text-neutral-400">{article.excerpt}</p><Link to={`/articles/${article.slug}`} className="mt-6 inline-flex text-sm text-emerald-200 hover:text-emerald-100">اقرأ المقال ←</Link></GlassCard>)}</div>
+      {articles.length === 0 && <p className="py-16 text-center text-neutral-400">لا توجد مقالات منشورة حتى الآن.</p>}
+    </motion.div>
   )
 }

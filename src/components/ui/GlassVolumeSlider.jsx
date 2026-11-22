@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 import { Volume1, Volume2, VolumeX } from 'lucide-react'
+import { playGlassDetent } from '../../utils/glassSound.js'
 
 /*
  * شريط صوت بأسلوب iOS 26 (Liquid Glass):
@@ -42,6 +43,7 @@ export default function GlassVolumeSlider({ value, onChange, label = 'مستوى
     const detent = Math.round(next * 10)
     if (detent !== lastDetentRef.current) {
       lastDetentRef.current = detent
+      playGlassDetent(detent / 10)
     }
     onChange(next)
   }

@@ -35,7 +35,7 @@ const stillness = () =>
 
 /* COW was Bencho's own pictures, which is not licensed
    to travel. Point this at yours. */
-const COW = "/fractal/JPG/01.jpg";
+const COW = import.meta.env.BASE_URL + "fractal/JPG/01.jpg";
 
 /* ══ Glass bubble, liquid ═════════════════════════════════
    A ball of glass you drag over a photograph. It bends what is

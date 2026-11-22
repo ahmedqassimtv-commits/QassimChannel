@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import { playGlassToggle } from '../../utils/glassSound.js'
 
 /*
  * سويتش زجاجي (Liquid Glass) زي الصور المرجعية:
@@ -51,6 +52,7 @@ export default function GlassSwitch({
       data-qz-silent=""
       dir="ltr"
       onClick={() => {
+        if (!silent) playGlassToggle(!checked)
         onChange(!checked)
       }}
       className={`qz-switch group relative inline-flex shrink-0 items-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--qz-mint)]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent ${className}`}

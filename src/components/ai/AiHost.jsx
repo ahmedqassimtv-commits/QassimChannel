@@ -5,7 +5,7 @@ import { ArrowUpLeft, Send, Volume2, VolumeX, X } from 'lucide-react'
 import AnimeAvatar from './AnimeAvatar.jsx'
 import { speak } from './speech.js'
 import { GREETING, SUGGESTIONS, AI_ENDPOINT, ask, localReply } from './brain.js'
-import { SPRING } from '../motion/Motion.jsx'
+const SPRING = { type: 'spring', bounce: 0, duration: 0.55 }
 
 /* ══ قاسم الافتراضي ═══════════════════════════════════════════════════
    لوح زجاج بيطلع من مكان اللوجو في النافبار: قاسم الأنمي بيتكلم ويرمش،

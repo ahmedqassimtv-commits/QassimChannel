@@ -1,42 +1,34 @@
+import { motion } from 'framer-motion'
 import { Radio } from 'lucide-react'
-import { FoldingBill } from '../components/onair/FoldingBill.tsx'
-import { PageHero, SectionHead, ShortTile, VideoTile } from '../components/qz/Kit.jsx'
-import { Stagger, StaggerItem } from '../components/motion/Motion.jsx'
-import { videos } from '../data/videos.js'
 
 export default function OnAir() {
   return (
-    <div>
-      <PageHero
-        index="—"
-        eyebrow="مساحة · البث الاجتماعي الحيّ"
-        title="أون إير"
-        lead="مساحة متجددة بتجمع منشورات قاسم اليومية، مقتطفاته السريعة، وتحديثاته على المنصات في مكان واحد."
-        aside={
-          /* ورقة قاسمز الزجاجية — اسحبها واطويها (three.js بيتحمّل مع الصفحة دي بس) */
-          <div className="flex flex-col items-center gap-3">
-            <FoldingBill />
-            <span className="text-xs text-[color:var(--qz-text-3)]">اسحب الورقة واطويها</span>
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.28 }}
+    >
+      <header className="liquid-glass rounded-3xl p-6 sm:p-10">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5">
+            <span className="grid size-9 place-items-center rounded-xl border border-emerald-400/30 bg-[color:var(--qz-ink)] text-emerald-300">
+              <Radio className="size-4" />
+            </span>
+            <span className="flex items-center gap-2 font-mono text-xs font-bold tracking-[0.2em] text-emerald-300">
+              <span className="size-2 animate-pulse rounded-full bg-emerald-400" />
+              ON AIR • البث الاجتماعي الحيّ
+            </span>
           </div>
-        }
-      >
-        <div className="flex flex-wrap items-center gap-4">
-          <span className="qz-chip qz-chip-live">
-            <Radio className="size-3.5" aria-hidden="true" /> على الهوا
-          </span>
-        </div>
-      </PageHero>
 
-      <section className="qz-section">
-        <SectionHead index="01" eyebrow="من القناة" title="آخر ما اتنشر" to="/videos" cta="كل الفيديوهات" />
-        <Stagger className="grid gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3">
-          {videos.slice(0, 3).map((v) => (
-            <StaggerItem key={v.id}>
-              {v.type === 'short' ? <ShortTile video={v} /> : <VideoTile video={v} />}
-            </StaggerItem>
-          ))}
-        </Stagger>
-      </section>
-    </div>
+        </div>
+
+        <h1 className="thmanyah-swash mt-4 text-4xl font-black text-[color:var(--qz-mint)] sm:text-5xl">
+          أون إير
+        </h1>
+        <p className="mt-3 max-w-2xl text-sm leading-7 text-[color:var(--qz-sage)] sm:text-base">
+          مساحة متجددة تجمع منشورات قاسم اليومية، مقتطفاته السريعة، وتحديثاته عبر منصات التواصل الاجتماعي في مكان واحد.
+        </p>
+      </header>
+    </motion.div>
   )
 }
