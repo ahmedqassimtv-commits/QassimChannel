@@ -174,3 +174,16 @@
     transition: none;
   }
 }
+
+/* ══ صفحة الحكايات: الأرشيف بعرض الشاشة وتحت النافبار مباشرة ═════════ */
+.qz-tape-page {
+  width: 100vw;
+  margin-inline: calc(50% - 50vw);
+  margin-top: -7rem;
+  margin-bottom: -6rem;
+}
+@media (min-width: 1024px) {
+  .qz-tape-page {
+    margin-top: -8rem;
+  }
+}
