@@ -210,7 +210,12 @@ export default function SiteNav({ onOpenSearch }) {
                     aria-label="كلّم قاسم الافتراضي"
                     data-open={hostOpen ? 'true' : undefined}
                   >
-                    <img src={assetUrl('/avatar/qassim-bubble.webp')} alt="" />
+                    <img src={assetUrl('/avatar/anime/bubble.webp')} alt="" />
+                    <img
+                      className="qz-host-bubble-grin"
+                      src={assetUrl('/avatar/anime/bubble-grin.webp')}
+                      alt=""
+                    />
                     <span className="qz-host-bubble-ring" aria-hidden="true" />
                   </motion.button>
                 )}
