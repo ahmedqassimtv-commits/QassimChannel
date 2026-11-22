@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import BrandLogo from '../brand/BrandLogo.jsx'
+import { atRest, register, spring, step, tune } from '../../motion/springs.js'
 
 /* ══ كتاب القصص — صفحات بتتقلب بالماوس ═══════════════════════════════
    كتاب عربي (الكعب في النص، والقراءة من اليمين): الصفحات اللي لسه
@@ -15,7 +17,10 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 const MOBILE = '(max-width: 760px)'
 const REDUCE = '(prefers-reduced-motion: reduce)'
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v)
-const easeOut = (t) => 1 - Math.pow(1 - t, 3)
+// قلب الورقة: spring من غير ارتداد تقريباً (الورق مابيرتدش)، بيكمّل بسرعة الإيد
+const PAGE_SPRING = [150, 23]
+// Apple: مكان الوقوف المتوقع من السرعة (decelerationRate 0.995)
+const project = (v) => ((v / 1000) * 0.995) / (1 - 0.995)
 
 function useMedia(q) {
   const [on, setOn] = useState(() => typeof window !== 'undefined' && window.matchMedia(q).matches)
@@ -33,9 +38,7 @@ function Cover({ title, subtitle }) {
   return (
     <div className="fb-cover">
       <div className="fb-cover-frame">
-        <span className="fb-cover-orn" aria-hidden="true">
-          ✦
-        </span>
+        <BrandLogo variant="glass" title="قاسمز" className="fb-cover-logo" />
         <h3 className="fb-cover-title">{title}</h3>
         <p className="fb-cover-sub">{subtitle}</p>
         <span className="fb-cover-orn" aria-hidden="true">
@@ -50,12 +53,31 @@ function Cover({ title, subtitle }) {
 function BackCover() {
   return (
     <div className="fb-cover fb-cover-back">
-      <div className="fb-cover-frame">
-        <span className="fb-cover-orn" aria-hidden="true">
-          ✦
-        </span>
-        <p className="fb-cover-sub">قاسمز</p>
+      <div className="fb-cover-back-body">
+        <p className="fb-cover-blurb">
+          حكايات قصيرة مكتوبة بعين الكاميرا — من ورا الكواليس، ومن آخر النهار.
+        </p>
+        <BrandLogo variant="glass" title="قاسمز" className="fb-cover-logo fb-cover-logo-sm" />
       </div>
+      <i className="fb-cover-sheen" aria-hidden="true" />
+    </div>
+  )
+}
+
+/* جوّه الغلاف: القماش من الناحية التانية + ورق الأطراف */
+function InsideCover({ side }) {
+  return (
+    <div className={`fb-inside fb-inside-${side}`} aria-hidden="true">
+      <div className="fb-inside-paper" />
+    </div>
+  )
+}
+
+function Epigraph() {
+  return (
+    <div className="fb-paper fb-center">
+      <p className="fb-epigraph">«كل لقطة وراها حكاية، وكل حكاية مستنية حد يبص كويس.»</p>
+      <p className="fb-small">— قاسم</p>
     </div>
   )
 }
@@ -83,12 +105,12 @@ function Contents({ tales, onJump }) {
               <span className="fb-toc-n">{String(i + 1).padStart(2, '0')}</span>
               <span className="fb-toc-t">{t.title}</span>
               <span className="fb-toc-dots" aria-hidden="true" />
-              <span className="fb-toc-p">{3 + i * 2}</span>
+              <span className="fb-toc-p">{4 + i * 2}</span>
             </button>
           </li>
         ))}
       </ol>
-      <p className="fb-hint">اسحب ركن الصفحة علشان تقلب ←</p>
+      <p className="fb-hint">اسحب ركن الصفحة أو دوس عليها علشان تقلب ←</p>
     </div>
   )
 }
@@ -160,24 +182,30 @@ export default function FlipBook({ tales, title = 'قصص قاسم', author = '�
 
   // ترتيب الصفحات (يمين ثم شمال في كل فرشة)
   const pages = useMemo(() => {
+    /* كل ورقة = وش (شمال قبل القلب) + ضهر (يمين بعده):
+       الغلاف | جوّه الغلاف — العنوان | الفهرس — الإهداء | صورة القصة —
+       نص القصة | صورة اللي بعدها … — الختام | جوّه الغلاف الخلفي — الغلاف الخلفي
+       فكل قصة بتيجي في فرشة واحدة: الصورة يمين والنص شمال. */
     const list = [
       <Cover key="cover" title={title} subtitle={author} />,
+      <InsideCover key="in-front" side="front" />,
       <TitlePage key="title" title={title} author={author} />,
       <Contents key="toc" tales={tales} onJump={onJump} />,
+      <Epigraph key="epi" />,
     ]
     tales.forEach((t, i) => {
-      list.push(<TaleImage key={t.id + 'i'} tale={t} n={i + 1} page={3 + i * 2} />)
-      list.push(<TaleText key={t.id + 't'} tale={t} page={4 + i * 2} />)
+      list.push(<TaleImage key={t.id + 'i'} tale={t} n={i + 1} page={4 + i * 2} />)
+      list.push(<TaleText key={t.id + 't'} tale={t} page={5 + i * 2} />)
     })
     list.push(<Closing key="closing" />)
     if (list.length % 2) list.push(<Endpaper key="end" />)
-    list.push(<Endpaper key="end2" />, <BackCover key="back" />)
+    list.push(<InsideCover key="in-back" side="back" />, <BackCover key="back" />)
     return list
   }, [tales, title, author, onJump])
 
   // الأوراق: على الديسكتوب كل ورقة صفحتين، على الموبايل صفحة واحدة
   const leaves = useMemo(() => {
-    if (mobile) return pages.map((p) => ({ front: p, back: <Endpaper /> }))
+    if (mobile) return pages.map((p) => ({ front: p, back: <InsideCover side="back" /> }))
     const out = []
     for (let i = 0; i < pages.length; i += 2)
       out.push({ front: pages[i], back: pages[i + 1] ?? <Endpaper /> })
@@ -187,8 +215,8 @@ export default function FlipBook({ tales, title = 'قصص قاسم', author = '�
 
   // الفهرس: رقم القصة → عدد الأوراق اللي لازم تتقلب
   jumpRef.current = (i) => {
-    const pageIdx = 3 + i * 2 // صفحة الصورة
-    const target = mobile ? pageIdx : Math.ceil(pageIdx / 2)
+    const pageIdx = 5 + i * 2 // صفحة الصورة (ضهر ورقة → يمين الفرشة)
+    const target = mobile ? pageIdx : (pageIdx + 1) / 2
     flipTo(target)
   }
 
@@ -229,36 +257,65 @@ export default function FlipBook({ tales, title = 'قصص قاسم', author = '�
             : 'open'
   }, [current, stack, leaves, N, paint, mobile])
 
+  /* قلب ورقة لحد زاوية: spring بيبدأ من الزاوية الحالية وبسرعة الإيد
+     (من غير قفزة لو اتمسكت تاني في نص الحركة) */
   const animate = useCallback(
-    (i, from, to, done) => {
-      cancelAnimationFrame(anim.current.raf)
+    (i, from, to, done, v0 = 0) => {
+      anim.current.finish?.()
       const el = leafRefs.current[i]
-      if (el) el.style.zIndex = String(N + 5)
+      if (el) {
+        el.style.zIndex = String(N + 5)
+        delete el.dataset.peek
+      }
       if (reduce) {
         paint(i, to)
         done?.()
         return
       }
-      const dur = 380 + Math.abs(to - from) * 2.6
-      const t0 = performance.now()
-      const step = (now) => {
-        const t = clamp((now - t0) / dur, 0, 1)
-        paint(i, from + (to - from) * easeOut(t))
-        if (t < 1) anim.current.raf = requestAnimationFrame(step)
-        else done?.()
+      const sp = spring(from, PAGE_SPRING)
+      sp.t = to
+      sp.v = v0
+      tune(sp, PAGE_SPRING)
+      let finished = false
+      const finish = () => {
+        if (finished) return
+        finished = true
+        paint(i, to)
+        unreg()
+        anim.current.finish = null
+        anim.current.unreg = null
+        done?.()
       }
-      anim.current.raf = requestAnimationFrame(step)
+      const unreg = register({
+        frame: (dt) => step(sp, dt),
+        render: () => {
+          if (finished) return
+          paint(i, sp.x)
+          if (atRest(sp, 0.05)) finish()
+        },
+        idle: () => finished,
+      })
+      anim.current.finish = finish
+      // إمساك الورقة في نص الحركة: نوقف الـspring من غير ما نكمّل
+      anim.current.unreg = () => {
+        finished = true
+        unreg()
+        anim.current.finish = null
+        anim.current.unreg = null
+      }
     },
     [N, paint, reduce],
   )
 
   const next = useCallback(() => {
+    anim.current.finish?.()
     const c = currentRef.current
     if (c >= N || anim.current.drag) return
     animate(c, 0, 180, () => setCurrent(c + 1))
   }, [N, animate, setCurrent])
 
   const prev = useCallback(() => {
+    anim.current.finish?.()
     const c = currentRef.current
     if (c <= 0 || anim.current.drag) return
     animate(c - 1, 180, 0, () => setCurrent(c - 1))
@@ -295,8 +352,9 @@ export default function FlipBook({ tales, title = 'قصص قاسم', author = '�
     let dir = leftSide ? 1 : -1
     if (mobile) dir = e.clientX < r.left + r.width * 0.6 ? 1 : -1
     if ((dir === 1 && c >= N) || (dir === -1 && c <= 0)) return
-    cancelAnimationFrame(anim.current.raf)
+    anim.current.finish?.()
     anim.current.peek = null
+    leafRefs.current.forEach((el) => el && delete el.dataset.peek)
     const i = dir === 1 ? c : c - 1
     const el = leafRefs.current[i]
     if (el) el.style.zIndex = String(N + 5)
@@ -323,17 +381,23 @@ export default function FlipBook({ tales, title = 'قصص قاسم', author = '�
       const c = currentRef.current
       const nearLeft = e.clientX - r.left < r.width * (mobile ? 0.2 : 0.12) && c < N
       const want = nearLeft ? c : null
-      if (want !== anim.current.peek) {
-        if (anim.current.peek !== null) paint(anim.current.peek, 0)
+      if (want !== anim.current.peek && !anim.current.finish) {
+        // التلميح بس اللي عليه transition ناعمة (data-peek)، القلب نفسه spring
+        const setPeek = (i, deg) => {
+          const el = leafRefs.current[i]
+          if (el) el.dataset.peek = 'true'
+          paint(i, deg)
+        }
+        if (anim.current.peek !== null) setPeek(anim.current.peek, 0)
         anim.current.peek = want
-        if (want !== null) paint(want, 14)
+        if (want !== null) setPeek(want, 12)
       }
       return
     }
     const dx = e.clientX - d.x0
     if (Math.abs(dx) > 4) d.moved = true
     // السحب لليمين بيقلب لقدّام (الورقة رايحة ناحية اليمين)
-    const span = d.half * (mobile ? 1.1 : 2)
+    const span = d.half * (mobile ? 1.1 : 1.25)
     const p = clamp((d.dir === 1 ? dx : -dx) / span, 0, 1)
     const deg = d.dir === 1 ? p * 180 : 180 - p * 180
     const now = performance.now()
@@ -355,17 +419,13 @@ export default function FlipBook({ tales, title = 'قصص قاسم', author = '�
       else prev()
       return
     }
-    const fast = Math.abs(d.v) > 0.35
-    const forward =
-      d.dir === 1 ? d.deg > 90 || (fast && d.v > 0) : !(d.deg < 90 || (fast && d.v < 0))
-    if (d.dir === 1) {
-      if (forward) animate(d.i, d.deg, 180, () => setCurrent(c + 1))
-      else animate(d.i, d.deg, 0, () => setCurrent(c))
-    } else {
-      const back = d.deg < 90 || (fast && d.v < 0)
-      if (back) animate(d.i, d.deg, 0, () => setCurrent(c - 1))
-      else animate(d.i, d.deg, 180, () => setCurrent(c))
-    }
+    // Apple: نختار الوجهة من مكان الوقوف المتوقع (السرعة)، ونسلّم السرعة للـspring
+    const vDeg = d.v * 1000 // درجة/ثانية
+    const landing = d.deg + project(vDeg)
+    const toEnd = landing > 90
+    const target = toEnd ? 180 : 0
+    const nextCurrent = d.dir === 1 ? (toEnd ? c + 1 : c) : toEnd ? c : c - 1
+    animate(d.i, d.deg, target, () => setCurrent(nextCurrent), vDeg)
   }
 
   const onPointerLeave = () => {
@@ -392,7 +452,7 @@ export default function FlipBook({ tales, title = 'قصص قاسم', author = '�
     }
   }
 
-  useEffect(() => () => cancelAnimationFrame(anim.current.raf), [])
+  useEffect(() => () => anim.current.unreg?.(), [])
 
   const label = mobile
     ? `صفحة ${Math.min(current + 1, N)} من ${N}`

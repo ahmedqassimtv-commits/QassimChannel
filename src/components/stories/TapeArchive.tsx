@@ -1,3 +1,4 @@
+import { LOGO_PATH } from "../brand/BrandLogo.jsx"
 import * as React from "react"
 
 /* ══ أرشيف الحكايات — «الشريط اللي بيلم الحكايات» ═══════════════════════
@@ -140,13 +141,14 @@ function HuggoBadge({ size, brand = "HUGGO", className }: { size?: number; brand
       <path d={BADGE_OUT} style={{ fill: "var(--ht-paper)" }} />
       <path d={BADGE_IN} style={{ fill: "var(--ht-ink)" }} />
       <circle cx="60" cy="60" r="37" fill="none" style={{ stroke: "var(--ht-lime)" }} strokeWidth="1.6" strokeDasharray="2.5 3.5" />
-      <text x="60" y="66" textAnchor="middle" className="ht-badge-word" style={{ fill: "var(--ht-lime)" }} fontSize={brand.length > 6 ? 19 : 24}>
-        {brand}
-      </text>
+      {/* شعار قاسمز الحقيقي بدل كلمة مكتوبة (brand فاضل للـaria بس) */}
+      <g transform="translate(60 57) scale(0.044) translate(-741 -279)" style={{ fill: "var(--ht-lime)" }} data-brand={brand}>
+        <path fillRule="evenodd" d={LOGO_PATH} />
+      </g>
       <text x="60" y="82" textAnchor="middle" className="ht-badge-sub" style={{ fill: "var(--ht-paper)" }} fontSize="8.5" letterSpacing="2">
         ARCHIVE
       </text>
-      <path d="M44 40 l3 -6 l3 6 l-3 6z M70 40 l3 -6 l3 6 l-3 6z" style={{ fill: "var(--ht-yellow)" }} />
+      <path d="M44 38 l3 -6 l3 6 l-3 6z M70 38 l3 -6 l3 6 l-3 6z" style={{ fill: "var(--ht-lime2)" }} />
       <ellipse cx="42" cy="30" rx="16" ry="6" fill="#fff" opacity="0.18" transform="rotate(-28 42 30)" />
     </svg>
   )
@@ -200,35 +202,23 @@ function Tape({ kind, x, y, w, r, peel }: { kind: RollKind; x: string; y: string
   )
 }
 
+/** نجمة قاسمز (✦) بدل الوردة — نفس الزخرفة اللي على الغلاف والهوية. */
 function Daisy({ petals, color, center, className }: { petals: number; color: string; center: string; className: string }) {
-  const angles = Array.from({ length: petals }, (_, i) => (i * 360) / petals)
-  const rx = petals > 6 ? 11 : 15
+  // petals بيحدد شكل النجمة: 4 سنون (رفيعة) أو 8 (نجمة مزدوجة)
+  const spikes = petals > 7 ? 8 : 4
+  const pts: string[] = []
+  for (let i = 0; i < spikes * 2; i++) {
+    const a = (i * Math.PI) / spikes - Math.PI / 2
+    const r = i % 2 === 0 ? (spikes === 8 && i % 4 === 2 ? 34 : 52) : 12
+    pts.push((Math.cos(a) * r).toFixed(2) + "," + (Math.sin(a) * r).toFixed(2))
+  }
+  const d = "M" + pts.join(" L") + "Z"
   return (
     <svg className={"ht-daisy " + className} viewBox="-62 -62 124 124" aria-hidden="true">
-      <g fill="#fffdf4" stroke="#fffdf4" strokeWidth="10" strokeLinejoin="round">
-        {angles.map((a) => (
-          <ellipse key={a} cx="0" cy="-25" rx={rx} ry="25" transform={"rotate(" + a + ")"} />
-        ))}
-      </g>
-      <g style={{ fill: color }}>
-        {angles.map((a) => (
-          <ellipse key={a} cx="0" cy="-25" rx={rx} ry="25" transform={"rotate(" + a + ")"} />
-        ))}
-      </g>
-      <g fill="#000" opacity="0.08">
-        {angles.map((a) => (
-          <ellipse key={a} cx="3" cy="-22" rx={rx * 0.5} ry="18" transform={"rotate(" + a + ")"} />
-        ))}
-      </g>
-      <circle r="15" style={{ fill: center }} />
-      <g fill="#7c3510" opacity="0.45">
-        <circle cx="-5" cy="-4" r="2" />
-        <circle cx="4" cy="-6" r="1.8" />
-        <circle cx="6" cy="4" r="2" />
-        <circle cx="-3" cy="6" r="1.6" />
-        <circle cx="0" cy="0" r="1.6" />
-      </g>
-      <ellipse cx="-16" cy="-34" rx="6" ry="13" fill="#fff" opacity="0.4" transform="rotate(-32 -16 -34)" />
+      <path d={d} fill="none" stroke="rgba(0,0,0,.25)" strokeWidth="10" strokeLinejoin="round" transform="translate(2 4)" />
+      <path d={d} style={{ fill: color, stroke: "var(--ht-ink)" }} strokeWidth="4" strokeLinejoin="round" />
+      <circle r="6" style={{ fill: center }} />
+      <path d="M-6 -30 L0 -44 L4 -28Z" fill="#fff" opacity="0.35" />
     </svg>
   )
 }
@@ -238,19 +228,19 @@ function GiftBow({ uid }: { uid: string }) {
     <svg className="ht-gift-bow" viewBox="0 0 220 160" aria-hidden="true">
       <defs>
         <linearGradient id={uid + "sat"} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#ffffff" />
-          <stop offset="0.45" stopColor="#f3eef5" />
-          <stop offset="0.7" stopColor="#ffffff" />
-          <stop offset="1" stopColor="#ddd3e2" />
+          <stop offset="0" style={{ stopColor: "var(--ht-lime2)" }} />
+          <stop offset="0.45" style={{ stopColor: "var(--ht-lime)" }} />
+          <stop offset="0.7" style={{ stopColor: "var(--ht-lime2)" }} />
+          <stop offset="1" style={{ stopColor: "var(--ht-lime3)" }} />
         </linearGradient>
       </defs>
-      <g filter="drop-shadow(0 6px 5px rgba(120,0,60,.28))">
+      <g filter="drop-shadow(0 6px 5px rgba(0,0,0,.35))">
         <path d="M110 80 C96 104 74 132 62 154 L84 150 L92 166 C102 140 108 112 114 86Z" fill={"url(#" + uid + "sat)"} />
         <path d="M110 80 C124 104 146 130 160 152 L138 150 L130 165 C120 140 112 112 106 86Z" fill={"url(#" + uid + "sat)"} />
         <path d="M108 78 C80 40 30 26 22 52 C14 80 64 96 108 84Z" fill={"url(#" + uid + "sat)"} />
         <path d="M112 78 C140 40 190 26 198 52 C206 80 156 96 112 84Z" fill={"url(#" + uid + "sat)"} />
-        <path d="M106 80 C82 58 50 48 40 58 C60 58 84 70 104 84Z" fill="#cdbfd6" opacity="0.6" />
-        <path d="M114 80 C138 58 170 48 180 58 C160 58 136 70 116 84Z" fill="#cdbfd6" opacity="0.6" />
+        <path d="M106 80 C82 58 50 48 40 58 C60 58 84 70 104 84Z" style={{ fill: "var(--ht-lime3)" }} opacity="0.6" />
+        <path d="M114 80 C138 58 170 48 180 58 C160 58 136 70 116 84Z" style={{ fill: "var(--ht-lime3)" }} opacity="0.6" />
         <ellipse cx="110" cy="81" rx="15" ry="13" fill={"url(#" + uid + "sat)"} />
         <ellipse cx="106" cy="77" rx="6" ry="3.5" fill="#fff" />
       </g>
@@ -1048,23 +1038,30 @@ export default function TapeArchive({
                 <rect y="11" width="300" height="1.5" fill="rgba(0,0,0,.08)" />
                 <rect x="120" y="18" width="300" height="3" fill="rgba(255,255,255,.14)" />
               </pattern>
-              <pattern id={uid + "mt"} width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(-62)">
-                <rect width="10" height="10" fill="#ecdba9" />
-                <rect width="10" height="1.2" fill="#d9c387" />
-                <rect y="5" width="10" height="0.8" fill="#f6e9c3" />
+              {/* شريط فيلم بدل شريط اللزق: ثقوب على الطرفين وكادرات في النص */}
+              <pattern id={uid + "mt"} width="120" height={MK_W} patternUnits="userSpaceOnUse" patternTransform={"translate(0 " + -MK_W / 2 + ")"}>
+                <rect width="120" height={MK_W} fill="#0c100f" />
+                {[0, 20, 40, 60, 80, 100].map((x) => (
+                  <g key={x}>
+                    <rect x={x + 6} y="6" width="9" height="7" rx="2" style={{ fill: "var(--ht-paper)" }} opacity="0.85" />
+                    <rect x={x + 6} y={MK_W - 13} width="9" height="7" rx="2" style={{ fill: "var(--ht-paper)" }} opacity="0.85" />
+                  </g>
+                ))}
+                <rect x="4" y="19" width="112" height={MK_W - 38} rx="3" style={{ fill: "var(--ht-grass2)" }} opacity="0.55" />
+                <rect x="4" y="19" width="112" height={MK_W - 38} rx="3" fill="none" style={{ stroke: "var(--ht-lime)" }} strokeOpacity="0.25" />
               </pattern>
               <linearGradient id={uid + "me"} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0" stopColor="#a8884a" stopOpacity="0.35" />
+                <stop offset="0" stopColor="#000" stopOpacity="0.35" />
                 <stop offset="0.07" stopColor="#fff" stopOpacity="0.25" />
                 <stop offset="0.5" stopColor="#fff" stopOpacity="0" />
                 <stop offset="0.93" stopColor="#000" stopOpacity="0.04" />
-                <stop offset="1" stopColor="#7d5d22" stopOpacity="0.38" />
+                <stop offset="1" stopColor="#000" stopOpacity="0.4" />
               </linearGradient>
               <linearGradient id={uid + "mcu"} x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0" stopColor="#bba061" />
-                <stop offset="0.35" stopColor="#f7ebc4" />
-                <stop offset="0.7" stopColor="#d9c183" />
-                <stop offset="1" stopColor="#8f7339" />
+                <stop offset="0" stopColor="#0a0d0c" />
+                <stop offset="0.35" stopColor="#3a4441" />
+                <stop offset="0.7" stopColor="#1a201e" />
+                <stop offset="1" stopColor="#050706" />
               </linearGradient>
             </defs>
             <g mask={"url(#" + uid + "mm)"}>
@@ -1079,21 +1076,23 @@ export default function TapeArchive({
             </g>
             {MK_STRIPS.map((s, i) => (
               <g key={i} transform={"translate(" + s.cx + " " + s.cy + ") rotate(" + s.a + ")"}>
-                <g className="ht-mk-body" filter="drop-shadow(0 3px 2px rgba(80,30,0,.28))">
+                <g className="ht-mk-body" filter="drop-shadow(0 4px 4px rgba(0,0,0,.35))">
                   <rect y={-MK_W / 2} height={MK_W} width="0" fill={"url(#" + uid + "mt)"} />
                   <rect y={-MK_W / 2} height={MK_W} width="0" fill={"url(#" + uid + "me)"} />
                 </g>
                 <g className="ht-mk-curl" opacity="0">
-                  <rect x="4" y={-MK_W / 2 - 4} width="34" height={MK_W + 8} rx="10" fill="rgba(70,25,0,.25)" />
+                  <rect x="4" y={-MK_W / 2 - 4} width="34" height={MK_W + 8} rx="10" fill="rgba(0,0,0,.3)" />
                   <rect x="-18" y={-MK_W / 2 - 8} width="34" height={MK_W + 16} rx="17" fill={"url(#" + uid + "mcu)"} />
                 </g>
                 <g className="ht-mk-lead" opacity="0">
-                  <circle r="80" cy="6" fill="rgba(70,25,0,.25)" />
-                  <circle r="78" fill="#e8d39c" />
-                  <circle r="78" fill="none" stroke="#c9ad6a" strokeWidth="14" strokeDasharray="1 3" opacity="0.5" />
-                  <circle r="50" fill="#b98647" />
-                  <circle r="42" style={{ fill: "var(--ht-orange)" }} />
-                  <text y="5" textAnchor="middle" className="ht-mk-lead-t" fill="#fffdf4" fontSize="17">
+                  <circle r="80" cy="6" fill="rgba(0,0,0,.3)" />
+                  <circle r="78" fill="#101413" />
+                  <circle r="70" fill="none" style={{ stroke: "var(--ht-lime)" }} strokeWidth="2" strokeDasharray="2 6" opacity="0.6" />
+                  {[0, 72, 144, 216, 288].map((a) => (
+                    <circle key={a} r="13" cx="0" cy="-48" fill="#1e2523" transform={"rotate(" + a + ")"} />
+                  ))}
+                  <circle r="42" style={{ fill: "var(--ht-grass2)" }} />
+                  <text y="5" textAnchor="middle" className="ht-mk-lead-t" style={{ fill: "var(--ht-lime)" }} fontSize="17">
                     {brand}
                   </text>
                   <ellipse cx="-34" cy="-46" rx="20" ry="8" fill="#fff" opacity="0.35" transform="rotate(-36 -34 -46)" />
@@ -1294,13 +1293,13 @@ const CSS = `
 .ht-lemon{aspect-ratio:300/380;background:#fffcf2;box-shadow:0 2px 2px rgba(0,0,0,.08),0 22px 30px -12px rgba(0,40,10,.55);overflow:hidden}
 .ht-lemon-svg{display:block;width:100%;height:100%;max-width:none}
 
-.ht-gift{position:relative;aspect-ratio:1/.86;border-radius:6px;background:repeating-linear-gradient(90deg,#ff3d8f 0 20px,#ff86c0 20px 34px,#ffe1ef 34px 38px,#ff86c0 38px 52px);box-shadow:inset 0 0 0 1px rgba(150,0,60,.2),inset -14px -18px 30px rgba(120,0,50,.25),inset 10px 12px 24px rgba(255,255,255,.25),0 30px 40px -14px rgba(0,40,10,.6),0 6px 0 #d42a72}
-.ht-gift::before{content:"";position:absolute;right:0;top:0;bottom:0;width:38%;border-radius:0 6px 6px 0;background:radial-gradient(circle,#fff 0 2.2px,transparent 2.6px) 0 0/14px 14px,#ff5aa2;box-shadow:inset 0 0 0 1px rgba(150,0,60,.2),inset -12px -14px 26px rgba(120,0,50,.25)}
-.ht-gift-rib{position:absolute;background:linear-gradient(90deg,#e7dfea,#fff 30%,#f4eef6 60%,#d8cde0);box-shadow:0 0 6px rgba(120,0,50,.25)}
+.ht-gift{position:relative;aspect-ratio:1/.86;border-radius:6px;background:repeating-linear-gradient(90deg,var(--ht-grass) 0 20px,var(--ht-grass2) 20px 34px,rgba(255,255,255,.1) 34px 38px,var(--ht-grass2) 38px 52px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08),inset -14px -18px 30px rgba(0,0,0,.35),inset 10px 12px 24px rgba(255,255,255,.08),0 30px 40px -14px rgba(0,0,0,.6),0 6px 0 var(--ht-shadow)}
+.ht-gift::before{content:"";position:absolute;right:0;top:0;bottom:0;width:38%;border-radius:0 6px 6px 0;background:radial-gradient(circle,var(--ht-lime) 0 2px,transparent 2.6px) 0 0/14px 14px,var(--ht-shadow);box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),inset -12px -14px 26px rgba(0,0,0,.35)}
+.ht-gift-rib{position:absolute;background:linear-gradient(90deg,var(--ht-lime3),var(--ht-lime2) 30%,var(--ht-lime) 60%,var(--ht-lime3));box-shadow:0 0 6px rgba(0,0,0,.3)}
 .ht-gift-rib-v{left:57%;top:0;bottom:0;width:9%}
-.ht-gift-rib-h{top:46%;left:0;right:0;height:10%;background:linear-gradient(180deg,#e7dfea,#fff 30%,#f4eef6 60%,#d8cde0)}
+.ht-gift-rib-h{top:46%;left:0;right:0;height:10%;background:linear-gradient(180deg,var(--ht-lime3),var(--ht-lime2) 30%,var(--ht-lime) 60%,var(--ht-lime3))}
 .ht-gift-bow{position:absolute;left:61.5%;top:51%;width:62%;height:auto;max-width:none;transform:translate(-50%,-50%)}
-.ht-gift-tag{position:absolute;left:8%;top:9%;padding:8px 14px 10px;background:var(--ht-paper);color:var(--ht-brown);font-family:var(--ht-hand);font-weight:700;font-size:clamp(18px,1.6cqw,24px);line-height:.95;rotate:-9deg;border-radius:4px 14px 14px 4px;box-shadow:0 8px 12px -4px rgba(100,0,40,.4)}
+.ht-gift-tag{position:absolute;left:8%;top:9%;padding:8px 14px 10px;background:var(--ht-paper);color:var(--ht-brown);font-family:var(--ht-hand);font-weight:700;font-size:clamp(18px,1.6cqw,24px);line-height:.95;rotate:-9deg;border-radius:4px 14px 14px 4px;box-shadow:0 8px 12px -4px rgba(0,0,0,.4)}
 .ht-gift-tag small{font-size:.65em;font-weight:500}
 
 .ht-ticket{display:flex;flex-direction:column;gap:2px;padding:20px 18px 18px;background:linear-gradient(170deg,#e6bf86,#cf9f62);color:var(--ht-cocoa);border-radius:4px;box-shadow:0 18px 24px -10px rgba(0,40,10,.55);clip-path:polygon(0 0,100% 0,100% 40%,95% 50%,100% 60%,100% 100%,0 100%,0 60%,5% 50%,0 40%)}
@@ -1323,9 +1322,9 @@ const CSS = `
 .ht-hint{font-family:var(--ht-hand);font-weight:700;font-size:clamp(20px,1.8cqw,28px);color:var(--ht-yellow);margin:.1em 0 .5em;rotate:-3deg}
 .ht-tp-in{position:absolute;inset:0;display:block;clip-path:polygon(0 4%,3% 22%,0 40%,4% 58%,1% 78%,3% 100%,97% 96%,100% 78%,96% 60%,100% 42%,97% 22%,100% 0)}
 .ht-tp-clear .ht-tp-in{background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.18) 18%,rgba(255,255,255,.08) 55%,rgba(255,255,255,.32)),rgba(240,250,220,.28);box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
-.ht-tp-masking .ht-tp-in{background:repeating-linear-gradient(118deg,rgba(150,115,50,.12) 0 1px,transparent 1px 4px),linear-gradient(180deg,#efe0b5,#e5d29d 50%,#dcc68c);opacity:.94}
+.ht-tp-masking .ht-tp-in{background:radial-gradient(circle,var(--ht-paper) 0 2px,transparent 2.4px) 4px 3px/12px 100% repeat-x,radial-gradient(circle,var(--ht-paper) 0 2px,transparent 2.4px) 4px calc(100% - 3px)/12px 100% repeat-x,linear-gradient(180deg,#111614,#1b2220 50%,#0d1110);opacity:.95}
 .ht-tp-print .ht-tp-in{background:repeating-linear-gradient(90deg,transparent 0 14px,rgba(0,0,0,.35) 14px 17px,transparent 17px 24px),linear-gradient(180deg,var(--ht-lime2),var(--ht-lime));opacity:.92}
-.ht-tp-washi .ht-tp-in{background:radial-gradient(circle,rgba(255,255,255,.9) 0 2px,transparent 2.6px) 0 0/11px 11px,repeating-linear-gradient(90deg,#ffd51f 0 10px,#ffc22a 10px 20px);opacity:.9}
+.ht-tp-washi .ht-tp-in{background:radial-gradient(circle,rgba(255,255,255,.7) 0 2px,transparent 2.6px) 0 0/11px 11px,repeating-linear-gradient(90deg,var(--ht-lime) 0 10px,var(--ht-lime3) 10px 20px);opacity:.9}
 .ht-tp-duct .ht-tp-in{background:repeating-linear-gradient(45deg,rgba(255,255,255,.18) 0 1px,transparent 1px 4px),repeating-linear-gradient(-45deg,rgba(0,0,0,.08) 0 1px,transparent 1px 4px),linear-gradient(180deg,#d5dade,#c3c9ce 50%,#b4bbc1);box-shadow:0 3px 5px rgba(60,20,0,.3)}
 
 .ht-tape{position:absolute;inset:0;z-index:4;pointer-events:none}
@@ -1343,12 +1342,12 @@ const CSS = `
 .ht-roll-cap .ht-face{--d:100%;width:100%;height:100%}
 .ht-k-clear{--band:#f3f0e1;--edge:#d7cfae}
 .ht-k-print{--band:var(--ht-lime);--edge:var(--ht-lime3)}
-.ht-k-masking{--band:#eadaa8;--edge:#c6ab6a}
-.ht-k-washi{--band:#ffd02a;--edge:#e2a400}
+.ht-k-masking{--band:#1a201e;--edge:#060807}
+.ht-k-washi{--band:var(--ht-lime);--edge:var(--ht-lime3)}
 .ht-k-duct{--band:#bcc3c9;--edge:#868e96}
 
 .ht-face{--d:160px;position:relative;width:var(--d);height:var(--d);border-radius:50%;container-type:size;background:radial-gradient(circle,transparent 0 30%,var(--ring2) 30.5%,var(--ring1) 34%,var(--ring2) 62%,var(--ring1) 97%,var(--rim) 99%),repeating-radial-gradient(circle,var(--ring1) 0 1.2%,var(--ring2) 1.2% 2%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.45),inset -8px -10px 18px rgba(0,0,0,.14)}
-.ht-face-core{position:absolute;inset:27%;border-radius:50%;background:radial-gradient(circle,#b88446 0 70%,#a06f35 75%,#c9975a 84%,#946130 100%);box-shadow:inset 0 0 0 1px rgba(0,0,0,.2)}
+.ht-face-core{position:absolute;inset:27%;border-radius:50%;background:radial-gradient(circle,#2a312f 0 70%,#151a19 75%,#38413e 84%,#0c0f0e 100%);box-shadow:inset 0 0 0 1px rgba(0,0,0,.2)}
 .ht-face-label{position:absolute;inset:31%;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--lab);color:var(--labink);text-align:center;line-height:.9;box-shadow:inset 0 0 0 2px rgba(255,255,255,.55),inset 0 -3px 6px rgba(0,0,0,.18)}
 .ht-face-brand{font-weight:800;font-stretch:75%;font-size:9.5cqw;letter-spacing:.02em}
 .ht-face-kind{font-weight:700;font-stretch:85%;text-transform:uppercase;font-size:4.6cqw;letter-spacing:.12em;margin-top:2px;opacity:.85}
