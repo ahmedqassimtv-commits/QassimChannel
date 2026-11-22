@@ -78,7 +78,7 @@
   color: var(--qz-accent);
 }
 .qz-gs-title {
-  font-family: var(--font-quiver);
+  font-family: var(--font-display);
   font-weight: 700;
   font-size: clamp(2.4rem, 6vw, 5.4rem);
   line-height: 1.25;

@@ -1,6 +1,10 @@
 /* ══════════════════════════════════════════════════════════════════════
    QASSIMZ — نظام التصميم الجديد (2026-11)
-   الخط الأساسي ثمانية (Thmanyah Sans)، ونص المقالات ثمانية Text، وكتاب القصص أميري.
+   الخطوط (زي مرجع أحمد):
+   - العناوين الكبيرة: ثمانية Display (Thmanyah Serif Display) — --font-display
+   - الواجهة والنصوص القصيرة والأزرار والشارات: ثمانية Sans — --font-sans-ui / --font-quiver
+   - نص المقالات الطويل: ثمانية Text — --font-text
+   - كتاب القصص: أميري — --font-book
    كل الألوان من متغيرات الثيم (--qz-*) فالثيمات الثلاثة شغالة لوحدها.
 
    ملاحظات خط:
@@ -41,32 +45,32 @@
 
 /* ── الطباعة ───────────────────────────────────────────────────────── */
 .qz-display {
-  font-family: var(--font-quiver);
-  font-weight: 300;
+  font-family: var(--font-display);
+  font-weight: 700;
   font-size: clamp(3.1rem, 9.2vw, 9.25rem);
   line-height: 1.12;
   color: var(--qz-text);
   text-wrap: balance;
 }
 .qz-h1 {
-  font-family: var(--font-quiver);
-  font-weight: 300;
+  font-family: var(--font-display);
+  font-weight: 700;
   font-size: clamp(2.5rem, 6vw, 5.4rem);
   line-height: 1.15;
   color: var(--qz-text);
   text-wrap: balance;
 }
 .qz-h2 {
-  font-family: var(--font-quiver);
-  font-weight: 400;
+  font-family: var(--font-display);
+  font-weight: 700;
   font-size: clamp(1.85rem, 3.6vw, 3.1rem);
   line-height: 1.22;
   color: var(--qz-text);
   text-wrap: balance;
 }
 .qz-h3 {
-  font-family: var(--font-quiver);
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-weight: 700;
   font-size: clamp(1.15rem, 1.6vw, 1.4rem);
   line-height: 1.5;
   color: var(--qz-text);

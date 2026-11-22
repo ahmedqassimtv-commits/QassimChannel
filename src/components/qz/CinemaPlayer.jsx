@@ -104,7 +104,7 @@ function Player({ video, scope, onClose }) {
         >
           <div className="min-w-0">
             {video.category && <p className="text-xs font-semibold text-[color:var(--qz-accent)]">{video.category}</p>}
-            <h2 className="mt-1 font-[family-name:var(--font-quiver)] text-xl font-semibold leading-snug sm:text-2xl">{video.title}</h2>
+            <h2 className="mt-1 font-[family-name:var(--font-display)] text-xl font-semibold leading-snug sm:text-2xl">{video.title}</h2>
             {video.summary && <p className="mt-1 hidden max-w-2xl text-sm leading-7 text-white/65 sm:block">{video.summary}</p>}
           </div>
           <a

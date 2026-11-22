@@ -171,7 +171,7 @@
   --font-book: 'Amiri', 'Thmanyah Text', serif;
   /* النصوص والفقرات بثمانية (Quiverleaf خط عرض: وصلاته الطويلة بتتعب العين في الأحجام الصغيرة) */
   --font-sans-ui: 'Thmanyah Sans', system-ui, sans-serif;
-  --font-display: var(--font-quiver);
+  --font-display: 'Thmanyah Display', 'Thmanyah Sans', serif;
   --font-text: 'Thmanyah Text', 'Thmanyah Sans', serif;
   /* ثمانية بنفس إعداداته الأصلية لأي مكان عايز يستخدمه صراحةً */
   --font-thmanyah: 'Thmanyah Sans', system-ui, sans-serif;
