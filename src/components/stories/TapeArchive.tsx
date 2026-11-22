@@ -1487,11 +1487,11 @@ html[data-theme='gold'] .ht-root{--ht-lime:#c9a54e;--ht-lime2:#e7cd85;--ht-lime3
 /* ── العربي: من غير تتبّع حروف، وسطور أوسع ── */
 .ht-root,.ht-root *{letter-spacing:normal!important}
 .ht-root{direction:rtl}
-.ht-h1{line-height:1.05;font-size:clamp(70px,17cqw,260px);text-transform:none}
+.ht-h1{line-height:1.05;font-size:clamp(64px,13.5cqw,210px);text-transform:none}
 .ht-h1-line{gap:.15em}
 .ht-collage-h{line-height:1.15}
 .ht-card-t{line-height:1.45;font-size:clamp(22px,2.8cqw,42px)}
-.ht-mask-h{line-height:1.12}
+.ht-mask-h{line-height:1.12;font-size:clamp(56px,8.6cqw,140px)}
 .ht-ml-wrap{padding:.06em .06em .12em}
 .ht-shop-h{line-height:1.1}
 .ht-foot-h{line-height:1.25}
@@ -1506,6 +1506,13 @@ html[data-theme='gold'] .ht-root{--ht-lime:#c9a54e;--ht-lime2:#e7cd85;--ht-lime3
 .ht-hero-note{left:auto;right:clamp(14px,4cqw,64px)}
 .ht-cue{right:auto;left:clamp(14px,4cqw,64px)}
 .ht-i-head{left:auto;right:2%}
+/* RTL: اللوحة متقلوبة (كل عنصر من اليمين بنفس مسافته من الشمال في الأصل) */
+.ht-i-card{left:auto;right:51.5%}
+.ht-i-note{left:auto;right:7%}
+.ht-i-lemon{left:auto;right:3%}
+.ht-i-gift{left:auto;right:57%}
+.ht-i-ticket{left:auto;right:31%}
+.ht-i-seal{left:auto;right:88%}
 .ht-mask-h{left:auto;right:clamp(16px,5cqw,80px)}
 .ht-mask-copy{left:auto;right:clamp(16px,5cqw,80px)}
 .ht-mask-roll{right:auto;left:clamp(16px,7cqw,120px)}
@@ -1525,7 +1532,8 @@ html[data-theme='gold'] .ht-root{--ht-lime:#c9a54e;--ht-lime2:#e7cd85;--ht-lime3
 .ht-prod-photo img{width:100%;height:100%;object-fit:cover;transition:transform .8s cubic-bezier(.2,.8,.2,1)}
 .ht-prod:hover .ht-prod-photo img{transform:scale(1.06)}
 @container ht (max-width:720px){
-.ht-i-head{right:auto}
+.ht-i-head,.ht-i-card,.ht-i-note,.ht-i-lemon,.ht-i-gift,.ht-i-ticket,.ht-i-seal{right:auto}
+.ht-mask-h{font-size:15cqw}
 .ht-h1{font-size:clamp(64px,24cqw,240px)}
 .ht-mask-roll{left:50%}
 }
