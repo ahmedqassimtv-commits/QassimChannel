@@ -324,14 +324,6 @@
   margin-top: 0.8em;
   text-indent: 1.5em;
 }
-.fb-tale-body p:first-child::first-letter {
-  float: right;
-  margin-inline-end: 0.12em;
-  font-family: var(--font-quiver);
-  font-size: 3.1em;
-  line-height: 0.9;
-  color: var(--fb-accent);
-}
 .fb-tale-note {
   margin-top: 1.2em;
   font-style: italic;
