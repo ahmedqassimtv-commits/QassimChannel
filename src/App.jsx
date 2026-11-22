@@ -2,8 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useSta
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import Lenis from 'lenis'
-import NightScene from './components/scene/NightScene.jsx'
-import SiteCursor from './components/cursor/SiteCursor.jsx'
+import LiquidScene from './components/scene/LiquidScene.jsx'
 import SiteNav from './components/nav/SiteNav.jsx'
 import MobileTabBar from './components/nav/MobileTabBar.jsx'
 import Footer from './components/layout/Footer.jsx'
@@ -24,22 +23,33 @@ const OnAir = lazy(() => import('./pages/OnAir.jsx'))
 const About = lazy(() => import('./pages/About.jsx'))
 const Books = lazy(() => import('./pages/Books.jsx'))
 
+// مفيش لودر ظاهر: الصفحات بتتحمّل في الخلفية بعد أول تحميل (preloadPages)،
+// فالانتقال بيبقى تبديل ناعم بس
 function PageFallback() {
-  return (
-    <div className="flex min-h-[70vh] items-center justify-center" role="status" aria-live="polite">
-      <span className="sr-only">جارٍ تحميل الصفحة…</span>
-      <span className="h-px w-24 overflow-hidden rounded-full bg-[rgb(var(--qz-mint-rgb)/0.12)]" aria-hidden="true">
-        <span className="block h-full w-1/2 animate-[qz-load_1.1s_ease-in-out_infinite] rounded-full bg-[color:var(--qz-accent)]" />
-      </span>
-    </div>
-  )
+  return <div className="min-h-[70vh]" role="status" aria-label="جارٍ تحميل الصفحة" />
+}
+
+const PAGES = [
+  () => import('./pages/Videos.jsx'),
+  () => import('./pages/Reviews.jsx'),
+  () => import('./pages/Stories.jsx'),
+  () => import('./pages/Articles.jsx'),
+  () => import('./pages/ArticleView.jsx'),
+  () => import('./pages/OnAir.jsx'),
+  () => import('./pages/About.jsx'),
+  () => import('./pages/Books.jsx'),
+]
+function preloadPages() {
+  const run = () => PAGES.forEach((load) => load().catch(() => {}))
+  if ('requestIdleCallback' in window) window.requestIdleCallback(run, { timeout: 3000 })
+  else window.setTimeout(run, 1500)
 }
 
 /* ══ الانتقال بين الصفحات ═════════════════════════════════════════════
    الصفحة القديمة بتنسحب لورا (blur + تصغير بسيط)، وبعد ما تخلص بنرجع
    لأول الصفحة، والجديدة بتتجسّد من تحت. التمرير لفوق بيحصل بين الاتنين
    (مش قبل الخروج) عشان القديمة ماتقفزش وهي بتختفي.
-   الخلفية (NightScene) ثابتة تحت الاتنين. */
+   الخلفية الحية (LiquidScene) بتغيّر مزاجها مع كل قسم. */
 function AnimatedRoutes() {
   const location = useLocation()
   const reduce = useReducedMotion()
@@ -112,6 +122,8 @@ export default function App() {
   const lenisRef = useRef(null)
   const [searchOpen, setSearchOpen] = useState(false)
 
+  useEffect(() => preloadPages(), [])
+
   useEffect(() => {
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined
     const lenis = new Lenis({ duration: 1.1, smoothWheel: true })
@@ -161,8 +173,7 @@ export default function App() {
             انتقل للمحتوى
           </a>
           <LiquidGlassFilters />
-          <NightScene />
-          <SiteCursor />
+          <LiquidScene />
           <SiteNav searchOpen={searchOpen} setSearchOpen={setSearchOpen} />
           <main id="main" className="qz-main relative z-10 mx-auto min-h-[80vh] w-full max-w-[1320px] px-[var(--qz-page-x)] pb-24 pt-28 lg:pt-32">
             <AnimatedRoutes />

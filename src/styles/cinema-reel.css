@@ -23,17 +23,6 @@
     margin-top: -8rem;
   }
 }
-@media (hover: hover) and (pointer: fine) {
-  .qz-reel,
-  .qz-reel * {
-    cursor: none;
-  }
-  .qz-reel button,
-  .qz-reel-panel,
-  .qz-reel-panel * {
-    cursor: pointer;
-  }
-}
 @media (max-width: 639.98px) {
   .qz-reel {
     --pad-x: 2dvh;
@@ -538,48 +527,6 @@
 }
 .qz-reel-close:hover {
   background: rgb(0 0 0 / 0.6);
-}
-
-/* ── الماوس ── */
-.qz-reel-cursor {
-  position: fixed;
-  left: 0;
-  top: 0;
-  z-index: 95;
-  pointer-events: none;
-  opacity: 0;
-  will-change: transform, opacity;
-}
-.qz-reel-cursor-ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 1px solid rgb(255 255 255 / 0.45);
-}
-.qz-reel-cursor-state {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  transition: opacity 180ms ease;
-}
-.qz-reel-cursor-state span {
-  font: 600 12px var(--font-sans-ui);
-  color: #fff;
-}
-.qz-reel-cursor-up,
-.qz-reel-cursor-down {
-  position: absolute;
-  left: 50%;
-  transition: opacity 160ms ease;
-}
-.qz-reel-cursor-up {
-  bottom: calc(100% + 12px);
-  transform: translateX(-50%);
-}
-.qz-reel-cursor-down {
-  top: calc(100% + 12px);
-  transform: translateX(-50%) rotate(180deg);
 }
 
 /* ── الموبايل ── */

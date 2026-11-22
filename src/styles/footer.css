@@ -1,12 +1,101 @@
-/* الفوتر — اتنقل من qz.css */
-
-/* ══ الفوتر ═══════════════════════════════════════════════════════════ */
-.qz-footer-word {
-  font-family: var(--font-display);
-  font-weight: 300;
-  font-size: clamp(4.5rem, 17vw, 15rem);
-  line-height: 1;
-  color: transparent;
-  -webkit-text-stroke: 1px rgb(var(--qz-mint-rgb) / 0.22);
-  user-select: none;
+/* ══ الفوتر — src/components/layout/Footer.jsx ═════════════════════════ */
+.qz-foot-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 24px;
+  overflow: hidden;
+  padding: clamp(28px, 5vw, 56px);
+  border-radius: 32px;
+  background:
+    radial-gradient(80% 120% at 0% 100%, rgb(var(--qz-glow-rgb) / 0.16), transparent 60%),
+    rgb(var(--qz-ink-rgb) / 0.55);
+  box-shadow: inset 0 0 0 1px rgb(var(--qz-mint-rgb) / 0.08);
+}
+.qz-foot-copy {
+  max-width: 34rem;
+}
+.qz-foot-lead {
+  margin-top: 14px;
+  color: var(--qz-text-3);
+  line-height: 1.9;
+}
+.qz-foot-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 26px;
+}
+.qz-foot-face {
+  width: clamp(130px, 17vw, 230px);
+  height: auto;
+  margin-block: -8% calc(-1 * clamp(28px, 5vw, 56px));
+  filter: drop-shadow(0 20px 40px rgb(0 0 0 / 0.45));
+  pointer-events: none;
+}
+.qz-foot-map {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  padding: 44px 6px 36px;
+}
+.qz-foot-map > div {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.qz-foot-h {
+  margin-bottom: 4px;
+  color: var(--qz-text-3);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.qz-foot-map a {
+  width: fit-content;
+  color: var(--qz-text-2);
+  font-size: 15px;
+  transition: color 0.25s;
+}
+.qz-foot-map a:hover {
+  color: var(--qz-text);
+}
+.qz-foot-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 22px;
+  padding-top: 20px;
+  border-top: 1px solid var(--qz-line);
+  color: var(--qz-text-3);
+  font-size: 12.5px;
+}
+.qz-foot-bar > p:first-of-type {
+  flex: 1;
+}
+.qz-foot-logo {
+  color: var(--qz-text-2);
+}
+.qz-foot-top {
+  border: 0;
+  background: none;
+  color: var(--qz-text-2);
+  font: inherit;
+  cursor: pointer;
+}
+.qz-foot-top:hover {
+  color: var(--qz-text);
+}
+@media (max-width: 640px) {
+  .qz-foot-card {
+    grid-template-columns: 1fr;
+  }
+  .qz-foot-face {
+    justify-self: start;
+    width: 120px;
+    margin: 0 0 calc(-1 * clamp(28px, 5vw, 56px));
+  }
+  .qz-foot-map {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }

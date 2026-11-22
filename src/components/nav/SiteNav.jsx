@@ -1,7 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import BrandLogo from '../brand/BrandLogo.jsx'
+import LogoIntro from './LogoIntro.jsx'
 import DaylightThemeSwitch from '../ui/DaylightThemeSwitch.jsx'
 import NavGlyph from './NavGlyph.jsx'
 import VerdictPlan from './VerdictPlan.jsx'
@@ -27,28 +27,25 @@ import { SPRINGS, kick, register, spring, springGroup } from '../../motion/sprin
 const AiHost = lazy(() => import('../ai/AiHost.jsx'))
 const HOST_SEEN = 'qz-host-seen'
 
-function useHostArrival(delay = 2400) {
-  const [arrived, setArrived] = useState(() => {
-    try {
-      return sessionStorage.getItem(HOST_SEEN) === '1'
-    } catch {
-      return false
-    }
-  })
+/* مع كل فتحة للموقع: لوجو قاسمز بيتكتب حرف حرف (LogoIntro)، وبعد ما
+   يخلص قاسم الافتراضي بيطلع مكانه بحركة. فقاعة «أهلاً» مرة واحدة في الزيارة. */
+function useHostArrival(delay = 2900) {
+  const [arrived, setArrived] = useState(false)
   const [hello, setHello] = useState(false)
   useEffect(() => {
-    if (arrived) return undefined
     const t = window.setTimeout(() => {
       setArrived(true)
-      setHello(true)
+      let seen = false
       try {
+        seen = sessionStorage.getItem(HOST_SEEN) === '1'
         sessionStorage.setItem(HOST_SEEN, '1')
       } catch {
         /* تصفح خاص */
       }
+      if (!seen) setHello(true)
     }, delay)
     return () => window.clearTimeout(t)
-  }, [arrived, delay])
+  }, [delay])
   useEffect(() => {
     if (!hello) return undefined
     const t = window.setTimeout(() => setHello(false), 5200)
@@ -344,11 +341,11 @@ export default function SiteNav({ searchOpen, setSearchOpen }) {
                 {!host.arrived ? (
                   <motion.div
                     key="logo"
-                    exit={{ opacity: 0, scale: 0.5, rotate: 12, filter: 'blur(6px)' }}
-                    transition={{ type: 'spring', stiffness: 420, damping: 30 }}
+                    exit={{ opacity: 0, scale: 0.6, y: -6, filter: 'blur(8px)' }}
+                    transition={{ type: 'spring', stiffness: 360, damping: 30 }}
                   >
                     <Link to="/" className="qz-nav-brand" aria-label="قاسمز — الرئيسية">
-                      <BrandLogo variant="glass" title="قاسمز" className="qz-nav-logo" />
+                      <LogoIntro className="qz-nav-logo" />
                     </Link>
                   </motion.div>
                 ) : (
@@ -356,9 +353,9 @@ export default function SiteNav({ searchOpen, setSearchOpen }) {
                     key="host"
                     type="button"
                     className="qz-host-bubble"
-                    initial={{ opacity: 0, scale: 0.3, rotate: -25 }}
-                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                    transition={{ type: 'spring', stiffness: 320, damping: 18 }}
+                    initial={{ opacity: 0, scale: 0.2, rotate: -30, filter: 'blur(8px)' }}
+                    animate={{ opacity: 1, scale: 1, rotate: 0, filter: 'blur(0px)' }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 17, delay: 0.12 }}
                     onClick={() => {
                       host.dismissHello()
                       setHostOpen((v) => !v)
