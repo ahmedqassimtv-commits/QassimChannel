@@ -5,14 +5,12 @@ import Lenis from 'lenis'
 import LiquidScene from './components/scene/LiquidScene.jsx'
 import SiteNav from './components/nav/SiteNav.jsx'
 import MobileTabBar from './components/nav/MobileTabBar.jsx'
-import SearchOverlay from './components/layout/SearchOverlay.jsx'
 import Footer from './components/layout/Footer.jsx'
 import BackToTop from './components/ui/BackToTop.jsx'
 import LiquidGlassFilters from './components/glass/LiquidGlassFilters.jsx'
 import { CinemaProvider } from './components/qz/CinemaPlayer.jsx'
 import { pageVariants, pageVariantsReduced } from './components/motion/Motion.jsx'
 import { setLenis } from './lib/scroll.js'
-import { playGlassTap } from './utils/glassSound.js'
 
 // تحميل الصفحات بشكل كسول لتقليل حزمة الصفحة الأولى
 const Home = lazy(() => import('./pages/Home.jsx'))
@@ -150,15 +148,6 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey)
   }, [])
 
-  // المؤثر الصوتي الزجاجي على أزرار المحتوى
-  useEffect(() => {
-    const handleGlobalClick = (e) => {
-      const btn = e.target.closest('main button, main [role="button"]')
-      if (btn && !btn.closest('[data-qz-silent]')) playGlassTap()
-    }
-    document.addEventListener('click', handleGlobalClick)
-    return () => document.removeEventListener('click', handleGlobalClick)
-  }, [])
 
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL}>
@@ -172,7 +161,7 @@ export default function App() {
           </a>
           <LiquidGlassFilters />
           <LiquidScene />
-          <SiteNav onOpenSearch={() => setSearchOpen(true)} />
+          <SiteNav searchOpen={searchOpen} setSearchOpen={setSearchOpen} />
           <main id="main" className="qz-main relative z-10 mx-auto min-h-[80vh] w-full max-w-[1320px] px-[var(--qz-page-x)] pb-24 pt-28 lg:pt-32">
             <AnimatedRoutes />
           </main>
@@ -181,7 +170,6 @@ export default function App() {
           <div className="hidden lg:block">
             <BackToTop lenisRef={lenisRef} />
           </div>
-          <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
         </div>
       </CinemaProvider>
     </BrowserRouter>

@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react'
-import { playGlassToggle } from '../../utils/glassSound.js'
 
 const CORE_W = 192
 const CORE_H = 112
@@ -1867,7 +1866,6 @@ export default function DaylightThemeSwitch({ theme = 'green', onCycleTheme, cla
         target = cfg.pos
         velocity = clamp(speed, -3, 3)
         moving = true
-        playGlassToggle(nextTheme !== 'blue')
         onCycleRef.current?.(nextTheme)
       }
       wake()
@@ -1882,7 +1880,6 @@ export default function DaylightThemeSwitch({ theme = 'green', onCycleTheme, cla
       const idx = THEME_ORDER.indexOf(themeRef.current)
       const nextIdx = (idx + 1) % THEME_ORDER.length
       const nextTheme = THEME_ORDER[nextIdx]
-      playGlassToggle(nextIdx > 0)
       onCycleRef.current?.(nextTheme)
     })
 
@@ -1896,7 +1893,6 @@ export default function DaylightThemeSwitch({ theme = 'green', onCycleTheme, cla
       const idx = THEME_ORDER.indexOf(themeRef.current)
       const nextIdx = (idx + dir + THEME_ORDER.length) % THEME_ORDER.length
       const nextTheme = THEME_ORDER[nextIdx]
-      playGlassToggle(nextIdx > 0)
       onCycleRef.current?.(nextTheme)
     })
 
