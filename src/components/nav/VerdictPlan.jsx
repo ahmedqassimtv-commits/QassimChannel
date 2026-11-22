@@ -132,7 +132,7 @@ export default function VerdictPlan({ onPick }) {
         <p className="qz-plan-price">
           <RollingNumber value={avg} className="qz-plan-num" />
           <span className="qz-plan-unit">
-            /10
+            من 10
             <small>متوسط الحكم</small>
           </span>
         </p>
