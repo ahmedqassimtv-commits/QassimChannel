@@ -1,11 +1,16 @@
-# Deploy old Qassimz site (React + Vite) to GitHub Pages
-# Site URL: https://ahmedqassimtv-commits.github.io/QassimChannel/
+# Deploy the QassimChannel site to GitHub Pages
 name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      merge_about:
+        description: Merge the requested About update before deploying
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -17,7 +22,23 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  merge_about:
+    if: github.event_name == 'workflow_dispatch' && inputs.merge_about == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Merge the reviewed About update
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh pr ready 14 --repo "${GITHUB_REPOSITORY}"
+          gh pr merge 14 --squash --delete-branch --repo "${GITHUB_REPOSITORY}"
+
   build:
+    if: github.event_name == 'push' || inputs.merge_about != true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,9 +49,7 @@ jobs:
       - run: npm ci
       - run: npm run build -- --base=/QassimChannel/
         env:
-          # رابط Worker قاسم الافتراضي (Settings › Secrets and variables › Actions › Variables)
           VITE_QZ_AI_ENDPOINT: ${{ vars.QZ_AI_ENDPOINT }}
-      # SPA fallback: serve index.html for unknown paths (react-router)
       - run: cp dist/index.html dist/404.html
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
@@ -38,6 +57,7 @@ jobs:
           path: dist
 
   deploy:
+    if: github.event_name == 'push' || inputs.merge_about != true
     needs: build
     runs-on: ubuntu-latest
     environment:
