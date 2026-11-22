@@ -12,7 +12,7 @@ const PALETTE = {
 
 const SECTIONS_CONFIG = {
   home: {
-    fractal4k: '/fractal/optimized/08.webp',
+    fractal4k: import.meta.env.BASE_URL + 'fractal/optimized/08.webp',
     customImage: '',
     darkness: 0.60,
     ribWidth: 44,
@@ -20,7 +20,7 @@ const SECTIONS_CONFIG = {
     tint: 'linear-gradient(150deg, var(--qz-ink) 0%, var(--qz-deep) 40%, var(--qz-forest) 75%, var(--qz-moss) 100%)',
   },
   movies: {
-    fractal4k: '/fractal/optimized/51.webp',
+    fractal4k: import.meta.env.BASE_URL + 'fractal/optimized/51.webp',
     customImage: '',
     darkness: 0.62,
     ribWidth: 40,
@@ -28,7 +28,7 @@ const SECTIONS_CONFIG = {
     tint: 'linear-gradient(145deg, var(--qz-ink) 0%, var(--qz-deep) 45%, var(--qz-x1) 100%)',
   },
   series: {
-    fractal4k: '/fractal/optimized/01.webp',
+    fractal4k: import.meta.env.BASE_URL + 'fractal/optimized/01.webp',
     customImage: '',
     darkness: 0.63,
     ribWidth: 36,
@@ -36,7 +36,7 @@ const SECTIONS_CONFIG = {
     tint: 'linear-gradient(160deg, var(--qz-ink) 0%, var(--qz-x4) 50%, var(--qz-moss) 100%)',
   },
   stories: {
-    fractal4k: '/fractal/optimized/106.webp',
+    fractal4k: import.meta.env.BASE_URL + 'fractal/optimized/106.webp',
     customImage: '',
     darkness: 0.64,
     ribWidth: 52,
@@ -44,7 +44,7 @@ const SECTIONS_CONFIG = {
     tint: 'linear-gradient(150deg, var(--qz-ink) 0%, var(--qz-x5) 45%, var(--qz-x2) 100%)',
   },
   videos: {
-    fractal4k: '/fractal/optimized/01.webp',
+    fractal4k: import.meta.env.BASE_URL + 'fractal/optimized/01.webp',
     customImage: '',
     darkness: 0.63,
     ribWidth: 38,
@@ -52,7 +52,7 @@ const SECTIONS_CONFIG = {
     tint: 'linear-gradient(150deg, var(--qz-ink) 0%, var(--qz-deep) 40%, var(--qz-moss) 100%)',
   },
   articles: {
-    fractal4k: '/fractal/optimized/106.webp',
+    fractal4k: import.meta.env.BASE_URL + 'fractal/optimized/106.webp',
     customImage: '',
     darkness: 0.70,
     ribWidth: 52,
@@ -60,7 +60,7 @@ const SECTIONS_CONFIG = {
     tint: 'linear-gradient(150deg, var(--qz-ink) 0%, var(--qz-deep) 65%, var(--qz-forest) 100%)',
   },
   social: {
-    fractal4k: '/fractal/optimized/51.webp',
+    fractal4k: import.meta.env.BASE_URL + 'fractal/optimized/51.webp',
     customImage: '',
     darkness: 0.60,
     ribWidth: 42,

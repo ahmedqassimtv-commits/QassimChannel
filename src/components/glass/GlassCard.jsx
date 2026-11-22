@@ -9,7 +9,7 @@ export default function GlassCard({
   className = '',
   hover = true,
   windowChrome = false, // اجعلها true في البطاقات المميزة لإظهار شريط (o o o و ✳)
-  fractalTexture = '/fractal/optimized/02.webp', // ✅ أداء: نسخة خفيفة (20KB بدل 16MB) متجهزة بالأبيض والأسود والتباين
+  fractalTexture = import.meta.env.BASE_URL + 'fractal/optimized/02.webp', // ✅ أداء: نسخة خفيفة (20KB بدل 16MB) متجهزة بالأبيض والأسود والتباين
   onClick,
   ...props
 }) {
