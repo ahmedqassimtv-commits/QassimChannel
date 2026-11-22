@@ -4,8 +4,6 @@
 /* نظام قاسمز — كل ملف لجزء واحد من الموقع (الترتيب مهم) */
 @import "./styles/base.css";
 @import "./styles/nav.css";
-@import "./styles/tabbar.css";
-@import "./styles/search.css";
 @import "./styles/cinema.css";
 @import "./styles/reading.css";
 @import "./styles/marquee.css";
@@ -138,43 +136,27 @@
 }
 
 /* ==========================================================================
-   4. خط Quiverleaf Arabic CF — الخط الأساسي للموقع (Connary Fagen، 5 أوزان)
-   الواجهة والعناوين والنافبار والكروت كلها بـ Quiverleaf؛ ثمانية فاضل
-   بنفس إعداداته (Sans احتياطي، Display للعناوين التحريرية، Text لنص المقالات).
+   4. خط أميري (Amiri) — نص كتاب القصص (OFL)
    ========================================================================== */
 @font-face {
-  font-family: 'Quiverleaf Arabic CF';
-  src: url('/fonts/quiverleaf/woff2/quiverleafarabiccf-light.woff2') format('woff2');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Quiverleaf Arabic CF';
-  src: url('/fonts/quiverleaf/woff2/quiverleafarabiccf-regular.woff2') format('woff2');
+  font-family: 'Amiri';
+  src: url('/fonts/amiri/amiri-regular.woff') format('woff');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Quiverleaf Arabic CF';
-  src: url('/fonts/quiverleaf/woff2/quiverleafarabiccf-demibold.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Quiverleaf Arabic CF';
-  src: url('/fonts/quiverleaf/woff2/quiverleafarabiccf-bold.woff2') format('woff2');
+  font-family: 'Amiri';
+  src: url('/fonts/amiri/amiri-bold.woff') format('woff');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Quiverleaf Arabic CF';
-  src: url('/fonts/quiverleaf/woff2/quiverleafarabiccf-extrabold.woff2') format('woff2');
-  font-weight: 800;
-  font-style: normal;
+  font-family: 'Amiri';
+  src: url('/fonts/amiri/amiri-italic.woff') format('woff');
+  font-weight: 400;
+  font-style: italic;
   font-display: swap;
 }
 
@@ -182,7 +164,9 @@
    6. التوزيع التلقائي للخطوط وخصائص OpenType
    ========================================================================== */
 :root {
-  --font-quiver: 'Quiverleaf Arabic CF', 'Thmanyah Sans', system-ui, sans-serif;
+  /* الخط الأساسي رجع ثمانية (Quiverleaf اتشال) — الاسم القديم فاضل عشان كل اللي بيستخدمه */
+  --font-quiver: 'Thmanyah Sans', system-ui, sans-serif;
+  --font-book: 'Amiri', 'Thmanyah Text', serif;
   /* النصوص والفقرات بثمانية (Quiverleaf خط عرض: وصلاته الطويلة بتتعب العين في الأحجام الصغيرة) */
   --font-sans-ui: 'Thmanyah Sans', system-ui, sans-serif;
   --font-display: var(--font-quiver);

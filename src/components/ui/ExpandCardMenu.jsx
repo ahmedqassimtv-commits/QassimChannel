@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import GlassIcon from './GlassIcon.jsx'
-import { playGlassDropdown, playGlassHover, playGlassTap } from '../../utils/glassSound.js'
 
 const S = (x, k = 400, c = 30) => ({ x, v: 0, t: x, k, c })
 const step = (s, dt) => {
@@ -51,7 +50,6 @@ export default function ExpandCardMenu({ items = [], activeKey, onSelect }) {
 
     const show = (idx) => {
       openRef.current = idx
-      playGlassDropdown(idx >= 0)
       rows.forEach((r) => {
         const home = PAD + r.i * (ROW + GAP)
         if (idx < 0) {
@@ -166,7 +164,6 @@ export default function ExpandCardMenu({ items = [], activeKey, onSelect }) {
               damping: 26,
               delay: idx * 0.04,
             }}
-            onMouseEnter={() => playGlassHover()}
             className={`qz-ex-card absolute inset-x-0 top-0 cursor-pointer overflow-hidden rounded-2xl border transition-colors ${
               isActive
                 ? 'border-white/28 bg-white/[0.12]'
@@ -214,11 +211,9 @@ export default function ExpandCardMenu({ items = [], activeKey, onSelect }) {
                   type="button"
                   onMouseEnter={(e) => {
                     e.stopPropagation()
-                    playGlassHover()
                   }}
                   onClick={(e) => {
                     e.stopPropagation()
-                    playGlassTap()
                     onSelect?.(e, item.to, item.key || item.to)
                   }}
                   className="qz-ex-go mr-auto cursor-pointer rounded-full bg-white px-3.5 py-1 text-xs font-bold text-[#051F20] shadow-sm transition hover:scale-[1.03] active:scale-95"

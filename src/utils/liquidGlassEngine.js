@@ -1,4 +1,3 @@
-import { preloadOnAirMusic } from './glassSound.js';
 // محرك الزجاج السائل (Chromatic RGB Refraction + LRU Cache + Safe Prefetcher)
 
 const MAX_CACHE_ENTRIES = 64;
@@ -121,7 +120,6 @@ const routeToPageName = {
 
 export function prefetchRoute(path) {
   // تحميل موسيقى أون إير مسبقاً عشان تبدأ فوراً لما تفتح الصفحة
-  if (path === '/on-air' || path === '/masaha/on-air') preloadOnAirMusic()?.catch(() => {});
   if (!path || prefetchedRoutes.has(path)) return;
   prefetchedRoutes.add(path);
 

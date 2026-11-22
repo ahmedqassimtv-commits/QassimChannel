@@ -20,6 +20,8 @@ export const VERDICT_ITEMS = [
     to: '/verdict/movies',
     label: 'حُكم السينما',
     sub: 'مراجعات وتقييمات الأفلام',
+    short: 'أفلام',
+    points: ['حكم صريح من غير حرق', 'تقييم من 10 بالأسباب', 'الحلقة كاملة على يوتيوب'],
     icon: Film,
     motion: 'tilt',
   },
@@ -27,6 +29,8 @@ export const VERDICT_ITEMS = [
     to: '/verdict/series',
     label: 'حُكم المسلسلات',
     sub: 'قراءات في المواسم والحلقات',
+    short: 'مسلسلات',
+    points: ['قراءة الموسم كله مش حلقة', 'إيه اللي يستاهل وقتك', 'مقارنات بين المواسم'],
     icon: Tv,
     motion: 'beat',
   },
@@ -51,19 +55,48 @@ export const MASAHA_ITEMS = [
 ]
 
 export const NAV = [
-  { key: '/', to: '/', label: 'الرئيسية', icon: Home, motion: 'beat' },
+  { key: '/', to: '/', label: 'الرئيسية', icon: Home, glyph: 'home', motion: 'beat' },
   {
     key: 'verdict',
+    glyph: 'verdict',
     label: 'الفِردِكت',
     tag: 'THE VERDICT',
     icon: Scale,
     motion: 'tilt',
     children: VERDICT_ITEMS,
   },
-  { key: '/stories', to: '/stories', label: 'الحكايات', icon: History, motion: 'rewind' },
-  { key: '/videos', to: '/videos', label: 'الفيديوهات', icon: Video, motion: 'beat' },
-  { key: '/articles', to: '/articles', label: 'المقالات', icon: BookOpen, motion: 'nudge' },
-  { key: 'masaha', label: 'مساحة', icon: Compass, motion: 'spin', children: MASAHA_ITEMS },
+  {
+    key: '/stories',
+    to: '/stories',
+    label: 'الحكايات',
+    icon: History,
+    glyph: 'stories',
+    motion: 'rewind',
+  },
+  {
+    key: '/videos',
+    to: '/videos',
+    label: 'الفيديوهات',
+    icon: Video,
+    glyph: 'videos',
+    motion: 'beat',
+  },
+  {
+    key: '/articles',
+    to: '/articles',
+    label: 'المقالات',
+    icon: BookOpen,
+    glyph: 'articles',
+    motion: 'nudge',
+  },
+  {
+    key: 'masaha',
+    label: 'مساحة',
+    icon: Compass,
+    glyph: 'masaha',
+    motion: 'spin',
+    children: MASAHA_ITEMS,
+  },
 ]
 
 /* القسم النشط من المسار */

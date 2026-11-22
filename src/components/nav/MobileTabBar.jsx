@@ -1,18 +1,18 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { ArrowUpLeft } from 'lucide-react'
-import { LiquidGlass } from '../glass/LiquidGlass.tsx'
-import GlassIcon from '../ui/GlassIcon.jsx'
+import NavGlyph from './NavGlyph.jsx'
+import VerdictPlan from './VerdictPlan.jsx'
+import SpringMenu from './SpringMenu.jsx'
+import useLiquidCapsule from './useLiquidCapsule.js'
 import { NAV, sectionKey } from './navConfig.js'
-import { SPRING } from '../motion/Motion.jsx'
-import { playGlassDropdown, playGlassTap } from '../../utils/glassSound.js'
+import { SPRINGS, kick, register, spring, springGroup } from '../../motion/springs.js'
 
 /* ══ التابات السفلية (موبايل وتابلت) ═════════════════════════════════
-   زي شريط تابات iOS: كبسولة زجاج عائمة تحت، فقاعة بتتزحلق للتاب النشط.
-   الفِردِكت ومساحة بيفتحوا لوح سفلي (sheet) بأقسامهم، بيتقفل بالسحب
-   لتحت أو بلمسة برّه. الشريط بيستخبى لما تنزل في الصفحة وبيرجع لما
-   تطلع، عشان المحتوى ياخد الشاشة كلها وقت القراءة. */
+   نفس زجاج الجزيرة ونفس الكبسولة السائلة والأيقونات المتحركة.
+   زي iOS 26: مع السكرول لتحت الشريط بيصغر (الأسماء بتختفي والأيقونات
+   بتقرب)، ومع الطلوع بيرجع. الفِردِكت ومساحة بيفتحوا لوح من تحت فيه
+   نفس الـPlan switch والـSpring dropdown. */
 
 const SHORT = {
   '/': 'الرئيسية',
@@ -23,37 +23,57 @@ const SHORT = {
   masaha: 'مساحة',
 }
 
-function useHideOnScroll() {
-  const [hidden, setHidden] = useState(false)
+function playGlyph(el) {
+  if (!el || el.dataset.play) return
+  el.dataset.play = 'true'
+  window.setTimeout(() => delete el.dataset.play, 900)
+}
+
+function useMinimize(barRef) {
   useEffect(() => {
+    const m = spring(0, SPRINGS.soft)
+    const unreg = register(
+      springGroup(
+        { m },
+        () => {
+          const el = barRef.current
+          if (!el) return
+          const k = Math.max(0, Math.min(1.1, m.x))
+          el.style.setProperty('--mini', k.toFixed(3))
+          el.style.transform = `translate3d(0, ${(k * 8).toFixed(2)}px, 0) scale(${(1 - 0.1 * k).toFixed(4)})`
+        },
+        0.002,
+      ),
+    )
     let last = window.scrollY
     let raf = 0
     const read = () => {
       raf = 0
       const y = window.scrollY
       const dy = y - last
-      if (Math.abs(dy) > 8) {
-        // بيستخبى بس بعد أول شاشة، وبيرجع مع أي طلوع أو قرب آخر الصفحة
-        const nearBottom = window.innerHeight + y > document.documentElement.scrollHeight - 160
-        setHidden(dy > 0 && y > 320 && !nearBottom)
-        last = y
+      if (Math.abs(dy) < 6) return
+      const nearBottom = window.innerHeight + y > document.documentElement.scrollHeight - 140
+      const next = dy > 0 && y > 200 && !nearBottom ? 1 : 0
+      if (next !== m.t) {
+        m.t = next
+        kick()
       }
+      last = y
     }
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(read)
     }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => {
+      unreg()
       window.removeEventListener('scroll', onScroll)
       cancelAnimationFrame(raf)
     }
-  }, [])
-  return hidden
+  }, [barRef])
 }
 
 function Sheet({ item, onClose }) {
   const reduce = useReducedMotion()
-  const startY = useRef(null)
   return (
     <>
       <motion.div
@@ -72,43 +92,22 @@ function Sheet({ item, onClose }) {
         initial={reduce ? { opacity: 0 } : { y: '110%' }}
         animate={reduce ? { opacity: 1 } : { y: 0 }}
         exit={reduce ? { opacity: 0 } : { y: '110%' }}
-        transition={{ type: 'spring', bounce: 0.12, duration: 0.45 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 32 }}
         drag={reduce ? false : 'y'}
         dragConstraints={{ top: 0, bottom: 0 }}
-        dragElastic={{ top: 0.05, bottom: 0.6 }}
-        onDragStart={(_, info) => {
-          startY.current = info.point.y
-        }}
+        dragElastic={{ top: 0.04, bottom: 0.6 }}
         onDragEnd={(_, info) => {
-          // سحبة لتحت أو رمية سريعة = قفل
-          if (info.offset.y > 90 || info.velocity.y > 600) onClose()
+          // سحبة لتحت أو رمية سريعة = قفل (بنحسب مكان الوقوف من السرعة)
+          const projected = info.offset.y + (info.velocity.y / 1000) * (0.998 / 0.002)
+          if (projected > 160) onClose()
         }}
       >
         <div className="qz-sheet-grip" aria-hidden="true" />
-        <p className="px-3 pb-2 text-xs font-semibold text-[color:var(--qz-accent)]">
-          {item.label}
-          {item.tag ? <span className="qz-latin ms-2 text-[10px] opacity-70">{item.tag}</span> : null}
-        </p>
-        <div className="flex flex-col gap-1">
-          {item.children.map((child) => (
-            <Link
-              key={child.to}
-              to={child.to}
-              onClick={() => {
-                playGlassTap()
-                onClose()
-              }}
-              className="flex items-center gap-3 rounded-2xl px-3 py-3 active:bg-[rgb(var(--qz-mint-rgb)/0.08)]"
-            >
-              <GlassIcon icon={child.icon} size="lg" />
-              <span className="min-w-0 flex-1">
-                <span className="block text-base font-semibold text-[color:var(--qz-text)]">{child.label}</span>
-                <span className="mt-0.5 block text-xs text-[color:var(--qz-text-3)]">{child.sub}</span>
-              </span>
-              <ArrowUpLeft className="size-4 text-[color:var(--qz-text-3)]" aria-hidden="true" />
-            </Link>
-          ))}
-        </div>
+        {item.key === 'verdict' ? (
+          <VerdictPlan onPick={onClose} />
+        ) : (
+          <SpringMenu items={item.children} label={item.label} onPick={onClose} />
+        )}
       </motion.div>
     </>
   )
@@ -117,74 +116,83 @@ function Sheet({ item, onClose }) {
 export default function MobileTabBar() {
   const { pathname } = useLocation()
   const active = sectionKey(pathname)
-  const hidden = useHideOnScroll()
   const [sheet, setSheet] = useState(null)
+  const barRef = useRef(null)
+  const trackRef = useRef(null)
+  const capRef = useRef(null)
+  const itemRefs = useRef({})
+  const cap = useLiquidCapsule(trackRef, capRef)
+  useMinimize(barRef)
 
   useEffect(() => setSheet(null), [pathname])
+
+  const target = sheet || active
+  useLayoutEffect(() => {
+    cap.moveTo(itemRefs.current[target])
+  }, [target, cap])
+  useEffect(() => {
+    const ro = new ResizeObserver(() => cap.moveTo(itemRefs.current[target], { instant: true }))
+    if (trackRef.current) ro.observe(trackRef.current)
+    return () => ro.disconnect()
+  }, [target, cap])
 
   const sheetItem = NAV.find((n) => n.key === sheet)
 
   return (
     <>
-      <nav
-        className="qz-tabbar lg:hidden"
-        aria-label="التنقل السريع"
-        data-hidden={hidden && !sheet ? 'true' : undefined}
-      >
-        <LiquidGlass
-          appearance="dark"
-          material="clear"
-          refraction={20}
-          bezel={18}
-          dispersion={0.1}
-          blur={2.4}
-          fallbackBlur={20}
-          className="qz-tabbar-glass"
-        >
-          <div className="qz-tabbar-row">
-            {NAV.map((item) => {
-              const isActive = active === item.key || sheet === item.key
-              const Icon = item.icon
-              const content = (
-                <>
-                  {isActive && <motion.span layoutId="qz-tab-pill" className="qz-tab-pill" transition={SPRING} />}
-                  <Icon aria-hidden="true" strokeWidth={isActive ? 2.1 : 1.75} />
-                  <span>{SHORT[item.key] ?? item.label}</span>
-                </>
-              )
-              return item.children ? (
-                <button
-                  key={item.key}
-                  type="button"
-                  className="qz-tab"
-                  data-active={isActive ? 'true' : undefined}
-                  aria-haspopup="dialog"
-                  aria-expanded={sheet === item.key}
-                  onClick={() => {
-                    playGlassDropdown(sheet !== item.key)
-                    setSheet((prev) => (prev === item.key ? null : item.key))
-                  }}
-                >
-                  {content}
-                </button>
-              ) : (
-                <Link
-                  key={item.key}
-                  to={item.to}
-                  className="qz-tab"
-                  data-active={isActive ? 'true' : undefined}
-                  aria-current={active === item.key ? 'page' : undefined}
-                  onClick={() => playGlassTap()}
-                >
-                  {content}
-                </Link>
-              )
-            })}
-          </div>
-        </LiquidGlass>
+      <nav ref={barRef} className="qz-tabbar lg:hidden" aria-label="التنقل السريع" dir="rtl">
+        <span className="qz-nav-glass" aria-hidden="true" />
+        <div ref={trackRef} className="qz-tabbar-row">
+          <span ref={capRef} className="qz-nav-capsule" aria-hidden="true" />
+          {NAV.map((item) => {
+            const isActive = target === item.key
+            const common = {
+              ref: (el) => {
+                itemRefs.current[item.key] = el
+              },
+              className: 'qz-tab',
+              'data-active': isActive ? 'true' : undefined,
+              onPointerDown: (e) => {
+                cap.press(true)
+                playGlyph(e.currentTarget)
+              },
+              onPointerUp: () => cap.press(false),
+              onPointerCancel: () => cap.press(false),
+            }
+            const content = (
+              <>
+                <NavGlyph name={item.glyph} />
+                <span className="qz-tab-label">{SHORT[item.key] ?? item.label}</span>
+              </>
+            )
+            return item.children ? (
+              <button
+                key={item.key}
+                type="button"
+                {...common}
+                aria-haspopup="dialog"
+                aria-expanded={sheet === item.key}
+                onClick={() => setSheet((prev) => (prev === item.key ? null : item.key))}
+              >
+                {content}
+              </button>
+            ) : (
+              <Link
+                key={item.key}
+                to={item.to}
+                {...common}
+                aria-current={active === item.key ? 'page' : undefined}
+              >
+                {content}
+              </Link>
+            )
+          })}
+        </div>
       </nav>
 
-      <AnimatePresence>{sheetItem && <Sheet key={sheetItem.key} item={sheetItem} onClose={() => setSheet(null)} />}</AnimatePresence>
+      <AnimatePresence>
+        {sheetItem && <Sheet key={sheetItem.key} item={sheetItem} onClose={() => setSheet(null)} />}
+      </AnimatePresence>
     </>
   )
 }
