@@ -369,6 +369,8 @@ h1, h2, h3, h4, .font-display {
   --qz-glow-rgb: 142 240 210;
   --qz-bg-filter: none;
   --qz-grad: linear-gradient(120deg, var(--qz-mint), var(--qz-sage));
+  /* تدريج العناوين: من الشمال (الأغمق) لليمين (الأفتح) — أول كلمة عربي هي الأفتح */
+  --qz-title-grad: linear-gradient(90deg, #3fbf98 0%, #6fe3bd 35%, #a8f5d9 65%, #e9fbef 100%);
 }
 
 html[data-theme='red'] {
@@ -382,6 +384,7 @@ html[data-theme='red'] {
   --qz-x5: #3A1208; --qz-x6: #120604; --qz-x7: #FFF4E3;
   --qz-glow-rgb: 255 160 70;
   --qz-grad: linear-gradient(120deg, #E5372B 0%, #F2672B 35%, #F59E2B 65%, #FFD54A 100%);
+  --qz-title-grad: linear-gradient(90deg, #E5372B 0%, #F2672B 30%, #F59E2B 62%, #FFD54A 100%);
   --qz-bg-tint: linear-gradient(150deg, #1A0A07 0%, #6E1A0C 32%, #B9300F 58%, #E0731C 80%, #F2C14A 100%);
   --color-emerald-100: #FFE9C7;
   --color-emerald-200: #FFD39A;
@@ -401,6 +404,7 @@ html[data-theme='gold'] {
   --qz-x5: #1A1408; --qz-x6: #0E0B04; --qz-x7: #FFF8E8;
   --qz-glow-rgb: 201 165 78;
   --qz-grad: linear-gradient(120deg, #C9A54E 0%, #E8C96A 35%, #F5D780 65%, #FFE8A0 100%);
+  --qz-title-grad: linear-gradient(90deg, #9C7A3C 0%, #C9A54E 30%, #E8C96A 62%, #FFF0C2 100%);
   --qz-bg-tint: linear-gradient(150deg, #1A1408 0%, #3D2E14 32%, #8A6D3B 58%, #C9A54E 80%, #F5D780 100%);
   --color-emerald-100: #FFF0D0;
   --color-emerald-200: #F5D780;
@@ -415,24 +419,6 @@ html[data-theme='red'] iframe {
   transition: filter 0.6s ease;
 }
 
-html[data-theme='red'] h1,
-html[data-theme='red'] .font-cinema,
-html[data-theme='red'] h2.font-history,
-html[data-theme='gold'] h1,
-html[data-theme='gold'] .font-cinema,
-html[data-theme='gold'] h2.font-history {
-  background-image: var(--qz-grad);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  position: relative;
-  top: -0.22em;
-  padding: 0.22em 0.12em 0.28em;
-  margin-inline: -0.12em;
-  margin-bottom: -0.5em;
-  -webkit-box-decoration-break: clone;
-  box-decoration-break: clone;
-}
 
 html.qz-theme-switching *,
 html.qz-theme-switching *::before,
@@ -1524,4 +1510,50 @@ button,
 }
 .cmp[data-held] .cmp-knob {
   scale: 0.9;
+}
+
+/* ══ العناوين: ثمانية Display بالـswash وتدريج الثيم ══════════════════
+   زي مرجع أحمد («مساحة للصورة، والحكاية التي وراءها.»): خط ثمانية
+   Display بالحروف البديلة (ss01/salt — ذيل «التي» الطويل) ومتلوّن بتدريج
+   الثيم. العناوين المقسومة كلمات (SplitTitle) كل كلمة بتاخد شريحتها من
+   نفس التدريج (--gx) فبيبان متصل، والباقي التدريج على العنوان كله.
+   الـpadding حوالين النص علشان ذيول الحروف ماتتقصّش من التدريج. */
+.qz-display,
+.qz-h1,
+.qz-h2,
+.qz-gtitle {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-feature-settings: 'ss01' 1, 'salt' 1;
+}
+.qz-display:not(.qz-split),
+.qz-h1:not(.qz-split),
+.qz-h2:not(.qz-split),
+.qz-gtitle:not(.qz-split),
+.qz-split .qz-w {
+  background-image: var(--qz-title-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.qz-display:not(.qz-split),
+.qz-h1:not(.qz-split),
+.qz-h2:not(.qz-split),
+.qz-gtitle:not(.qz-split) {
+  /* مساحة لذيول الحروف من غير ما نلمس margin-top (بتاع Tailwind) */
+  padding: 0 0.3em 0.34em;
+  margin-inline: -0.3em;
+  margin-bottom: -0.34em;
+}
+.qz-split .qz-w {
+  background-size: calc(var(--gn, 1) * 100% + 0.6em) 100%;
+  background-position: calc(var(--gx, 1) * 100%) 0;
+  padding: 0.16em 0.3em 0.34em;
+  margin: -0.16em -0.3em -0.34em;
+}
+.qz-split .qz-word-mask {
+  overflow-clip-margin: 0.45em;
 }

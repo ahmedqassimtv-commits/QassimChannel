@@ -73,9 +73,10 @@ export function SplitTitle({ as = 'h1', text, className = '', delay = 0, stagger
   const reduce = useReducedMotion()
   const Tag = motion[as] ?? motion.h1
   const lines = String(text).split('\n')
+  const total = lines.reduce((n, l) => n + l.split(' ').length, 0)
   let index = 0
   return (
-    <Tag className={className} aria-label={String(text).replace(/\n/g, ' ')} initial="hidden" animate="show">
+    <Tag className={`qz-split ${className}`} aria-label={String(text).replace(/\n/g, ' ')} initial="hidden" animate="show">
       {lines.map((line, li) => (
         <span key={li} className="block" aria-hidden="true">
           {line.split(' ').map((word, wi, words) => {
@@ -85,7 +86,9 @@ export function SplitTitle({ as = 'h1', text, className = '', delay = 0, stagger
               <Fragment key={wi}>
               <span className="qz-word-mask">
                 <motion.span
-                  className="inline-block"
+                  className="qz-w inline-block"
+                  // مكان الكلمة في العنوان: التدريج بيكمّل من كلمة للتانية (أول كلمة = يمين التدريج)
+                  style={{ '--gx': total > 1 ? 1 - i / (total - 1) : 1, '--gn': total }}
                   variants={{
                     hidden: reduce ? { opacity: 0 } : { y: '105%', opacity: 0 },
                     show: {
