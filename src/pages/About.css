@@ -1,0 +1,382 @@
+.qz-about-page {
+  position: relative;
+  width: 100vw;
+  margin-inline: calc((100% - 100vw) / 2);
+  margin-top: -8rem;
+  margin-bottom: -5rem;
+  overflow: clip;
+  background: var(--qz-ink);
+  color: var(--qz-mint);
+}
+
+.qz-about-page section[id] { scroll-margin-top: 6rem; }
+.qz-about-page button,
+.qz-about-page a { color: inherit; }
+.qz-about-page button:focus-visible,
+.qz-about-page a:focus-visible {
+  outline: 2px solid var(--qz-sage);
+  outline-offset: 4px;
+}
+
+.qz-about-hero {
+  position: relative;
+  display: grid;
+  min-height: 100svh;
+  align-items: center;
+  padding: 9rem clamp(1.25rem, 6vw, 7rem) 3.5rem;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 68% 45%, rgb(var(--qz-mint-rgb) / .12), transparent 42%),
+    linear-gradient(145deg, rgb(var(--qz-deep-rgb) / .35), var(--qz-ink) 70%);
+}
+.qz-about-hero::after {
+  position: absolute;
+  z-index: -1;
+  inset: auto 0 0;
+  height: 24%;
+  background: linear-gradient(transparent, var(--qz-ink));
+  content: '';
+  pointer-events: none;
+}
+.qz-about-hero-inner {
+  position: relative;
+  display: grid;
+  width: min(100%, 92rem);
+  min-height: 68vh;
+  grid-template-columns: minmax(0, .9fr) minmax(20rem, 1.1fr);
+  align-items: center;
+  gap: clamp(1rem, 5vw, 5rem);
+  margin: 0 auto;
+}
+.qz-about-hero-copy { position: relative; z-index: 2; }
+.qz-about-kicker {
+  margin: 0 0 1.2rem;
+  color: var(--qz-sage);
+  font: 700 .72rem/1.4 var(--font-sans-ui, system-ui, sans-serif);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+}
+.qz-about-title {
+  margin: 0;
+  color: var(--qz-mint);
+  font-family: var(--font-display, Georgia, serif);
+  font-size: clamp(4.5rem, 12vw, 11rem);
+  font-weight: 900;
+  letter-spacing: -.075em;
+  line-height: .78;
+  text-transform: uppercase;
+}
+.qz-about-hero-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .75rem;
+  margin-top: 2.4rem;
+  padding: .8rem 1rem;
+  border-bottom: 1px solid rgb(var(--qz-mint-rgb) / .34);
+  color: var(--qz-mint);
+  font-size: .9rem;
+  text-decoration: none;
+  transition: border-color .2s ease, color .2s ease;
+}
+.qz-about-hero-link:hover { border-color: var(--qz-sage); color: var(--qz-sage); }
+.qz-about-hero-link span { font-size: 1.25rem; }
+.qz-about-hero-visual { position: relative; min-width: 0; }
+.qz-about-hero-index {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 3;
+  color: var(--qz-sage);
+  font: 600 .68rem/1 var(--font-sans-ui, system-ui, sans-serif);
+  letter-spacing: .2em;
+}
+.qz-about-scroll {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: .7rem;
+  color: var(--qz-sage);
+  font: 600 .7rem/1 var(--font-sans-ui, system-ui, sans-serif);
+  letter-spacing: .16em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.qz-about-scroll span { font-size: 1.2rem; }
+
+.qz-about-model {
+  position: relative;
+  min-height: min(68vh, 42rem);
+  overflow: hidden;
+  border: 1px solid rgb(var(--qz-mint-rgb) / .14);
+  border-radius: 50% 50% 42% 42% / 42% 42% 34% 34%;
+  background: radial-gradient(ellipse at 50% 42%, rgb(var(--qz-mint-rgb) / .13), transparent 62%);
+}
+.qz-about-model-canvas,
+.qz-about-model-poster {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.qz-about-model-canvas { z-index: 1; cursor: grab; touch-action: none; }
+.qz-about-model-canvas:active { cursor: grabbing; }
+.qz-about-model-poster {
+  z-index: 0;
+  object-fit: contain;
+  padding: 1.5rem;
+  opacity: .8;
+  transition: opacity .35s ease;
+}
+.qz-about-model-poster.is-hidden { opacity: 0; }
+.qz-about-model-status {
+  position: absolute;
+  z-index: 2;
+  inset: auto 1rem 1rem;
+  display: flex;
+  justify-content: center;
+  gap: .75rem;
+  color: var(--qz-sage);
+  font-size: .78rem;
+  text-align: center;
+}
+.qz-about-model-error button {
+  border-bottom: 1px solid currentColor;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+}
+.qz-about-model-controls {
+  position: absolute;
+  z-index: 3;
+  right: 50%;
+  bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  transform: translateX(50%);
+  white-space: nowrap;
+}
+.qz-about-model-controls span {
+  margin-inline-end: .45rem;
+  color: var(--qz-sage);
+  font-size: .68rem;
+}
+.qz-about-model-controls button {
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: .35rem .55rem;
+  border: 1px solid rgb(var(--qz-mint-rgb) / .2);
+  border-radius: 999px;
+  background: rgb(var(--qz-ink-rgb) / .68);
+  cursor: pointer;
+  font: 600 .75rem/1 var(--font-sans-ui, system-ui, sans-serif);
+}
+.qz-about-model-controls button:hover { border-color: var(--qz-sage); }
+
+.qz-about-track-section,
+.qz-about-helmets {
+  padding: clamp(4rem, 9vw, 8rem) clamp(1.25rem, 6vw, 7rem);
+  border-top: 1px solid rgb(var(--qz-mint-rgb) / .12);
+}
+.qz-about-section-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: .8rem 2rem;
+  width: min(100%, 92rem);
+  margin: 0 auto 2.2rem;
+}
+.qz-about-section-head .qz-about-kicker { grid-column: 1 / -1; margin-bottom: 0; }
+.qz-about-section-head h2 {
+  margin: 0;
+  color: var(--qz-mint);
+  font-family: var(--font-display, Georgia, serif);
+  font-size: clamp(3rem, 8vw, 7rem);
+  font-weight: 900;
+  letter-spacing: -.05em;
+  line-height: .85;
+}
+.qz-about-section-note {
+  margin: 0 0 .25rem;
+  color: var(--qz-sage);
+  font: 500 .75rem/1.5 var(--font-sans-ui, system-ui, sans-serif);
+  letter-spacing: .08em;
+  text-align: right;
+}
+.qz-about-offtrack { background: rgb(var(--qz-deep-rgb) / .32); }
+.qz-about-rail {
+  display: flex;
+  width: min(100%, 92rem);
+  gap: clamp(.8rem, 1.8vw, 1.5rem);
+  margin: 0 auto;
+  padding: 0 0 .75rem;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-color: rgb(var(--qz-sage-rgb) / .55) transparent;
+  scrollbar-width: thin;
+  list-style: none;
+}
+.qz-about-photo-card { flex: 0 0 clamp(16rem, 27vw, 25rem); scroll-snap-align: start; }
+.qz-about-photo-card button {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid rgb(var(--qz-mint-rgb) / .14);
+  border-radius: 1.5rem;
+  background: var(--qz-deep);
+  cursor: zoom-in;
+  text-align: left;
+}
+.qz-about-photo-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  transition: transform .45s cubic-bezier(.2,.7,.2,1), opacity .3s ease;
+}
+.qz-about-photo-card button:hover img { transform: scale(1.035); }
+.qz-about-photo-caption {
+  position: absolute;
+  inset: auto 0 0;
+  padding: 3.5rem 1.2rem 1.15rem;
+  background: linear-gradient(transparent, rgb(var(--qz-ink-rgb) / .9));
+  color: var(--qz-mint);
+  font-size: .82rem;
+  line-height: 1.45;
+}
+
+.qz-about-helmets { background: var(--qz-ink); }
+.qz-about-helmet-head { align-items: start; margin-bottom: 2.8rem; }
+.qz-about-helmet-head h2 { grid-column: 1 / -1; font-size: clamp(3.2rem, 9vw, 8rem); line-height: .82; }
+.qz-about-helmet-head h2 span { color: var(--qz-sage); }
+.qz-about-helmet-grid {
+  display: grid;
+  width: min(100%, 92rem);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(.7rem, 1.5vw, 1.25rem);
+  margin: 0 auto;
+}
+.qz-about-helmet-card {
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgb(var(--qz-mint-rgb) / .13);
+  border-radius: 1.25rem;
+  background: rgb(var(--qz-deep-rgb) / .72);
+  cursor: zoom-in;
+  text-align: left;
+}
+.qz-about-helmet-images {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 1 / 1;
+  background: radial-gradient(ellipse, rgb(var(--qz-mint-rgb) / .1), transparent 70%);
+}
+.qz-about-helmet-images img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: opacity .25s ease;
+}
+.qz-about-helmet-hover { opacity: 0; }
+.qz-about-helmet-card:hover .qz-about-helmet-hover,
+.qz-about-helmet-card:focus-visible .qz-about-helmet-hover { opacity: 1; }
+.qz-about-helmet-card:hover .qz-about-helmet-images img:first-child,
+.qz-about-helmet-card:focus-visible .qz-about-helmet-images img:first-child { opacity: 0; }
+.qz-about-helmet-name {
+  display: block;
+  padding: .8rem .9rem 1rem;
+  border-top: 1px solid rgb(var(--qz-mint-rgb) / .1);
+  color: var(--qz-mint);
+  font-size: .82rem;
+  font-weight: 700;
+}
+.qz-about-helmet-card:hover .qz-about-helmet-name { color: var(--qz-sage); }
+
+.qz-about-end {
+  display: flex;
+  min-height: 9rem;
+  align-items: center;
+  justify-content: center;
+  gap: 1.2rem;
+  border-top: 1px solid rgb(var(--qz-mint-rgb) / .12);
+  color: var(--qz-sage);
+  font: 700 .7rem/1 var(--font-sans-ui, system-ui, sans-serif);
+  letter-spacing: .22em;
+}
+.qz-about-end img { width: min(28vw, 12rem); max-height: 3rem; object-fit: contain; }
+
+.qz-about-viewer {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 3rem 1rem;
+  background: rgb(var(--qz-ink-rgb) / .94);
+  backdrop-filter: blur(12px);
+}
+.qz-about-viewer figure { display: grid; max-width: min(92vw, 80rem); max-height: 88vh; justify-items: center; gap: .8rem; margin: 0; }
+.qz-about-viewer figure img { display: block; max-width: 100%; max-height: 80vh; border-radius: 1rem; object-fit: contain; }
+.qz-about-viewer figcaption { color: var(--qz-sage); font-size: .82rem; text-align: center; }
+.qz-about-viewer-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border: 1px solid rgb(var(--qz-mint-rgb) / .24);
+  border-radius: 50%;
+  background: rgb(var(--qz-deep-rgb) / .8);
+  cursor: pointer;
+  font-size: 1.6rem;
+}
+
+html[data-theme='red'] .qz-about-page .qz-about-title,
+html[data-theme='blue'] .qz-about-page .qz-about-title {
+  top: 0;
+  margin: 0;
+  padding: 0;
+}
+html[data-theme='blue'] .qz-about-page .qz-about-title { color: var(--qz-mint); }
+
+@media (max-width: 800px) {
+  .qz-about-hero { padding-inline: 1.25rem; padding-top: 8rem; }
+  .qz-about-hero-inner { min-height: 76vh; grid-template-columns: 1fr; gap: .6rem; padding-bottom: 3rem; }
+  .qz-about-hero-copy { align-self: end; }
+  .qz-about-title { font-size: clamp(4.5rem, 17vw, 8rem); }
+  .qz-about-hero-visual { grid-row: 1; width: min(100%, 28rem); justify-self: center; }
+  .qz-about-model { min-height: min(48vh, 32rem); }
+  .qz-about-scroll { bottom: -.5rem; }
+  .qz-about-track-section,
+  .qz-about-helmets { padding: 4.5rem 1.25rem; }
+  .qz-about-helmet-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  .qz-about-hero-inner { min-height: 82vh; }
+  .qz-about-hero-visual { width: min(100%, 23rem); }
+  .qz-about-model { min-height: 42vh; }
+  .qz-about-section-head { grid-template-columns: 1fr; }
+  .qz-about-section-note { text-align: left; }
+  .qz-about-photo-card { flex-basis: 78vw; }
+  .qz-about-helmet-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .qz-about-end { min-height: 7rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .qz-about-page *, .qz-about-page *::before, .qz-about-page *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}
