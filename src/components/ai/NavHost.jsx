@@ -37,7 +37,7 @@ export default function NavHost({ onHome }) {
   useEffect(() => {
     if (!hello) return undefined
     const r = slotRef.current?.getBoundingClientRect()
-    if (r) setPos({ top: r.bottom + 14, left: r.left })
+    if (r) setPos({ top: r.bottom + 14, right: Math.max(12, window.innerWidth - r.right) })
     const t = window.setTimeout(() => setHello(false), 5200)
     return () => window.clearTimeout(t)
   }, [hello])
@@ -88,13 +88,21 @@ export default function NavHost({ onHome }) {
       {/* برّه النافبار (portal): الكبسولة عليها transform و overflow hidden
           فأي fixed جوّاها كان بيتقص ويتحرك معاها */}
       {createPortal(
-        <>
+        <div dir="rtl">
           <AnimatePresence>
             {hello && pos && !open && (
               <motion.span
                 className="qz-host-hello"
                 style={
-                  pos ? { position: 'fixed', top: pos.top, left: pos.left, zIndex: 80 } : undefined
+                  pos
+                    ? {
+                        position: 'fixed',
+                        top: pos.top,
+                        right: pos.right,
+                        left: 'auto',
+                        zIndex: 80,
+                      }
+                    : undefined
                 }
                 initial={{ opacity: 0, y: -6, scale: 0.9 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -113,7 +121,7 @@ export default function NavHost({ onHome }) {
               </Suspense>
             )}
           </AnimatePresence>
-        </>,
+        </div>,
         document.body,
       )}
     </>
