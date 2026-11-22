@@ -13,6 +13,7 @@
 @import "./styles/glass-slider.css";
 @import "./styles/ai.css";
 @import "./styles/flipbook.css";
+@import "./styles/cinema-reel.css";
 @import "./styles/a11y.css";
 
 @custom-variant dark (&:is(.dark *));
