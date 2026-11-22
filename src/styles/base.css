@@ -29,50 +29,6 @@
   --qz-page-x: clamp(20px, 5vw, 56px);
 }
 
-/* ── المشهد الحي ───────────────────────────────────────────────────── */
-.qz-scene {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: var(--qz-ink);
-}
-.qz-scene-canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  opacity: 0;
-  transition: opacity 1.2s var(--qz-ease);
-}
-.qz-scene-canvas[data-ready='true'] {
-  opacity: 1;
-}
-.qz-scene-fallback {
-  position: absolute;
-  inset: 0;
-  display: none;
-  background:
-    repeating-linear-gradient(90deg, rgb(var(--qz-mint-rgb) / 0.05) 0 1px, transparent 1px 46px),
-    radial-gradient(60% 50% at 70% 25%, rgb(var(--qz-moss-rgb) / 0.55), transparent 70%),
-    radial-gradient(70% 60% at 20% 80%, rgb(var(--qz-forest-rgb) / 0.7), transparent 70%),
-    var(--qz-ink);
-}
-.qz-scene-canvas[data-fallback='true'] + .qz-scene-fallback {
-  display: block;
-}
-.qz-scene-veil {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgb(var(--qz-ink-rgb) / 0.35) 0%,
-    transparent 22%,
-    transparent 70%,
-    rgb(var(--qz-ink-rgb) / 0.6) 100%
-  );
-}
 
 @keyframes qz-load {
   0% {

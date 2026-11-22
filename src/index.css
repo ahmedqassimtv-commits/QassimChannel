@@ -14,6 +14,7 @@
 @import "./styles/ai.css";
 @import "./styles/flipbook.css";
 @import "./styles/cinema-reel.css";
+@import "./styles/scene.css";
 @import "./styles/a11y.css";
 
 @custom-variant dark (&:is(.dark *));
