@@ -5,7 +5,7 @@
   .qz-main {
     padding-bottom: calc(var(--qz-tabbar-h) + 48px + env(safe-area-inset-bottom, 0px));
   }
-  .qz-footer {
+  .qz-foot {
     padding-bottom: calc(var(--qz-tabbar-h) + 40px + env(safe-area-inset-bottom, 0px));
   }
 }

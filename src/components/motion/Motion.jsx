@@ -115,25 +115,18 @@ export function SplitTitle({ as = 'h1', text, className = '', delay = 0, stagger
 
 /* انتقال الصفحات: الصفحة القديمة بتنسحب لورا (blur + تصغير بسيط) والجديدة
    بتتجسّد من تحت. المشهد الحي في الخلفية بيغيّر مزاجه في نفس اللحظة. */
+/* انتقال الصفحات: تبديل هادي وسريع (fade + رفعة صغيرة) من غير blur ولا تصغير */
 export const pageVariants = {
-  initial: { opacity: 0, y: 28, scale: 0.985, filter: 'blur(10px)' },
+  initial: { opacity: 0, y: 10 },
   enter: {
     opacity: 1,
     y: 0,
-    scale: 1,
-    filter: 'blur(0px)',
-    transition: { duration: 0.7, ease: EASE },
-    /* لازم filter يرجع none بعد الدخول: أي filter (حتى blur(0px)) بيخلّي
-       الصفحة «containing block» لأي عنصر position: fixed جواها، فشريط القراءة
-       والنوافذ المنبثقة كانوا هيتحركوا مع الصفحة بدل ما يثبتوا على الشاشة */
-    transitionEnd: { filter: 'none' },
+    transition: { duration: 0.38, ease: EASE },
+    transitionEnd: { transform: 'none' },
   },
   exit: {
     opacity: 0,
-    y: -14,
-    scale: 0.99,
-    filter: 'blur(8px)',
-    transition: { duration: 0.32, ease: [0.4, 0, 1, 1] },
+    transition: { duration: 0.16, ease: 'easeOut' },
   },
 }
 

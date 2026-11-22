@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
 
 /* ══ الفِردِكت — Cinema Reel ══════════════════════════════════════════════
    مبني على مواصفات "Cinema Reel" (cinema-reel.md) بنفس الأرقام، معكوس للعربي:
@@ -10,7 +9,6 @@ import { createPortal } from 'react-dom'
      (y += (target − y) · 0.11)، والكادر الجاي محتواه بيظهر بـsmoothstep
      واللي ماشي بيسبق بـparallax
    - "التفاصيل": الكادر بيتفتح كباب على حرفه (rotateY) ولوح بيدخل من الجنب
-   - ماوس مخصص 104px: «مرّر» ← إيد السحب ← سهم فوق/تحت عند الأطراف
    اختلافين عن الأصل علشان الصفحة: في أول وآخر حكم العجلة بتكمّل تنزل الصفحة
    عادي (مش محبوس جوّه البكرة)، والصور من يوتيوب. */
 
@@ -36,7 +34,6 @@ const IMG_HEIGHT_RATIO = 1.2
 const LOOP_COPIES = 7
 const AUTO_SCROLL_MS = 3000
 const AUTO_FADE_MS = 1000
-const CURSOR_SIZE = 104
 const BG = '#0a0908'
 
 const thumb = (id, q = 'maxresdefault') => `https://i.ytimg.com/vi/${id}/${q}.jpg`
@@ -239,34 +236,6 @@ function DetailsPanel({ open, r, onClose, onWatch }) {
   )
 }
 
-function GrabHand() {
-  return (
-    <svg
-      width="22"
-      height="22"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="white"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M7 11V7.5a1.5 1.5 0 0 1 3 0V11" />
-      <path d="M10 11V6.5a1.5 1.5 0 0 1 3 0V11" />
-      <path d="M13 11V7a1.5 1.5 0 0 1 3 0v6" />
-      <path d="M16 9.5a1.5 1.5 0 0 1 3 0V15c0 3-2.2 6-6 6-3.4 0-5.5-1.8-6.5-3.5l-2.7-4.7a1.4 1.4 0 0 1 2.4-1.4L8 13" />
-    </svg>
-  )
-}
-function Chevron() {
-  return (
-    <svg width="22" height="14" viewBox="0 0 22 14" fill="none" aria-hidden="true">
-      <path d="M2 12 C 7 4, 15 4, 20 12" stroke="white" strokeWidth="1.6" strokeLinecap="round" />
-    </svg>
-  )
-}
-
 export default function CinemaReel({ items, startId, onWatch }) {
   const N = items.length
   const TOTAL = N * LOOP_COPIES
@@ -283,11 +252,6 @@ export default function CinemaReel({ items, startId, onWatch }) {
   const sectionRef = useRef(null)
   const trackRef = useRef(null)
   const slideRefs = useRef([])
-  const cursorRef = useRef(null)
-  const cScroll = useRef(null)
-  const cDrag = useRef(null)
-  const cUp = useRef(null)
-  const cDown = useRef(null)
   const blurRef = useRef(null)
   const scanRef = useRef(null)
   const api = useRef({})
@@ -475,30 +439,6 @@ export default function CinemaReel({ items, startId, onWatch }) {
           content.style.filter = b < 0.05 ? 'none' : `blur(${b.toFixed(2)}px)`
           content.style.pointerEvents = i === st.idx ? 'auto' : 'none'
         }
-      }
-      // cursor
-      const cur = cursorRef.current
-      if (cur) {
-        const { x: px, y: py } = st.cur
-        if (!st.cInit && (px || py)) {
-          st.cr.x = px
-          st.cr.y = py
-          st.cInit = true
-        }
-        st.cr.x += (px - st.cr.x) * 0.22
-        st.cr.y += (py - st.cr.y) * 0.22
-        st.cr.o += ((st.on && st.cInit ? 1 : 0) - st.cr.o) * 0.18
-        st.cr.s += ((st.down ? 1.18 : 1) - st.cr.s) * 0.22
-        cur.style.transform = `translate3d(${st.cr.x}px, ${st.cr.y}px, 0) translate(-50%, -50%) scale(${st.cr.s.toFixed(3)})`
-        cur.style.opacity = st.cr.o.toFixed(3)
-        const z = st.zone
-        if (cScroll.current)
-          cScroll.current.style.opacity = z === null && !st.down && !st.onUi ? '1' : '0'
-        if (cDrag.current) cDrag.current.style.opacity = st.down && z === null ? '1' : '0'
-        if (cUp.current)
-          cUp.current.style.opacity = z === 'top' || (st.down && z === null) ? '1' : '0'
-        if (cDown.current)
-          cDown.current.style.opacity = z === 'bottom' || (st.down && z === null) ? '1' : '0'
       }
       raf = requestAnimationFrame(tick)
     }
@@ -740,31 +680,6 @@ export default function CinemaReel({ items, startId, onWatch }) {
         onClose={() => setOpenKey(null)}
         onWatch={() => openR && onWatch(openR)}
       />
-
-      {hover &&
-        createPortal(
-          <div
-            ref={cursorRef}
-            className="qz-reel-cursor"
-            style={{ width: CURSOR_SIZE, height: CURSOR_SIZE }}
-            aria-hidden="true"
-          >
-            <div className="qz-reel-cursor-ring" />
-            <div ref={cScroll} className="qz-reel-cursor-state">
-              <span>مرّر</span>
-            </div>
-            <div ref={cDrag} className="qz-reel-cursor-state" style={{ opacity: 0 }}>
-              <GrabHand />
-            </div>
-            <div ref={cUp} className="qz-reel-cursor-up" style={{ opacity: 0 }}>
-              <Chevron />
-            </div>
-            <div ref={cDown} className="qz-reel-cursor-down" style={{ opacity: 0 }}>
-              <Chevron />
-            </div>
-          </div>,
-          document.body,
-        )}
     </section>
   )
 }
