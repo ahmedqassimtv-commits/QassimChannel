@@ -32,7 +32,7 @@ jobs:
           PY
           rm -f src/components/layout/liquid-nav.css
           git show origin/main:.github/workflows/import-about-assets.yml > .github/workflows/import-about-assets.yml
-          git add -A -- src/components/layout/Navbar.jsx src/components/layout/liquid-nav.css .github/workflows/import-about-assets.yml
+          git add -A -- src/components/layout/Navbar.jsx .github/workflows/import-about-assets.yml
           if ! git diff --cached --quiet; then
             git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'استعادة وظائف التنقل وحل تعارض طلب الدمج'
             git push origin HEAD:refs/heads/about-ahmed-liquid-glass
