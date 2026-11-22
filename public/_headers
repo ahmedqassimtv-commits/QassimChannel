@@ -1,0 +1,4 @@
+/about-ahmed/*
+  Access-Control-Allow-Origin: *
+  Cross-Origin-Resource-Policy: cross-origin
+  Referrer-Policy: no-referrer
