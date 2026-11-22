@@ -68,9 +68,8 @@
 }
 .qz-host-hello {
   position: absolute;
-  top: 50%;
-  inset-inline-start: calc(100% + 10px);
-  translate: 0 -50%;
+  top: calc(100% + 14px);
+  inset-inline-start: 0;
   padding: 8px 14px;
   border-radius: 14px;
   background: var(--qz-accent);
@@ -81,12 +80,15 @@
   box-shadow: 0 10px 30px -10px rgb(0 0 0 / 0.6);
   pointer-events: none;
 }
-@media (max-width: 1023.98px) {
-  .qz-host-hello {
-    top: calc(100% + 12px);
-    translate: 0 0;
-    inset-inline-start: 0;
-  }
+.qz-host-hello::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  inset-inline-start: 18px;
+  width: 10px;
+  height: 10px;
+  rotate: 45deg;
+  background: inherit;
 }
 
 /* اللوح */
