@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import LogoIntro from './LogoIntro.jsx'
 import { assetUrl } from '../../utils/assets.js'
@@ -74,34 +75,47 @@ export default function NavHost({ onHome }) {
               data-open={open ? 'true' : undefined}
             >
               <img src={assetUrl('/avatar/anime/bubble.webp')} alt="" />
-              <img className="qz-host-bubble-grin" src={assetUrl('/avatar/anime/bubble-grin.webp')} alt="" />
+              <img
+                className="qz-host-bubble-grin"
+                src={assetUrl('/avatar/anime/bubble-grin.webp')}
+                alt=""
+              />
               <span className="qz-host-bubble-ring" aria-hidden="true" />
             </motion.button>
           )}
         </AnimatePresence>
-        <AnimatePresence>
-          {hello && !open && (
-            <motion.span
-              className="qz-host-hello"
-              style={pos ? { position: 'fixed', top: pos.top, left: pos.left, zIndex: 80 } : undefined}
-              initial={{ opacity: 0, y: -6, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -4, scale: 0.95 }}
-              transition={{ type: 'spring', stiffness: 420, damping: 30 }}
-              aria-hidden="true"
-            >
-              أهلاً! دوس عليّا نتكلم
-            </motion.span>
-          )}
-        </AnimatePresence>
       </span>
-      <AnimatePresence>
-        {open && (
-          <Suspense key="host" fallback={null}>
-            <AiHost onClose={() => setOpen(false)} />
-          </Suspense>
-        )}
-      </AnimatePresence>
+      {/* برّه النافبار (portal): الكبسولة عليها transform و overflow hidden
+          فأي fixed جوّاها كان بيتقص ويتحرك معاها */}
+      {createPortal(
+        <>
+          <AnimatePresence>
+            {hello && pos && !open && (
+              <motion.span
+                className="qz-host-hello"
+                style={
+                  pos ? { position: 'fixed', top: pos.top, left: pos.left, zIndex: 80 } : undefined
+                }
+                initial={{ opacity: 0, y: -6, scale: 0.9 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -4, scale: 0.95 }}
+                transition={{ type: 'spring', stiffness: 420, damping: 30 }}
+                aria-hidden="true"
+              >
+                أهلاً! دوس عليّا نتكلم
+              </motion.span>
+            )}
+          </AnimatePresence>
+          <AnimatePresence>
+            {open && (
+              <Suspense key="host" fallback={null}>
+                <AiHost onClose={() => setOpen(false)} />
+              </Suspense>
+            )}
+          </AnimatePresence>
+        </>,
+        document.body,
+      )}
     </>
   )
 }
