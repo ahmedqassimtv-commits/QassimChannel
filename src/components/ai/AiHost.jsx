@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowUpLeft, Send, Volume2, VolumeX, X } from 'lucide-react'
-import AnimeAvatar from './AnimeAvatar.jsx'
+import Avatar3D from './Avatar3D.jsx'
 import { speak } from './speech.js'
 import { GREETING, SUGGESTIONS, AI_ENDPOINT, ask, localReply } from './brain.js'
 const SPRING = { type: 'spring', bounce: 0, duration: 0.55 }
@@ -77,7 +77,7 @@ export default function AiHost({ onClose }) {
     const t = window.setTimeout(() => {
       headRef.current?.setMood('idle')
       say(GREETING)
-    }, 1150)
+    }, 1700)
     return () => {
       window.clearTimeout(t0)
       window.clearTimeout(t)
@@ -167,7 +167,7 @@ export default function AiHost({ onClose }) {
       </div>
 
       <div className="qz-host-stage" ref={stageRef}>
-        <AnimeAvatar ref={headRef} reduceMotion={reduce} />
+        <Avatar3D ref={headRef} reduceMotion={reduce} />
       </div>
 
       <p className="qz-host-sub" aria-live="polite">

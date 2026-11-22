@@ -69,6 +69,10 @@ const DROPDOWN_CLOSE_DELAY = 360
 // Interfaces»): نوابض حرجة التخميد افتراضياً (damping 1.0، بلا overshoot) تستأنف
 // من القيمة الظاهرة على الشاشة ويمكن مقاطعتها وإعادة توجيهها في أي لحظة.
 // في Framer Motion تُترجم إلى bounce: 0 مع duration 0.4 (انظر SKILL.md).
+// كل تغيير في حجم الكبسولة (التصغير مع السكرول، فتح البحث) بيمشي على نفس
+// النابض ده كـFLIP (transform بس) — مفيش max-width/width بيتحرك فمفيش تقطيع
+const NAV_LAYOUT_SPRING = { type: 'spring', stiffness: 420, damping: 40, mass: 0.9 }
+
 const morphSpring = {
   type: 'spring',
   bounce: 0,
@@ -1060,7 +1064,10 @@ export default function Navbar() {
       className="fixed inset-x-0 top-3.5 z-[70] isolation-isolate px-2.5 sm:top-4 sm:px-5"
     >
       {/* كبسولة الزجاج السائل الرئيسية — خالية تمامًا من اللمعان الجانبي ووميض التقاط الصور */}
-      <nav
+      <motion.nav
+        layout
+        transition={NAV_LAYOUT_SPRING}
+        style={{ borderRadius: 9999 }}
         onMouseMove={handleNavMouseMove}
         onMouseLeave={() => {
           setHoveredKey(null)
@@ -1068,7 +1075,7 @@ export default function Navbar() {
           glowOpacity.set(0)
         }}
         aria-label="التنقل الرئيسي"
-        className={`qassimz-apple-nav-shell qz-glass-rim group/nav relative z-20 mx-auto flex items-center justify-between gap-2 overflow-hidden rounded-full border-y border-x-0 px-2.5 py-1.5 transition-[max-width,background-color,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        className={`qassimz-apple-nav-shell qz-glass-rim group/nav relative z-20 mx-auto flex items-center justify-between gap-2 overflow-hidden rounded-full border-y border-x-0 px-2.5 py-1.5 transition-[background-color,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
           isLightTheme
             ? 'border-[#1F1D18]/14 bg-[#EBE2CC]/74'
             : 'border-white/14 bg-[color:var(--qz-ink)]/34'
@@ -1086,11 +1093,6 @@ export default function Navbar() {
           className="qz-glass-layer pointer-events-none absolute inset-0 z-0 rounded-full"
         />
 
-        {/* الطبقة 2: طبقة عمق زجاجي داخلي بفرق انكسار ناعم بعيدًا عن الجوانب */}
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-y-[3px] inset-x-14 z-0 rounded-full bg-linear-to-b from-white/[0.07] via-transparent to-black/[0.12]"
-        />
 
         {/* الطبقة 3: ضوء داخلي خافت يتبع الماوس في المنتصف فقط بعيدًا عن الأطراف */}
         <div
@@ -1114,34 +1116,21 @@ export default function Navbar() {
         </div>
 
         {/* المحتوى الداخلي للكبسولة (نصوص وأيقونات حادة تمامًا) */}
-        <div className="relative z-20 flex w-full items-center justify-between gap-2">
+        <motion.div
+          layout
+          transition={NAV_LAYOUT_SPRING}
+          className="relative z-20 flex w-full items-center justify-between gap-2"
+        >
           {/* الهوية واللوجو: يتحرك فقط عند تغير وضع Compact أو فتح/إغلاق البحث */}
-          <AnimatePresence initial={false}>
+          <AnimatePresence initial={false} mode="popLayout">
             {!isCompact && !searchExpanded && (
               <motion.div
                 key="brand-identity"
-                initial={{ opacity: 0, width: 0, scale: 0.94 }}
-                animate={{
-                  opacity: 1,
-                  width: 'auto',
-                  scale: 1,
-                  transition: {
-                    width: { duration: 0.34, ease: [0.22, 1, 0.36, 1] },
-                    opacity: { duration: 0.24, delay: 0.06, ease: 'easeOut' },
-                    scale: { duration: 0.32, ease: [0.22, 1, 0.36, 1] },
-                  },
-                }}
-                exit={{
-                  opacity: 0,
-                  width: 0,
-                  scale: 0.94,
-                  transition: {
-                    opacity: { duration: 0.14, ease: 'easeIn' },
-                    width: { duration: 0.28, ease: [0.22, 1, 0.36, 1] },
-                    scale: { duration: 0.22, ease: 'easeIn' },
-                  },
-                }}
-                className="shrink-0 overflow-hidden"
+                layout
+                initial={{ opacity: 0, scale: 0.9, filter: 'blur(6px)' }}
+                animate={{ opacity: 1, scale: 1, filter: 'blur(0px)', transition: { ...NAV_LAYOUT_SPRING, opacity: { duration: 0.22, delay: 0.08 } } }}
+                exit={{ opacity: 0, scale: 0.9, filter: 'blur(6px)', transition: { duration: 0.16, ease: 'easeIn' } }}
+                className="shrink-0"
               >
                 {/* اللوجو بيتكتب حرف حرف وبعدين قاسم الافتراضي بيطلع مكانه */}
                 <NavHost onHome={(event) => handleSectionSelect(event, '/', '/')} />
@@ -1150,10 +1139,11 @@ export default function Navbar() {
           </AnimatePresence>
 
           {/* مسار الأقسام الستة */}
-          <AnimatePresence initial={false}>
+          <AnimatePresence initial={false} mode="popLayout">
             {!searchExpanded && (
               <motion.div
                 key="nav-links-track"
+                layout="position"
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.98 }}
@@ -1326,7 +1316,9 @@ export default function Navbar() {
           </AnimatePresence>
 
           {/* مجموعة البحث وزر تبديل الثيم المتماثلة */}
-          <div
+          <motion.div
+            layout
+            transition={NAV_LAYOUT_SPRING}
             ref={searchBoxRef}
             onPointerEnter={handleSearchAreaEnter}
             onPointerLeave={handleSearchAreaLeave}
@@ -1336,7 +1328,10 @@ export default function Navbar() {
             }`}
           >
             {/* كبسولة حقل البحث */}
-            <div
+            <motion.div
+              layout
+              transition={NAV_LAYOUT_SPRING}
+              style={{ borderRadius: 9999 }}
               role="combobox"
               aria-expanded={searchSuggestionsOpen}
               aria-haspopup="listbox"
@@ -1353,7 +1348,7 @@ export default function Navbar() {
                   searchInputRef.current?.focus()
                 }
               }}
-              className={`relative flex items-center overflow-hidden rounded-full border-y border-x-0 transition-[width,background-color,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+              className={`relative flex items-center overflow-hidden rounded-full border-y border-x-0 transition-[background-color,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
                 searchExpanded
                   ? 'w-full border-white/20 bg-white/[0.11] px-3.5 py-1.5'
                   : 'cursor-pointer border-white/16 bg-white/[0.08] px-3.5 py-1.5 hover:border-white/24 hover:bg-white/[0.13]'
@@ -1417,7 +1412,7 @@ export default function Navbar() {
                   </kbd>
                 </span>
               )}
-            </div>
+            </motion.div>
 
             {/* خانة تبديل الثيمات المتماثلة */}
             <div
@@ -1458,9 +1453,9 @@ export default function Navbar() {
                 <MenuMorphIcon open={mobileMenuOpen} size={16} />
               </motion.button>
             )}
-          </div>
-        </div>
-      </nav>
+          </motion.div>
+        </motion.div>
+      </motion.nav>
 
       {/* طبقة القوائم المنسدلة المستقلة — نسخة واحدة نظيفة لكل قائمة دون Ghosting */}
       <div
