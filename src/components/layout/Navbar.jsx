@@ -40,6 +40,7 @@ import {
 } from '../../utils/glassSound.js'
 import { prefetchRoute } from '../../utils/liquidGlassEngine.js'
 import NavHost from '../ai/NavHost.jsx'
+import NavGlassOverlay from '../glass/NavGlassOverlay.jsx'
 import DaylightThemeSwitch from '../ui/DaylightThemeSwitch.jsx'
 import GlassHoverBubble from '../glass/GlassHoverBubble.jsx'
 import GlassIcon from '../ui/GlassIcon.jsx'
@@ -486,6 +487,7 @@ export default function Navbar() {
   const [verdictOpen, setVerdictOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [searchExpanded, setSearchExpanded] = useState(false)
+  const glassNavRef = useRef(null)
   const [searchSuggestionsOpen, setSearchSuggestionsOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [activeSearchIndex, setActiveSearchIndex] = useState(0)
@@ -1065,6 +1067,7 @@ export default function Navbar() {
     >
       {/* كبسولة الزجاج السائل الرئيسية — خالية تمامًا من اللمعان الجانبي ووميض التقاط الصور */}
       <motion.nav
+        ref={glassNavRef}
         layout
         transition={NAV_LAYOUT_SPRING}
         style={{ borderRadius: 9999 }}
@@ -1092,6 +1095,9 @@ export default function Navbar() {
           aria-hidden="true"
           className="qz-glass-layer pointer-events-none absolute inset-0 z-0 rounded-full"
         />
+
+        {/* الطبقة 2: زجاج سائل WebGL — لمعة بتتبع الماوس/الجيروسكوب، انكسار ألوان على الحبّاية، shimmer مع الحركة */}
+        <NavGlassOverlay navRef={glassNavRef} />
 
 
         {/* الطبقة 3: ضوء داخلي خافت يتبع الماوس في المنتصف فقط بعيدًا عن الأطراف */}
