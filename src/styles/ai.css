@@ -33,6 +33,17 @@
   .qz-host-bubble:hover img {
     transform: scale(1.08) rotate(-4deg);
   }
+  .qz-host-bubble:hover .qz-host-bubble-grin {
+    opacity: 1;
+  }
+}
+.qz-host-bubble .qz-host-bubble-grin {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition:
+    opacity 0.18s ease,
+    transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .qz-host-bubble:focus-visible {
   outline: 2px solid var(--qz-accent);
@@ -167,13 +178,133 @@
     radial-gradient(60% 55% at 50% 42%, rgb(var(--qz-glow-rgb) / 0.22), transparent 70%),
     rgb(var(--qz-mint-rgb) / 0.04);
 }
-.qz-host-canvas {
+/* ══ الشخصية الأنمي — AnimeAvatar.jsx ══ */
+.qz-anime {
+  --lx: 0;
+  --ly: 0;
   position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 3%;
+  pointer-events: none;
+  user-select: none;
+}
+.qz-anime-body {
+  position: relative;
+  flex: 0 0 auto;
+  height: 122%;
+  aspect-ratio: 462 / 701;
+  transform-origin: 50% 85%;
+  transform: translate(calc(var(--lx) * 8px), calc(var(--ly) * 5px))
+    rotate(calc(var(--lx) * -1.8deg));
+  transition:
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    scale 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: qz-anime-breathe 3.8s ease-in-out infinite;
+  filter: drop-shadow(0 18px 30px rgb(0 0 0 / 0.35));
+}
+@keyframes qz-anime-breathe {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -4px;
+  }
+}
+.qz-anime img {
+  position: absolute;
+  display: block;
+  -webkit-user-drag: none;
+}
+.qz-anime-base,
+.qz-anime-full {
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  object-position: bottom;
+}
+.qz-anime-base {
+  transition: opacity 0.22s ease;
+}
+.qz-anime-patch {
+  height: auto;
+  opacity: 0;
+}
+.qz-anime-full {
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+/* البوق والرمش: فريمات لحظية من غير transition */
+.qz-anime[data-mouth='aa'] .qz-anime-aa,
+.qz-anime[data-mouth='oo'] .qz-anime-oo,
+.qz-anime[data-blink='true'] .qz-anime-blink {
+  opacity: 1;
+}
+/* الضحكة والتفكير: لقطة كاملة بدل الأساس */
+.qz-anime[data-mood] .qz-anime-base,
+.qz-anime[data-mood] .qz-anime-patch {
+  opacity: 0;
+}
+.qz-anime[data-mood='excited'] .qz-anime-grin,
+.qz-anime[data-mood='thinking'] .qz-anime-cap {
+  opacity: 1;
+}
+.qz-anime[data-mood='excited'] .qz-anime-body {
+  scale: 1.04;
+}
+.qz-anime[data-speaking='true'] .qz-anime-body {
+  animation-duration: 2.2s;
+}
+.qz-anime-think {
+  position: absolute;
+  top: 14%;
+  inset-inline-end: 12%;
+  display: flex;
+  gap: 5px;
+  padding: 8px 11px;
+  border-radius: 999px;
+  background: var(--qz-accent);
+  box-shadow: 0 8px 22px -8px rgb(0 0 0 / 0.6);
+  opacity: 0;
+  scale: 0.6;
+  transition:
+    opacity 0.2s ease,
+    scale 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.qz-anime-think i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--qz-ink);
+  animation: qz-anime-dot 1s ease-in-out infinite;
+}
+.qz-anime-think i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.qz-anime-think i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes qz-anime-dot {
+  0%,
+  100% {
+    translate: 0 0;
+    opacity: 0.45;
+  }
+  40% {
+    translate: 0 -4px;
+    opacity: 1;
+  }
+}
+.qz-anime[data-mood='thinking'] .qz-anime-think {
+  opacity: 1;
+  scale: 1;
+}
+.qz-anime[data-reduce='true'] .qz-anime-body,
+.qz-anime[data-reduce='true'] .qz-anime-think i {
+  animation: none;
+  transition: none;
 }
 .qz-host-sub {
   min-height: 3.6em;

@@ -2,14 +2,13 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowUpLeft, Send, Volume2, VolumeX, X } from 'lucide-react'
-import { TalkingHead } from './talkingHead.js'
+import AnimeAvatar from './AnimeAvatar.jsx'
 import { speak } from './speech.js'
 import { GREETING, SUGGESTIONS, AI_ENDPOINT, ask, localReply } from './brain.js'
-import { assetUrl } from '../../utils/assets.js'
 import { SPRING } from '../motion/Motion.jsx'
 
 /* ══ قاسم الافتراضي ═══════════════════════════════════════════════════
-   لوح زجاج بيطلع من مكان اللوجو في النافبار: راس قاسم المتكلّم (WebGL)،
+   لوح زجاج بيطلع من مكان اللوجو في النافبار: قاسم الأنمي بيتكلم ويرمش،
    ترجمة بتتكتب مع الكلام، اقتراحات، وخانة سؤال. كل رد ممكن يجي معاه
    لينك لصفحة في الموقع. مكتوب عليه بوضوح إنه نسخة بالذكاء الاصطناعي. */
 
@@ -18,12 +17,11 @@ const MUTE_KEY = 'qz-host-muted'
 export default function AiHost({ onClose }) {
   const reduce = useReducedMotion()
   const navigate = useNavigate()
-  const canvasRef = useRef(null)
+  const stageRef = useRef(null)
   const headRef = useRef(null)
   const stopRef = useRef(null)
   const inputRef = useRef(null)
   const historyRef = useRef([])
-  const [glOk, setGlOk] = useState(true)
   const [reply, setReply] = useState(GREETING)
   const [shown, setShown] = useState(0)
   const [busy, setBusy] = useState(false)
@@ -35,37 +33,20 @@ export default function AiHost({ onClose }) {
     }
   })
 
-  // الراس
+  // بيبص ناحية الماوس
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return undefined
-    let head
-    try {
-      head = new TalkingHead(canvas, { src: assetUrl('/avatar/qassim-face.webp') })
-      head.reduceMotion = reduce
-      headRef.current = head
-    } catch {
-      setGlOk(false)
-      return undefined
-    }
+    if (reduce) return undefined
     const onMove = (e) => {
-      const r = canvas.getBoundingClientRect()
-      const cx = r.left + r.width / 2
-      const cy = r.top + r.height * 0.42
-      head.setLook(
-        (e.clientX - cx) / (window.innerWidth / 2),
-        (e.clientY - cy) / (window.innerHeight / 2),
+      const stage = stageRef.current
+      if (!stage) return
+      const r = stage.getBoundingClientRect()
+      headRef.current?.setLook(
+        (e.clientX - (r.left + r.width / 2)) / (window.innerWidth / 2),
+        (e.clientY - (r.top + r.height * 0.4)) / (window.innerHeight / 2),
       )
     }
-    const ro = new ResizeObserver(() => head.resize())
-    ro.observe(canvas)
     window.addEventListener('pointermove', onMove, { passive: true })
-    return () => {
-      window.removeEventListener('pointermove', onMove)
-      ro.disconnect()
-      head.destroy()
-      headRef.current = null
-    }
+    return () => window.removeEventListener('pointermove', onMove)
   }, [reduce])
 
   const say = useCallback(
@@ -90,10 +71,15 @@ export default function AiHost({ onClose }) {
     [muted, reduce],
   )
 
-  // التحية أول ما اللوح يفتح
+  // التحية أول ما اللوح يفتح: ضحكة الأول وبعدين الكلام
   useEffect(() => {
-    const t = window.setTimeout(() => say(GREETING), 450)
+    const t0 = window.setTimeout(() => headRef.current?.setMood('excited'), 250)
+    const t = window.setTimeout(() => {
+      headRef.current?.setMood('idle')
+      say(GREETING)
+    }, 1150)
     return () => {
+      window.clearTimeout(t0)
       window.clearTimeout(t)
       stopRef.current?.()
     }
@@ -110,6 +96,9 @@ export default function AiHost({ onClose }) {
   const run = async (text, intentId) => {
     if (busy) return
     setBusy(true)
+    stopRef.current?.()
+    headRef.current?.setSpeaking(false)
+    headRef.current?.setMood('thinking')
     const r = intentId && !AI_ENDPOINT ? localReply(intentId) : await ask(text, historyRef.current)
     historyRef.current = [
       ...historyRef.current,
@@ -117,6 +106,7 @@ export default function AiHost({ onClose }) {
       { role: 'assistant', content: r.text },
     ].slice(-12)
     setBusy(false)
+    headRef.current?.setMood('idle')
     say(r)
   }
 
@@ -176,17 +166,8 @@ export default function AiHost({ onClose }) {
         </div>
       </div>
 
-      <div className="qz-host-stage">
-        {glOk ? (
-          <canvas ref={canvasRef} className="qz-host-canvas" aria-hidden="true" />
-        ) : (
-          <img
-            className="qz-host-canvas"
-            src={assetUrl('/avatar/qassim-face.webp')}
-            alt=""
-            aria-hidden="true"
-          />
-        )}
+      <div className="qz-host-stage" ref={stageRef}>
+        <AnimeAvatar ref={headRef} reduceMotion={reduce} />
       </div>
 
       <p className="qz-host-sub" aria-live="polite">
