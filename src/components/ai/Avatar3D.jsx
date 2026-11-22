@@ -53,8 +53,8 @@ function createStage(THREE, GLTFLoader, canvas, reduce) {
   rim.position.set(-1.5, 2, -2)
   scene.add(rim)
   const camera = new THREE.PerspectiveCamera(28, 1, 0.05, 20)
-  camera.position.set(0, 1.5, 1.55)
-  camera.lookAt(0, 1.47, 0)
+  camera.position.set(0, 1.47, 1.8)
+  camera.lookAt(0, 1.42, 0)
 
   const S = {
     breath: 0,

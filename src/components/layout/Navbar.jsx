@@ -1093,11 +1093,6 @@ export default function Navbar() {
           className="qz-glass-layer pointer-events-none absolute inset-0 z-0 rounded-full"
         />
 
-        {/* الطبقة 2: طبقة عمق زجاجي داخلي بفرق انكسار ناعم بعيدًا عن الجوانب */}
-        <span
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-y-[3px] inset-x-14 z-0 rounded-full bg-linear-to-b from-white/[0.07] via-transparent to-black/[0.12]"
-        />
 
         {/* الطبقة 3: ضوء داخلي خافت يتبع الماوس في المنتصف فقط بعيدًا عن الأطراف */}
         <div
