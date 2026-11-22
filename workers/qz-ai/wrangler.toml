@@ -1,0 +1,7 @@
+name = "qz-ai"
+main = "index.js"
+compatibility_date = "2026-11-01"
+
+[vars]
+# المواقع المسموح لها تكلم الـ Worker (افصل بفاصلة)
+ALLOWED_ORIGINS = "https://ahmedqassimtv-commits.github.io,http://localhost:5173"

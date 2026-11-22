@@ -1,0 +1,292 @@
+/* ══ قاسم الافتراضي — src/components/ai ══════════════════════════════ */
+
+/* مكان اللوجو في النافبار: اللوجو ثم الوش */
+.qz-island-brand-slot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  min-width: 48px;
+}
+.qz-host-bubble {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  margin-inline: 4px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(var(--qz-mint-rgb) / 0.08);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.qz-host-bubble img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@media (hover: hover) {
+  .qz-host-bubble:hover img {
+    transform: scale(1.08) rotate(-4deg);
+  }
+}
+.qz-host-bubble:focus-visible {
+  outline: 2px solid var(--qz-accent);
+  outline-offset: 2px;
+}
+.qz-host-bubble-ring {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid var(--qz-accent);
+  box-shadow: 0 0 14px rgb(var(--qz-glow-rgb) / 0.55);
+  animation: qz-host-breathe 2.6s ease-in-out infinite;
+  pointer-events: none;
+}
+.qz-host-bubble[data-open='true'] .qz-host-bubble-ring {
+  animation: none;
+  opacity: 1;
+}
+@keyframes qz-host-breathe {
+  0%,
+  100% {
+    opacity: 0.35;
+    scale: 1;
+  }
+  50% {
+    opacity: 1;
+    scale: 1.06;
+  }
+}
+.qz-island[data-compact='true'] .qz-host-bubble {
+  width: 40px;
+  height: 40px;
+}
+.qz-host-hello {
+  position: absolute;
+  top: 50%;
+  inset-inline-start: calc(100% + 10px);
+  translate: 0 -50%;
+  padding: 8px 14px;
+  border-radius: 14px;
+  background: var(--qz-accent);
+  color: var(--qz-ink);
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 10px 30px -10px rgb(0 0 0 / 0.6);
+  pointer-events: none;
+}
+@media (max-width: 1023.98px) {
+  .qz-host-hello {
+    top: calc(100% + 12px);
+    translate: 0 0;
+    inset-inline-start: 0;
+  }
+}
+
+/* اللوح */
+.qz-host {
+  position: fixed;
+  z-index: 75;
+  top: calc(var(--qz-header-h) + 28px);
+  inset-inline-start: max(16px, calc(50% - 640px));
+  width: min(380px, calc(100vw - 24px));
+  max-height: calc(100svh - var(--qz-header-h) - 48px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 28px;
+  border: 1px solid var(--qz-line);
+  background: rgb(var(--qz-ink-rgb) / 0.86);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+  box-shadow:
+    0 40px 90px -30px rgb(0 0 0 / 0.8),
+    inset 0 1px 0 rgb(var(--qz-mint-rgb) / 0.14);
+  transform-origin: 85% 0%;
+}
+.qz-host-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.qz-host-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  color: var(--qz-text-3);
+}
+.qz-host-badge i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--qz-accent);
+  box-shadow: 0 0 10px var(--qz-accent);
+}
+.qz-host-tools {
+  display: flex;
+  gap: 4px;
+}
+.qz-host-tools button {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(var(--qz-mint-rgb) / 0.06);
+  color: var(--qz-text-2);
+  cursor: pointer;
+}
+.qz-host-tools button:hover {
+  color: var(--qz-text);
+  background: rgb(var(--qz-mint-rgb) / 0.12);
+}
+.qz-host-tools svg {
+  width: 17px;
+  height: 17px;
+}
+.qz-host-stage {
+  position: relative;
+  height: 300px;
+  border-radius: 22px;
+  overflow: hidden;
+  background:
+    radial-gradient(60% 55% at 50% 42%, rgb(var(--qz-glow-rgb) / 0.22), transparent 70%),
+    rgb(var(--qz-mint-rgb) / 0.04);
+}
+.qz-host-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom;
+}
+.qz-host-sub {
+  min-height: 3.6em;
+  font-size: 1rem;
+  line-height: 1.85;
+  color: var(--qz-text);
+}
+.qz-host-w {
+  opacity: 0.18;
+  transition: opacity 0.25s ease;
+}
+.qz-host-w[data-on='true'] {
+  opacity: 1;
+}
+.qz-host-link {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding-inline: 18px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--qz-accent);
+  color: var(--qz-ink);
+  font-weight: 700;
+  cursor: pointer;
+}
+.qz-host-link svg {
+  width: 16px;
+  height: 16px;
+}
+.qz-host-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.qz-host-chips button {
+  height: 34px;
+  padding-inline: 12px;
+  border-radius: 999px;
+  border: 1px solid var(--qz-line);
+  background: rgb(var(--qz-mint-rgb) / 0.05);
+  color: var(--qz-text-2);
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+.qz-host-chips button:hover:not(:disabled) {
+  background: rgb(var(--qz-mint-rgb) / 0.12);
+  color: var(--qz-text);
+}
+.qz-host-chips button:disabled {
+  opacity: 0.5;
+  cursor: progress;
+}
+.qz-host-form {
+  display: flex;
+  gap: 6px;
+}
+.qz-host-form input {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  padding-inline: 16px;
+  border-radius: 999px;
+  border: 1px solid var(--qz-line);
+  background: rgb(var(--qz-mint-rgb) / 0.05);
+  color: var(--qz-text);
+  font: inherit;
+}
+.qz-host-form input::placeholder {
+  color: var(--qz-text-3);
+}
+.qz-host-form input:focus-visible,
+.qz-host-chips button:focus-visible,
+.qz-host-link:focus-visible,
+.qz-host-tools button:focus-visible,
+.qz-host-form button:focus-visible {
+  outline: 2px solid var(--qz-accent);
+  outline-offset: 2px;
+}
+.qz-host-form button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--qz-accent);
+  color: var(--qz-ink);
+  cursor: pointer;
+}
+.qz-host-form button svg {
+  width: 18px;
+  height: 18px;
+  transform: scaleX(-1);
+}
+@media (max-width: 1023.98px) {
+  .qz-host {
+    top: calc(58px + 22px);
+    inset-inline: 12px;
+    width: auto;
+  }
+  .qz-host-stage {
+    height: 240px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .qz-host-bubble-ring {
+    animation: none;
+  }
+  .qz-host-w {
+    transition: none;
+  }
+}
