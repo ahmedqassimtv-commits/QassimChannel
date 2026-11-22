@@ -47,7 +47,7 @@
 .qz-display {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(3.1rem, 9.2vw, 9.25rem);
+  font-size: clamp(2.8rem, 6.6vw, 7rem);
   line-height: 1.12;
   color: var(--qz-text);
   text-wrap: balance;
