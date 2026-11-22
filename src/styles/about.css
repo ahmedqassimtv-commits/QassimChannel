@@ -43,7 +43,7 @@
   padding-block: 2rem 4rem;
 }
 .qz-ab-name {
-  font-family: var(--font-quiver);
+  font-family: var(--font-display);
   font-weight: 800;
   font-size: clamp(4.5rem, 16vw, 14rem);
   line-height: 1.15;
@@ -94,7 +94,7 @@
   display: flex;
   align-items: center;
   gap: 3rem;
-  font-family: var(--font-quiver);
+  font-family: var(--font-display);
   font-size: clamp(1.8rem, 4vw, 3.4rem);
   font-weight: 700;
   color: var(--qz-text);
@@ -120,7 +120,7 @@
 }
 .qz-ab-big {
   max-width: 18ch;
-  font-family: var(--font-quiver);
+  font-family: var(--font-display);
   font-weight: 800;
   font-size: clamp(2.2rem, 6vw, 5.4rem);
   line-height: 1.4;
@@ -187,7 +187,7 @@
   flex: none;
   align-self: center;
   width: clamp(280px, 34vw, 520px);
-  font-family: var(--font-quiver);
+  font-family: var(--font-display);
   font-weight: 700;
   font-size: clamp(1.8rem, 3.4vw, 3.2rem);
   line-height: 1.45;
@@ -263,7 +263,7 @@
 .qz-ab-split-card h3 small {
   display: block;
   margin-top: 0.4rem;
-  font-family: var(--font-quiver);
+  font-family: var(--font-display);
   font-size: clamp(1.4rem, 2.6vw, 2.4rem);
   font-weight: 700;
 }
@@ -287,7 +287,7 @@
   margin-bottom: 3rem;
 }
 .qz-ab-h2 {
-  font-family: var(--font-quiver);
+  font-family: var(--font-display);
   font-weight: 800;
   font-size: clamp(2.4rem, 6vw, 5.5rem);
   line-height: 1.25;
@@ -321,7 +321,7 @@
   color: var(--qz-accent);
 }
 .qz-ab-row strong {
-  font-family: var(--font-quiver);
+  font-family: var(--font-display);
   font-weight: 700;
   font-size: clamp(1.6rem, 3.4vw, 3rem);
   color: var(--qz-text);

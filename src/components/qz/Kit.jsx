@@ -205,7 +205,7 @@ export function VerdictTile({ review, onPlay }) {
           </span>
           <span className="absolute inset-x-0 bottom-0 p-5">
             <span className="qz-latin block text-[10px] text-white/60">{review.title}</span>
-            <span className="mt-1 block font-[family-name:var(--font-quiver)] text-2xl font-normal leading-snug text-white">
+            <span className="mt-1 block font-[family-name:var(--font-display)] text-2xl font-normal leading-snug text-white">
               {review.titleAr || review.title}
             </span>
           </span>
@@ -230,7 +230,7 @@ export function ArticleRow({ article, index }) {
     <Link to={`/articles/${article.slug}`} className="group grid grid-cols-[auto_minmax(0,1fr)_auto] items-baseline gap-x-5 gap-y-2 border-t border-[color:var(--qz-line)] py-7 sm:gap-x-8">
       <span className="qz-index qz-num w-8">{String(index).padStart(2, '0')}</span>
       <span className="min-w-0">
-        <span className="block font-[family-name:var(--font-quiver)] text-[clamp(1.35rem,2.4vw,2rem)] font-normal leading-snug text-[color:var(--qz-text)] transition-colors duration-300 group-hover:text-[color:var(--qz-accent)]">
+        <span className="block font-[family-name:var(--font-display)] text-[clamp(1.35rem,2.4vw,2rem)] font-normal leading-snug text-[color:var(--qz-text)] transition-colors duration-300 group-hover:text-[color:var(--qz-accent)]">
           {article.title}
         </span>
         {article.excerpt && <span className="qz-body mt-2 block line-clamp-2 max-w-2xl text-[0.95rem]">{article.excerpt}</span>}

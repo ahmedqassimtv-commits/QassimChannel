@@ -2,7 +2,7 @@
 
 /* ══ الفوتر ═══════════════════════════════════════════════════════════ */
 .qz-footer-word {
-  font-family: var(--font-quiver);
+  font-family: var(--font-display);
   font-weight: 300;
   font-size: clamp(4.5rem, 17vw, 15rem);
   line-height: 1;

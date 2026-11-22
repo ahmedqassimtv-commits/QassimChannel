@@ -2,7 +2,8 @@ import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useSta
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import Lenis from 'lenis'
-import LiquidScene from './components/scene/LiquidScene.jsx'
+import NightScene from './components/scene/NightScene.jsx'
+import SiteCursor from './components/cursor/SiteCursor.jsx'
 import SiteNav from './components/nav/SiteNav.jsx'
 import MobileTabBar from './components/nav/MobileTabBar.jsx'
 import Footer from './components/layout/Footer.jsx'
@@ -37,8 +38,8 @@ function PageFallback() {
 /* ══ الانتقال بين الصفحات ═════════════════════════════════════════════
    الصفحة القديمة بتنسحب لورا (blur + تصغير بسيط)، وبعد ما تخلص بنرجع
    لأول الصفحة، والجديدة بتتجسّد من تحت. التمرير لفوق بيحصل بين الاتنين
-   (مش قبل الخروج) عشان القديمة ماتقفزش وهي بتختفي. المشهد الحي في
-   الخلفية بيغيّر مزاجه في نفس اللحظة (LiquidScene بيقرا المسار). */
+   (مش قبل الخروج) عشان القديمة ماتقفزش وهي بتختفي.
+   الخلفية (NightScene) ثابتة تحت الاتنين. */
 function AnimatedRoutes() {
   const location = useLocation()
   const reduce = useReducedMotion()
@@ -160,7 +161,8 @@ export default function App() {
             انتقل للمحتوى
           </a>
           <LiquidGlassFilters />
-          <LiquidScene />
+          <NightScene />
+          <SiteCursor />
           <SiteNav searchOpen={searchOpen} setSearchOpen={setSearchOpen} />
           <main id="main" className="qz-main relative z-10 mx-auto min-h-[80vh] w-full max-w-[1320px] px-[var(--qz-page-x)] pb-24 pt-28 lg:pt-32">
             <AnimatedRoutes />
