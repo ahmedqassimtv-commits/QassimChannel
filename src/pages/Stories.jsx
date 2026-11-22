@@ -6,6 +6,7 @@ import { stories } from '../data/stories.js'
 import { Filters, PageHero } from '../components/qz/Kit.jsx'
 import { Reveal, SPRING_SOFT } from '../components/motion/Motion.jsx'
 import { lockScroll, unlockScroll } from '../lib/scroll.js'
+import GlassSlider from '../components/ui/GlassSlider.jsx'
 
 /* ══ أرشيف الحكايات ═══════════════════════════════════════════════════
    خط زمني: كل حكاية فصل لوحده، السنة بخط ضخم بتفضل ثابتة (sticky) وانت
@@ -14,6 +15,14 @@ import { lockScroll, unlockScroll } from '../lib/scroll.js'
    بتقلّب بين الحكايات. */
 
 const big = (url) => url.replace(/w=\d+/, 'w=2000')
+
+/* شرائح سلايدر الزجاج: ثابتة برّه الكومبوننت عشان الـ WebGL مايتعادش كل render */
+const SLIDES = stories.map((s) => ({
+  title: s.title,
+  description: s.caption,
+  meta: `${s.year} · ${s.location}`,
+  media: big(s.image),
+}))
 
 function Chapter({ story, index, onOpen }) {
   const ref = useRef(null)
@@ -148,6 +157,10 @@ export default function Stories() {
         title={'أرشيف\nالحكايات'}
         lead="صور قديمة وحكاياتها: أماكن وأزمنة وناس، زي ما حفظتها الكاميرا. انزل في الزمن حكاية حكاية."
       />
+
+      <div className="mt-12">
+        <GlassSlider slides={SLIDES} label="أرشيف الحكايات" />
+      </div>
 
       {eras.length > 2 && (
         <div className="mt-12">

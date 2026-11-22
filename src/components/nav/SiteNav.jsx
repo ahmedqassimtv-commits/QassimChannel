@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDown, Search } from 'lucide-react'
@@ -12,6 +12,7 @@ import useCompact from './useCompact.js'
 import { NAV, sectionKey } from './navConfig.js'
 import { prefetchRoute } from '../../utils/liquidGlassEngine.js'
 import { setThemeWithWipe, useTheme } from '../../utils/theme.js'
+import { assetUrl } from '../../utils/assets.js'
 import { playGlassDropdown, playGlassTap } from '../../utils/glassSound.js'
 import { SPRING } from '../motion/Motion.jsx'
 
@@ -25,6 +26,42 @@ import { SPRING } from '../motion/Motion.jsx'
    - مع التمرير الكبسولة بتصغر. تحت lg: لوجو + بحث + ثيم بس،
      والتنقل في التابات السفلية (MobileTabBar). */
 
+// قاسم الافتراضي بيتحمّل بس لما حد يفتحه (فيه WebGL)
+const AiHost = lazy(() => import('../ai/AiHost.jsx'))
+const HOST_SEEN = 'qz-host-seen'
+
+/* اللوجو بيظهر الأول، وبعد ثانيتين بيتحوّل لوش قاسم (مرة في الزيارة،
+   بعدها الوش بيبان على طول). الضغط على الوش بيفتح قاسم الافتراضي. */
+function useHostArrival(delay = 2400) {
+  const [arrived, setArrived] = useState(() => {
+    try {
+      return sessionStorage.getItem(HOST_SEEN) === '1'
+    } catch {
+      return false
+    }
+  })
+  const [hello, setHello] = useState(false)
+  useEffect(() => {
+    if (arrived) return undefined
+    const t = window.setTimeout(() => {
+      setArrived(true)
+      setHello(true)
+      try {
+        sessionStorage.setItem(HOST_SEEN, '1')
+      } catch {
+        /* تصفح خاص */
+      }
+    }, delay)
+    return () => window.clearTimeout(t)
+  }, [arrived, delay])
+  useEffect(() => {
+    if (!hello) return undefined
+    const t = window.setTimeout(() => setHello(false), 5200)
+    return () => window.clearTimeout(t)
+  }, [hello])
+  return { arrived, hello, dismissHello: () => setHello(false) }
+}
+
 const IS_MAC =
   typeof navigator !== 'undefined' &&
   /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)
@@ -36,6 +73,8 @@ export default function SiteNav({ onOpenSearch }) {
   const compact = useCompact()
   const theme = useTheme()
   const switchRef = useRef(null)
+  const host = useHostArrival()
+  const [hostOpen, setHostOpen] = useState(false)
   const [hover, setHover] = useState(null)
   const [open, setOpen] = useState(null)
   const [anchor, setAnchor] = useState({ top: 0, center: 0 })
@@ -138,14 +177,59 @@ export default function SiteNav({ onOpenSearch }) {
           className="qz-island-glass"
         >
           <div ref={rowRef} className="qz-island-row">
-            <Link
-              to="/"
-              className="qz-island-brand"
-              aria-label="قاسمز — الرئيسية"
-              onClick={() => playGlassTap()}
-            >
-              <BrandLogo variant="glass" title="قاسمز" className="qz-island-logo" />
-            </Link>
+            <div className="qz-island-brand-slot">
+              <AnimatePresence mode="popLayout" initial={false}>
+                {!host.arrived ? (
+                  <motion.div
+                    key="logo"
+                    exit={{ opacity: 0, scale: 0.5, rotate: 12, filter: 'blur(6px)' }}
+                    transition={SPRING}
+                  >
+                    <Link
+                      to="/"
+                      className="qz-island-brand"
+                      aria-label="قاسمز — الرئيسية"
+                      onClick={() => playGlassTap()}
+                    >
+                      <BrandLogo variant="glass" title="قاسمز" className="qz-island-logo" />
+                    </Link>
+                  </motion.div>
+                ) : (
+                  <motion.button
+                    key="host"
+                    type="button"
+                    className="qz-host-bubble"
+                    initial={{ opacity: 0, scale: 0.3, rotate: -25 }}
+                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                    transition={{ type: 'spring', stiffness: 320, damping: 18 }}
+                    onClick={() => {
+                      host.dismissHello()
+                      setHostOpen((v) => !v)
+                    }}
+                    aria-expanded={hostOpen}
+                    aria-label="كلّم قاسم الافتراضي"
+                    data-open={hostOpen ? 'true' : undefined}
+                  >
+                    <img src={assetUrl('/avatar/qassim-bubble.webp')} alt="" />
+                    <span className="qz-host-bubble-ring" aria-hidden="true" />
+                  </motion.button>
+                )}
+              </AnimatePresence>
+              <AnimatePresence>
+                {host.hello && !hostOpen && (
+                  <motion.span
+                    className="qz-host-hello"
+                    initial={{ opacity: 0, x: 10, scale: 0.9 }}
+                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                    exit={{ opacity: 0, x: 6, scale: 0.95 }}
+                    transition={SPRING}
+                    aria-hidden="true"
+                  >
+                    أهلاً! دوس عليّا نتكلم
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </div>
 
             <nav
               aria-label="التنقل الرئيسي"
@@ -255,6 +339,14 @@ export default function SiteNav({ onOpenSearch }) {
           </div>
         </LiquidGlass>
       </header>
+
+      <AnimatePresence>
+        {hostOpen && (
+          <Suspense key="host" fallback={null}>
+            <AiHost onClose={() => setHostOpen(false)} />
+          </Suspense>
+        )}
+      </AnimatePresence>
 
       <AnimatePresence>
         {openItem && (
