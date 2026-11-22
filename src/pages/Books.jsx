@@ -1,17 +1,22 @@
 import { books } from '../data/books.js'
 import { PageHero, SectionHead } from '../components/qz/Kit.jsx'
 import { Stagger, StaggerItem } from '../components/motion/Motion.jsx'
+import FlipBook from '../components/books/FlipBook.jsx'
 
 /* ══ الكتب والقصص ═════════════════════════════════════════════════════
    رف كتب: كل غلاف كتاب له عمق حقيقي (CSS 3D: وش + كعب + سُمك صفحات)،
-   مايل شوية، ومع الماوس بيلف ويواجهك. قسمين: قراءات قاسم، وقصصه هو. */
+   مايل شوية، ومع الماوس بيلف ويواجهك. قسمين: قراءات قاسم، وقصصه هو
+   في كتاب حقيقي بيتقلب بالماوس (FlipBook). */
 
 function Rating({ value }) {
   if (!value) return null
   return (
     <span className="flex gap-1" aria-label={`تقييم ${value} من 5`}>
       {Array.from({ length: 5 }, (_, i) => (
-        <span key={i} className={`h-1 w-5 rounded-full ${i < value ? 'bg-[color:var(--qz-accent)]' : 'bg-[rgb(var(--qz-mint-rgb)/0.14)]'}`} />
+        <span
+          key={i}
+          className={`h-1 w-5 rounded-full ${i < value ? 'bg-[color:var(--qz-accent)]' : 'bg-[rgb(var(--qz-mint-rgb)/0.14)]'}`}
+        />
       ))}
     </span>
   )
@@ -66,13 +71,7 @@ export default function Books() {
       {tales.length > 0 && (
         <section className="qz-section pt-0">
           <SectionHead index="02" eyebrow="بقلم قاسم" title="قصص" />
-          <Stagger className="grid gap-x-10 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
-            {tales.map((b) => (
-              <StaggerItem key={b.id}>
-                <Book book={b} />
-              </StaggerItem>
-            ))}
-          </Stagger>
+          <FlipBook tales={tales} />
         </section>
       )}
     </div>
