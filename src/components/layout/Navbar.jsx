@@ -40,7 +40,7 @@ import {
 } from '../../utils/glassSound.js'
 import { prefetchRoute } from '../../utils/liquidGlassEngine.js'
 import NavHost from '../ai/NavHost.jsx'
-import NavGlassOverlay from '../glass/NavGlassOverlay.jsx'
+import { GlassLayer } from '../../../1-qassim-liquid-glass.js'
 import DaylightThemeSwitch from '../ui/DaylightThemeSwitch.jsx'
 import GlassHoverBubble from '../glass/GlassHoverBubble.jsx'
 import GlassIcon from '../ui/GlassIcon.jsx'
@@ -1068,6 +1068,7 @@ export default function Navbar() {
       {/* كبسولة الزجاج السائل الرئيسية — خالية تمامًا من اللمعان الجانبي ووميض التقاط الصور */}
       <motion.nav
         ref={glassNavRef}
+        data-glass-host=""
         layout
         transition={NAV_LAYOUT_SPRING}
         style={{ borderRadius: 9999 }}
@@ -1086,15 +1087,13 @@ export default function Navbar() {
               : 'w-full max-w-[78rem]'
         }`}
       >
-        {/* الطبقة 1: لوح العزل الخلفي والانكسار البصري متعدد الطبقات (خلف المحتوى دون أي Snapshot يسبب وميضًا) */}
-        <span
-          aria-hidden="true"
-          className="qz-glass-layer pointer-events-none absolute inset-0 z-0 rounded-full"
+        <GlassLayer
+          material="clear"
+          tint={0.28}
+          blur={14}
+          swell={false}
+          optics={{ tintColor: theme === 'green' ? '#123b36' : theme === 'red' ? '#48241d' : '#303654', refraction: 0.35, dispersion: 0, shadow: 0, borderAlpha: 0.2, borderWidth: 0.6 }}
         />
-
-        {/* الطبقة 2: زجاج سائل WebGL — لمعة بتتبع الماوس/الجيروسكوب، انكسار ألوان على الحبّاية، shimmer مع الحركة */}
-        <NavGlassOverlay navRef={glassNavRef} />
-
 
         {/* الطبقة 3: ضوء داخلي خافت يتبع الماوس في المنتصف فقط بعيدًا عن الأطراف */}
         <div
