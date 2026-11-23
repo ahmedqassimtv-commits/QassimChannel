@@ -117,8 +117,13 @@ html[data-qz-theme='gold'] {
   --qz-rive-muted-filter: hue-rotate(-24deg) saturate(0.62) brightness(1);
 }
 
-/* خلفية الصفحة الأساسية بانتقال ناعم عند تبديل الثيم */
-html,
+/* خلفية الصفحة الأساسية بانتقال ناعم عند تبديل الثيم:
+   مهم جداً: يجب أن تبقى html شفافة (transparent) حتى يرث الجذر خلفية body
+   ويظل عنصر WebGL (.gl-wrap ذو z-index: -1) مرئياً فوق خلفية الصفحة تماماً كما في الملف الأصلي. */
+html {
+  background-color: transparent !important;
+}
+
 body {
   background-color: var(--color--dark-green);
   color: var(--color--white);

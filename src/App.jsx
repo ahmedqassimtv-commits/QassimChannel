@@ -101,7 +101,9 @@ function AppShell({ lenisRef }) {
   const isImmersive =
     pathname === '/masaha/ahmed' ||
     pathname.startsWith('/verdict') ||
-    pathname.startsWith('/stories')
+    pathname.startsWith('/stories') ||
+    pathname.startsWith('/ideas') ||
+    pathname.startsWith('/masaha/ideas')
 
   return (
     <div className="relative min-h-screen overflow-x-clip bg-[color:var(--qz-ink)] text-[color:var(--qz-text)]">

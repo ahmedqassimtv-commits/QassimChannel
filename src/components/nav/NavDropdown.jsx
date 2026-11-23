@@ -11,7 +11,7 @@ import { SPRING } from '../motion/Motion.jsx'
    أو حواف لامعة زائدة. */
 
 const NavDropdown = forwardRef(function NavDropdown(
-  { item, anchor, onEnter, onLeave, onPick, onKeyDown },
+  { item, anchor, surface, onEnter, onLeave, onPick, onKeyDown },
   ref,
 ) {
   const reduce = useReducedMotion()
@@ -22,6 +22,7 @@ const NavDropdown = forwardRef(function NavDropdown(
       role="menu"
       aria-label={item.label}
       className="qz-island-menu"
+      data-surface={surface}
       style={{ top: anchor.top, left: anchor.center, transformOrigin: '50% 0%' }}
       initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.96, y: -8 }}
       animate={reduce ? { opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}

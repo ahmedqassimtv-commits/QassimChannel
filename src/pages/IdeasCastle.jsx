@@ -1,51 +1,54 @@
 import { useMemo, useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { ArrowUpLeft, BookMarked, Lightbulb, PenTool, Plus, Sparkles, Tag, X } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { AnimatePresence, motion } from 'framer-motion'
 import { playGlassTap } from '../utils/glassSound.js'
 
-/* ══ قلع الأفكار — Superr Tactile Notebook & Sketchbook (DESIGN 3) ═════
-   مساحة دفاتر أحمد قاسم ومسودات الأفكار والتجارب البصرية قبل تحوّلها إلى حلقات:
-   - بطاقات دفاتر مائلة (5–8 درجات) مع استيكر الاسم المصفّح (Name / Class / Roll no.)
-   - تعليقات قلم الماركر البرتقالي (#ff6f1e) مع أسهم مرسومة باليد (SVG Curved Arrows)
-   - استيكرات كرتونية مبعثرة بحدود حبر 2px داكنة (#171717)
-   - إمكانية فتح أي دفتر وتصفّح هوامشه المسطّرة أو إضافة شرارة فكرة جديدة. */
+/* ══ قاع الأفكار — Superr Full-Page Notebook Experience ═════════════════
+   صفحة كاملة بأرضية الورق الكريمي (#fdfbf9) بدون قص أو برواز خارجي،
+   تطبّق جميع قواعد وتوكنز Superr — Style Reference المرفقة:
+   - Canvas: #fdfbf9 (Cream Paper) ممتد بعرض وطول الصفحة بالكامل
+   - Headlines: 104px weight 600 Cocoa Ink (#2b1a07), line-height 1.08, محاذاة لبداية السطر
+   - Handwritten Captions: 20-24px Marker Orange (#ff6f1e) مع أسهم منحنية 1.5px بلون الحبر الفحمي (#171717)
+   - Pill Action Buttons: 20px radius, 1.5px Charcoal (#171717) border, cream fill (#fdfbf9) في كل الحالات
+   - Product Notebooks: دفاتر مائلة 5–8 درجات (جلد بني، أزرق بسحب بيضاء، وردي) مع استيكر الاسم المصفّح
+   - Sticker Illustrations: استيكرات مسطّحة بحدود 2px داكنة مائلة بزاوية 5–15 درجة بدون ظلال
+   - Footer Brand Band: شريط برتقالي (#ff6f1e) بعرض الصفحة بالكامل وبحافة علوية 56px. */
 
 const INITIAL_NOTEBOOKS = [
   {
-    id: 'nb-01',
-    rollNo: 'QF-01',
-    title: 'لماذا نصدّق الكاميرا حين تكذب؟',
-    category: 'تأملات سينمائية',
+    id: 'nb-hero-brown',
+    rollNo: '01',
+    studentName: 'أحمد قاسم',
     classLabel: 'فلسفة الصورة · مونتاج',
-    date: 'نوفمبر ٢٠٢٦',
-    pages: '٦٤ صفحة مرقّمة',
+    category: 'تأملات سينمائية',
+    title: 'لماذا نصدّق الكاميرا حين تكذب؟',
+    handCaption: 'دفتر الجلد البني الكلاسيكي',
     tilt: '-6deg',
-    coverBg: '#ff6f1e',
-    coverText: '#fdfbf9',
-    accentSticker: 'bolt',
-    handCaption: 'مترقّم في كل صفحة مع هوامش للمونتاج!',
+    coverStyle: 'brown-leather',
+    pencilColor: '#ff6f1e',
+    pages: '١٢٠ صفحة مرقّمة · 100 GSM',
     summary:
       'مسودة أولى عن الخداع البصري في السينما الوثائقية: كيف تخلق زاوية العدسة وإيقاع القطع شعوراً بالحقيقة حتى لو كان المشهد مُعاد التمثيل بالكامل.',
     marginNotes: [
       'العدسة الواسعة ٢٤مم تقرّب المتفرج من الحدث لكنها تشوّه المسافة العاطفية.',
-      'قاعدة الـ 3 ثوانٍ: إذا استمرت اللقطة بعد انتهاء الجملة، يبدأ المشاهد في قراءة ما وراء الوجه.',
+      'قاعدة الـ ٣ ثوانٍ: إذا استمرت اللقطة بعد انتهاء الجملة، يبدأ المشاهد في قراءة ما وراء الوجه.',
       'مراجعة افتتاحية فيلم Close-Up لعباس كيارستمي كمثال على التداخل بين الواقع والتمثيل.',
     ],
-    sketchQuote: '«الحقيقة في السينما ليست ما حدث أمام الكاميرا، بل ما يبقى في ذهن المتفرج بعد إظلام الشاشة.»',
+    sketchQuote:
+      '«الحقيقة في السينما ليست ما حدث أمام الكاميرا، بل ما يبقى في ذهن المتفرج بعد إظلام الشاشة.»',
   },
   {
-    id: 'nb-02',
-    rollNo: 'QF-02',
-    title: 'أطلس الأماكن التي نسيتها الخرائط',
-    category: 'بذور الحلقات',
+    id: 'nb-blue-parchi',
+    rollNo: '02',
+    studentName: 'أحمد قاسم',
     classLabel: 'وثائقيات · أرشيف المدن',
-    date: 'أكتوبر ٢٠٢٦',
-    pages: '٨٠ صفحة مسطّرة',
-    tilt: '5.5deg',
-    coverBg: '#3b82f6',
-    coverText: '#fdfbf9',
-    accentSticker: 'sprout',
-    handCaption: 'بذرة سلسلة وثائقية جديدة!',
+    category: 'بذور الحلقات',
+    title: 'أطلس الأماكن التي نسيتها الخرائط',
+    handCaption: 'دفتر السحاب الأزرق الكبير',
+    tilt: '-5.5deg',
+    coverStyle: 'blue-clouds',
+    pencilColor: '#3b82f6',
+    pages: '٩٦ صفحة مسطّرة · هوامش عريضة',
     summary:
       'دفتر ميداني يجمع حكايات المحطات المهجورة ودور السينما الصيفية في المدن العربية: كيف تتحول العمارة إلى شاهد صامت على تحوّلات الناس.',
     marginNotes: [
@@ -56,84 +59,38 @@ const INITIAL_NOTEBOOKS = [
     sketchQuote: '«كل مبنى مهجور هو شريط سينمائي توقّف جهاز العرض عن تدويره.»',
   },
   {
-    id: 'nb-03',
-    rollNo: 'QF-03',
-    title: 'هندسة التوتر في المشهد الواحد',
-    category: 'تأملات سينمائية',
+    id: 'nb-cute-pink',
+    rollNo: '03',
+    studentName: 'أحمد قاسم',
     classLabel: 'الفِردِكت · تشريح مشهد',
-    date: 'سبتمبر ٢٠٢٦',
-    pages: '٤٨ صفحة شبكية',
-    tilt: '-5deg',
-    coverBg: '#22c55e',
-    coverText: '#171717',
-    accentSticker: 'pink',
-    handCaption: 'رسوم حركة الكاميرا باليد!',
+    category: 'تأملات سينمائية',
+    title: 'هندسة التوتر في المشهد الواحد',
+    handCaption: 'مسودات وردية لطيفة',
+    tilt: '6.5deg',
+    coverStyle: 'rose-pink',
+    pencilColor: '#ff66cf',
+    pages: '٨٠ صفحة شبكية · رسم كادرات',
     summary:
       'تفكيك بصري للمشاهد الطويلة (Long Takes) التي تحبس الأنفاس دون قطرة دم واحدة: كيف يتصاعد الإيقاع عبر حركة الممثلين داخل الكادر الثابت.',
     marginNotes: [
       'المشهد الافتتاحي في Inglourious Basterds: الكاميرا تتحرك أقل من ٣ مرات خلال ١٨ دقيقة.',
       'توزيع الإضاءة بين الظل والضوء يعمل كمؤشر نفسي لمن يملك السيطرة في الحوار.',
-      'الصمت قبل جملة الحكم في الفِردِكت يضاعف أثر التقييم النهائي.',
+      'الصمت قبل جملة الحُكم في الفِردِكت يضاعف أثر التقييم النهائي.',
     ],
     sketchQuote: '«التوتر لا يصنعه الانفجار، بل يصنعه علم المتفرج بوجود القنبلة تحت الطاولة.»',
   },
   {
-    id: 'nb-04',
-    rollNo: 'QF-04',
-    title: 'دفتر التجارب اللونية والزجاج السائل',
-    category: 'تجارب بصرية',
-    classLabel: 'هوية قاسمز · تصميم تفاعلي',
-    date: 'نوفمبر ٢٠٢٦',
-    pages: '٩٦ صفحة كروكي',
-    tilt: '6.5deg',
-    coverBg: '#ff66cf',
-    coverText: '#171717',
-    accentSticker: 'sun',
-    handCaption: 'معمل الهوية البصرية للموقع!',
-    summary:
-      'ملاحظات تصميم واجهة قاسمز: الدمج بين الزمرد الليلي الدافئ، انكسار الزجاج السائل، وتناسق أوزان خط ثمانية بين العناوين والنصوص الطويلة.',
-    marginNotes: [
-      'خط ثمانية للعناوين (Display Black 900) مع الكشيدة المائلة ss01 يعطي هيبة المجلات الثقافية.',
-      'في النصوص الطويلة نوقف البدائل الزخرفية تماماً لراحة العين أثناء القراءة.',
-      'الحركة الفخمة تأخذ وقتها (1.8 ثانية) بدون ارتداد مبالغ فيه.',
-    ],
-    sketchQuote: '«التصميم الجيد لا يصرخ ليقول أنا هنا، بل يفسح الطريق للحكاية.»',
-  },
-  {
-    id: 'nb-05',
-    rollNo: 'QF-05',
-    title: 'حكايات لم تجد نهايتها بعد',
-    category: 'مسودات لم تكتمل',
-    classLabel: 'أرشيف شخصي · قيد البحث',
-    date: 'أغسطس ٢٠٢٦',
-    pages: '٥٢ صفحة مرقّمة',
-    tilt: '-6.5deg',
-    coverBg: '#facc15',
-    coverText: '#171717',
-    accentSticker: 'bolt',
-    handCaption: 'أفكار تنتظر الشرارة الأخيرة!',
-    summary:
-      'قصاصات وأسئلة مفتوحة من كتب ومراسلات قديمة لم تتحول بعد إلى فيديو كامل، لكنها تشكّل الخلفية الفكرية للحلقات القادمة.',
-    marginNotes: [
-      'قصة المصوّر الذي التقط ١٠ آلاف صورة لشارع واحد على مدار ٤٠ عاماً.',
-      'هل يمكن صناعة حلقة كاملة تعتمد فقط على قراءة رسائل صوتية قديمة؟',
-      'ربط أرشيف الحكايات بمكتبة الكتب بحيث يحيل كل كتاب إلى حكاية مصوّرة.',
-    ],
-    sketchQuote: '«بعض الأفكار تحتاج أن تختمر في الدفتر شهوراً قبل أن تستحق دقيقة واحدة على الشاشة.»',
-  },
-  {
-    id: 'nb-06',
-    rollNo: 'QF-06',
-    title: 'الصوت الخفي: كيف نسمع الصورة؟',
-    category: 'بذور الحلقات',
+    id: 'nb-sprout-green',
+    rollNo: '04',
+    studentName: 'أحمد قاسم',
     classLabel: 'هندسة صوتية · سيكولوجيا',
-    date: 'نوفمبر ٢٠٢٦',
-    pages: '٧٢ صفحة مسطّرة',
-    tilt: '5deg',
-    coverBg: '#171717',
-    coverText: '#fdfbf9',
-    accentSticker: 'sprout',
-    handCaption: 'ورق كريمي سميك لا يشفّ الحبر!',
+    category: 'بذور الحلقات',
+    title: 'الصوت الخفي: كيف نسمع الصورة؟',
+    handCaption: 'دفتر التجارب الصوتية',
+    tilt: '-5deg',
+    coverStyle: 'sprout-green',
+    pencilColor: '#22c55e',
+    pages: '٧٢ صفحة مسطّرة · ورق كريمي',
     summary:
       'بحث في تصميم الصوت السينمائي (Foley & Room Tone): كيف تغيّر ترددات الخلفية المنخفضة تفسيرنا لنفس اللقطة البصرية تماماً.',
     marginNotes: [
@@ -143,26 +100,66 @@ const INITIAL_NOTEBOOKS = [
     ],
     sketchQuote: '«العين ترى الإطار، لكن الأذن هي التي تقرر حجم الغرفة.»',
   },
+  {
+    id: 'nb-cocoa-drafts',
+    rollNo: '05',
+    studentName: 'أحمد قاسم',
+    classLabel: 'أرشيف شخصي · قيد البحث',
+    category: 'مسودات لم تكتمل',
+    title: 'حكايات لم تجد نهايتها بعد',
+    handCaption: 'قصاصات وأسئلة مفتوحة',
+    tilt: '5.5deg',
+    coverStyle: 'brown-leather',
+    pencilColor: '#ce500a',
+    pages: '٦٤ صفحة مرقّمة · أرشيف حي',
+    summary:
+      'قصاصات وأسئلة مفتوحة من كتب ومراسلات قديمة لم تتحول بعد إلى فيديو كامل، لكنها تشكّل الخلفية الفكرية للحلقات القادمة.',
+    marginNotes: [
+      'قصة المصوّر الذي التقط ١٠ آلاف صورة لشارع واحد على مدار ٤٠ عاماً.',
+      'هل يمكن صناعة حلقة كاملة تعتمد فقط على قراءة رسائل صوتية قديمة؟',
+      'ربط أرشيف الحكايات بمكتبة الكتب بحيث يحيل كل كتاب إلى حكاية مصوّرة.',
+    ],
+    sketchQuote:
+      '«بعض الأفكار تحتاج أن تختمر في الدفتر شهوراً قبل أن تستحق دقيقة واحدة على الشاشة.»',
+  },
 ]
 
-const CATEGORIES = ['كل الدفاتر', 'بذور الحلقات', 'تأملات سينمائية', 'تجارب بصرية', 'مسودات لم تكتمل']
+const CATEGORIES = ['كل الدفاتر', 'بذور الحلقات', 'تأملات سينمائية', 'مسودات لم تكتمل']
 
-/* ── خط متعرج مرسوم باليد تحت الكلمات المميزة بالماركر ── */
-function MarkerWord({ children }) {
+/* ── Top-left Brand Mark: Small illustrated hand/pointing icon (~32px) in Charcoal ── */
+function HandBrandMark() {
   return (
-    <span className="qz-sp-marker">
+    <svg
+      width="34"
+      height="34"
+      viewBox="0 0 36 36"
+      fill="none"
+      aria-hidden="true"
+      className="text-[#171717]"
+    >
+      <path
+        d="M14 17V7.5C14 6.12 15.12 5 16.5 5C17.88 5 19 6.12 19 7.5V15M19 13.5C19 12.12 20.12 11 21.5 11C22.88 11 24 12.12 24 13.5V16M24 15.5C24 14.12 25.12 13 26.5 13C27.88 13 29 14.12 29 15.5V22.5C29 27.75 24.75 32 19.5 32H16.5C12.5 32 9.5 29.5 8 26L5.5 20.5C4.9 19.2 5.5 17.7 6.8 17.2C8 16.7 9.4 17.3 10 18.5L11.5 21.5V17C11.5 15.62 12.62 14.5 14 14.5"
+        stroke="#171717"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="#fdfbf9"
+      />
+    </svg>
+  )
+}
+
+/* ── Marker Highlight: inline word in #ff6f1e with rough hand-drawn 2.5px underline ── */
+function MarkerHighlight({ children }) {
+  return (
+    <span className="qz-superr-highlight">
       {children}
-      <svg
-        className="qz-sp-marker-wave"
-        viewBox="0 0 120 14"
-        preserveAspectRatio="none"
-        aria-hidden="true"
-      >
+      <svg viewBox="0 0 110 10" preserveAspectRatio="none" aria-hidden="true">
         <path
-          d="M2 9 C 22 2, 42 13, 62 7 C 82 2, 100 12, 118 6"
+          d="M2 6.5 C 24 2.5, 46 8.5, 68 4.5 C 86 2.5, 98 7.5, 108 4.5"
           fill="none"
           stroke="#ff6f1e"
-          strokeWidth="3.2"
+          strokeWidth="2.6"
           strokeLinecap="round"
         />
       </svg>
@@ -170,29 +167,28 @@ function MarkerWord({ children }) {
   )
 }
 
-/* ── سهم منحني مرسوم باليد (1.5px stroke) ── */
-function HandCurvedArrow({ flip = false, className = '' }) {
+/* ── Hand-drawn Arrow: Thin 1.5px Charcoal (#171717) stroke curved arrow, no arrowhead fill ── */
+function CharcoalCurvedArrow({ flip = false, className = '' }) {
   return (
     <svg
-      width="54"
-      height="38"
-      viewBox="0 0 54 38"
+      width="56"
+      height="42"
+      viewBox="0 0 56 42"
       fill="none"
       className={className}
       style={{ transform: flip ? 'scaleX(-1)' : undefined }}
       aria-hidden="true"
     >
       <path
-        d="M4 8 C 18 2, 36 8, 46 28"
-        stroke="#ff6f1e"
-        strokeWidth="1.8"
+        d="M6 7 C 22 3, 38 11, 46 34"
+        stroke="#171717"
+        strokeWidth="1.5"
         strokeLinecap="round"
-        strokeDasharray="1 0"
       />
       <path
-        d="M37 26 L 47 30 L 49 19"
-        stroke="#ff6f1e"
-        strokeWidth="1.8"
+        d="M38 30 C 42 33, 45 35, 47 36 C 48 32, 49 27, 51 23"
+        stroke="#171717"
+        strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -200,101 +196,205 @@ function HandCurvedArrow({ flip = false, className = '' }) {
   )
 }
 
-/* ── استيكرات كرتونية مسطّحة بحدود حبر 2px داكنة (#171717) ── */
-function StickerGraphic({ type = 'bolt', size = 46, rotate = '8deg' }) {
+/* ── Sticker Illustration: Flat 2D characters with 2px dark outlines, rotated 5-15° ── */
+function Sticker({ type = 'bolt', size = 54, rotate = '10deg', className = '' }) {
   return (
     <span
-      className="qz-sp-sticker"
+      className={`qz-superr-sticker ${className}`}
       style={{ width: size, height: size, transform: `rotate(${rotate})` }}
       aria-hidden="true"
     >
       {type === 'bolt' && (
-        <svg viewBox="0 0 48 48" fill="none" className="size-full">
-          <circle cx="24" cy="24" r="21" fill="#3b82f6" stroke="#171717" strokeWidth="2.4" />
+        <svg viewBox="0 0 56 56" fill="none" className="size-full">
           <path
-            d="M26 9L14 26H24L21 39L35 21H25L26 9Z"
-            fill="#facc15"
+            d="M31 6L11 31H27L23 50L45 24H29L31 6Z"
+            fill="#3b82f6"
             stroke="#171717"
-            strokeWidth="2.2"
+            strokeWidth="2"
             strokeLinejoin="round"
           />
         </svg>
       )}
-      {type === 'pink' && (
-        <svg viewBox="0 0 48 48" fill="none" className="size-full">
+      {type === 'bear' && (
+        <svg viewBox="0 0 56 56" fill="none" className="size-full">
+          <circle cx="15" cy="15" r="7" fill="#ff66cf" stroke="#171717" strokeWidth="2" />
+          <circle cx="41" cy="15" r="7" fill="#ff66cf" stroke="#171717" strokeWidth="2" />
           <rect
-            x="5"
-            y="7"
-            width="38"
-            height="34"
-            rx="14"
+            x="10"
+            y="14"
+            width="36"
+            height="32"
+            rx="16"
             fill="#ff66cf"
             stroke="#171717"
-            strokeWidth="2.4"
+            strokeWidth="2"
           />
-          <circle cx="18" cy="22" r="2.6" fill="#171717" />
-          <circle cx="30" cy="22" r="2.6" fill="#171717" />
+          <circle cx="22" cy="28" r="2.2" fill="#171717" />
+          <circle cx="34" cy="28" r="2.2" fill="#171717" />
+          <ellipse cx="28" cy="34" rx="5.5" ry="4" fill="#fdfbf9" stroke="#171717" strokeWidth="1.8" />
+          <circle cx="28" cy="33" r="1.6" fill="#171717" />
+        </svg>
+      )}
+      {type === 'heart' && (
+        <svg viewBox="0 0 56 56" fill="none" className="size-full">
           <path
-            d="M19 29C21 32 27 32 29 29"
+            d="M28 47C28 47 8 34 8 19.5C8 12.5 13.5 8 19.5 8C23.5 8 26.5 10 28 13C29.5 10 32.5 8 36.5 8C42.5 8 48 12.5 48 19.5C48 34 28 47 28 47Z"
+            fill="#ff6f1e"
             stroke="#171717"
-            strokeWidth="2.2"
-            strokeLinecap="round"
+            strokeWidth="2"
+            strokeLinejoin="round"
           />
+          <circle cx="22" cy="23" r="3.2" fill="#fdfbf9" stroke="#171717" strokeWidth="1.8" />
+          <circle cx="34" cy="23" r="3.2" fill="#fdfbf9" stroke="#171717" strokeWidth="1.8" />
+          <circle cx="22" cy="23" r="1.4" fill="#171717" />
+          <circle cx="34" cy="23" r="1.4" fill="#171717" />
+        </svg>
+      )}
+      {type === 'ghost' && (
+        <svg viewBox="0 0 56 56" fill="none" className="size-full">
+          <path
+            d="M12 46V24C12 14.6 19.2 8 28 8C36.8 8 44 14.6 44 24V46L38.5 41.5L33 46L28 41.5L23 46L17.5 41.5L12 46Z"
+            fill="#fdfbf9"
+            stroke="#171717"
+            strokeWidth="2"
+            strokeLinejoin="round"
+          />
+          <circle cx="23" cy="24" r="2.4" fill="#171717" />
+          <circle cx="33" cy="24" r="2.4" fill="#171717" />
         </svg>
       )}
       {type === 'sprout' && (
-        <svg viewBox="0 0 48 48" fill="none" className="size-full">
-          <circle cx="24" cy="24" r="21" fill="#22c55e" stroke="#171717" strokeWidth="2.4" />
+        <svg viewBox="0 0 56 56" fill="none" className="size-full">
           <path
-            d="M24 36V20M24 24C24 17 17 14 13 17C13 22 18 25 24 24ZM24 21C24 14 31 12 35 15C35 20 30 22 24 21Z"
-            fill="#fdfbf9"
+            d="M28 46V24M28 28C28 19 19 15 13 19C13 26 20 30 28 28ZM28 24C28 15 37 12 43 16C43 23 36 26 28 24Z"
+            fill="#22c55e"
             stroke="#171717"
-            strokeWidth="2.2"
+            strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-        </svg>
-      )}
-      {type === 'sun' && (
-        <svg viewBox="0 0 48 48" fill="none" className="size-full">
-          <path
-            d="M24 4L29.5 15.5L42 17.5L33 26.5L35 39L24 33L13 39L15 26.5L6 17.5L18.5 15.5L24 4Z"
-            fill="#facc15"
-            stroke="#171717"
-            strokeWidth="2.4"
-            strokeLinejoin="round"
-          />
-          <circle cx="20" cy="22" r="2" fill="#171717" />
-          <circle cx="28" cy="22" r="2" fill="#171717" />
-          <path d="M21 27C22.5 28.5 25.5 28.5 27 27" stroke="#171717" strokeWidth="2" strokeLinecap="round" />
         </svg>
       )}
     </span>
   )
 }
 
-/* ── استيكر الاسم المصفّح على غلاف كل دفتر (Name / Class / Roll no.) ── */
-function NameLabelSticker({ title, classLabel, rollNo }) {
+/* ── Name Label Sticker: White card, 1px Charcoal border, 8px radius, 3 fields ── */
+function NameLabelSticker({ name, classLabel, rollNo }) {
   return (
-    <div className="qz-sp-name-label" dir="rtl">
-      <div className="qz-sp-name-row">
-        <span className="qz-sp-name-key">الاسم / الدفتر:</span>
-        <span className="qz-sp-name-val truncate">{title}</span>
+    <div className="qz-superr-label" dir="rtl">
+      <div className="qz-superr-label-row">
+        <span className="qz-superr-label-key">الاسم / Name:</span>
+        <span className="qz-superr-label-name">{name}</span>
       </div>
-      <div className="qz-sp-name-row">
-        <span className="qz-sp-name-key">الفئة:</span>
-        <span className="qz-sp-name-val">{classLabel}</span>
+      <div className="qz-superr-label-row">
+        <span className="qz-superr-label-key">القسم / Class:</span>
+        <span className="qz-superr-label-meta">{classLabel}</span>
       </div>
-      <div className="qz-sp-name-row">
-        <span className="qz-sp-name-key">رقم الأرشيف:</span>
-        <span className="qz-sp-name-val qz-latin">{rollNo}</span>
+      <div className="qz-superr-label-row">
+        <span className="qz-superr-label-key">رقم الدفتر / Roll no.:</span>
+        <span className="qz-superr-label-meta qz-latin">{rollNo}</span>
+      </div>
+    </div>
+  )
+}
+
+/* ── غلاف الدفتر حسب النوع (جلد بني / أزرق بسحب بيضاء / وردي / أخضر) ── */
+function getCoverPalette(style) {
+  switch (style) {
+    case 'blue-clouds':
+      return {
+        backgroundColor: '#3b82f6',
+        backgroundImage:
+          'radial-gradient(circle at 22% 24%, #fdfbf9 0%, #fdfbf9 14%, transparent 15%), radial-gradient(circle at 32% 26%, #fdfbf9 0%, #fdfbf9 11%, transparent 12%), radial-gradient(circle at 76% 72%, #fdfbf9 0%, #fdfbf9 13%, transparent 14%), radial-gradient(circle at 66% 74%, #fdfbf9 0%, #fdfbf9 10%, transparent 11%)',
+        color: '#fdfbf9',
+      }
+    case 'rose-pink':
+      return {
+        backgroundColor: '#ff66cf',
+        backgroundImage:
+          'radial-gradient(circle at 78% 20%, rgba(253,251,249,0.28) 0%, transparent 35%)',
+        color: '#171717',
+      }
+    case 'sprout-green':
+      return {
+        backgroundColor: '#22c55e',
+        color: '#171717',
+      }
+    case 'brown-leather':
+    default:
+      return {
+        backgroundColor: '#5c3419',
+        backgroundImage:
+          'radial-gradient(circle at 28% 22%, rgba(255,255,255,0.08), transparent 55%)',
+        color: '#fdfbf9',
+      }
+  }
+}
+
+function ProductNotebookCard({ notebook, onOpen }) {
+  const cover = getCoverPalette(notebook.coverStyle)
+  return (
+    <div
+      className="qz-superr-notebook"
+      style={{
+        ...cover,
+        transform: `rotate(${notebook.tilt || '-6deg'})`,
+      }}
+      onClick={() => {
+        playGlassTap()
+        onOpen(notebook)
+      }}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onOpen(notebook)
+        }
+      }}
+      aria-label={`افتح دفتر ${notebook.title}`}
+    >
+      {/* قلم الألوان المرفق بجانب الدفتر */}
+      <span
+        className="qz-superr-pencil"
+        style={{ backgroundColor: notebook.pencilColor || '#ff6f1e' }}
+        aria-hidden="true"
+      />
+
+      <div>
+        <div className="flex items-center justify-between gap-2">
+          <span
+            className="inline-block rounded-[20px] border border-[#171717] bg-[#fdfbf9] px-3 py-0.5 text-[13px] font-medium text-[#171717]"
+          >
+            {notebook.category}
+          </span>
+          <span className="qz-latin text-xs font-medium opacity-80">#{notebook.rollNo}</span>
+        </div>
+
+        <h3 className="mt-5 font-[family-name:var(--font-gelica)] text-[26px] font-semibold leading-[1.22]">
+          {notebook.title}
+        </h3>
+
+        <p className="mt-2.5 text-[15px] leading-[1.55] opacity-90">{notebook.summary}</p>
+      </div>
+
+      <div className="mt-6 space-y-3">
+        <NameLabelSticker
+          name={notebook.studentName}
+          classLabel={notebook.classLabel}
+          rollNo={notebook.rollNo}
+        />
+        <div className="flex items-center justify-between text-[13px] font-medium opacity-90">
+          <span>{notebook.pages}</span>
+          <span className="underline underline-offset-4">افتح الدفتر ←</span>
+        </div>
       </div>
     </div>
   )
 }
 
 export default function IdeasCastle() {
-  const reduce = useReducedMotion()
   const [notebooks, setNotebooks] = useState(INITIAL_NOTEBOOKS)
   const [activeCategory, setActiveCategory] = useState('كل الدفاتر')
   const [selectedBook, setSelectedBook] = useState(null)
@@ -303,45 +403,40 @@ export default function IdeasCastle() {
   const [ideaCat, setIdeaCat] = useState('بذور الحلقات')
   const [ideaSummary, setIdeaSummary] = useState('')
 
+  const heroBrown = notebooks[0]
+  const blueBook = notebooks[1] || notebooks[0]
+  const pinkBook = notebooks[2] || notebooks[0]
+
   const filtered = useMemo(() => {
     if (activeCategory === 'كل الدفاتر') return notebooks
     return notebooks.filter((n) => n.category === activeCategory)
   }, [notebooks, activeCategory])
 
-  const heroBook = notebooks[0]
-
   const handleAddNotebook = (e) => {
     e.preventDefault()
     if (!ideaTitle.trim()) return
     const nextNum = String(notebooks.length + 1).padStart(2, '0')
-    const palettes = [
-      { bg: '#ff6f1e', fg: '#fdfbf9', st: 'bolt', tilt: '-5.5deg' },
-      { bg: '#3b82f6', fg: '#fdfbf9', st: 'sprout', tilt: '5.5deg' },
-      { bg: '#22c55e', fg: '#171717', st: 'pink', tilt: '-5deg' },
-      { bg: '#ff66cf', fg: '#171717', st: 'sun', tilt: '6deg' },
-    ]
-    const pick = palettes[notebooks.length % palettes.length]
+    const styles = ['blue-clouds', 'rose-pink', 'brown-leather', 'sprout-green']
     const created = {
       id: `nb-${nextNum}`,
-      rollNo: `QF-${nextNum}`,
-      title: ideaTitle.trim(),
+      rollNo: nextNum,
+      studentName: 'أحمد قاسم',
+      classLabel: `${ideaCat} · مسودة جديدة`,
       category: ideaCat,
-      classLabel: `${ideaCat} · مسودة حية`,
-      date: 'الآن · ٢٠٢٦',
-      pages: '٣٢ صفحة مرقّمة',
-      tilt: pick.tilt,
-      coverBg: pick.bg,
-      coverText: pick.fg,
-      accentSticker: pick.st,
-      handCaption: 'شرارة مضافة للتو في الدفتر!',
+      title: ideaTitle.trim(),
+      handCaption: 'ملاحظة مضافة بخط اليد!',
+      tilt: notebooks.length % 2 === 0 ? '-5.5deg' : '5.5deg',
+      coverStyle: styles[notebooks.length % styles.length],
+      pencilColor: '#ff6f1e',
+      pages: '٦٤ صفحة مرقّمة · 100 GSM',
       summary:
         ideaSummary.trim() ||
-        'فكرة جديدة قيد التطوير في معمل قلع الأفكار، جاهزة للتحول إلى سيناريو أو مقال قادم.',
+        'فكرة جديدة في قاع الأفكار، جاهزة للتحول إلى حلقة أو تجربة بصرية قادمة.',
       marginNotes: [
-        'تحديد السؤال المحوري للفكرة في سطر واحد قبل كتابة السكريبت.',
-        'اختيار التكوين البصري والمراجع السينمائية المرتبطة بالموضوع.',
+        'صياغة السؤال الأساسي للفكرة في جملة واحدة واضحة.',
+        'تجميع المراجع البصرية والمشاهد المرتبطة بالموضوع.',
       ],
-      sketchQuote: `«${ideaTitle.trim()} — كل حلقة كبيرة بدأت بسطر سريع على هامش دفتر.»`,
+      sketchQuote: `«${ideaTitle.trim()} — كل حكاية تبدأ بسطر صادق في دفتر.»`,
     }
     setNotebooks((prev) => [created, ...prev])
     setIdeaTitle('')
@@ -352,172 +447,28 @@ export default function IdeasCastle() {
   }
 
   return (
-    <div className="qz-ideas-page" dir="rtl">
-      <div className="qz-ideas-canvas">
-        {/* الشريط العلوي داخل الدفتر الورقي */}
-        <div className="qz-ideas-topbar">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="qz-ideas-brand-pill">
-              <Sparkles className="size-4 text-[#ff6f1e]" aria-hidden="true" />
-              <span>قلع الأفكار · SUPERR SKETCHBOOK EDITION</span>
-            </span>
-            <span className="text-xs font-bold text-[#5b5753]">
-              ورق كريمي 100 GSM · مرقّم ومسطّر للشخبطة الحرة
-            </span>
+    <div className="qz-superr-page" dir="rtl">
+      <div className="qz-superr-container">
+        {/* ── Top Header Row: 32px hand icon on one side, Pill Action Button on the other ── */}
+        <header className="qz-superr-header">
+          <div className="flex items-center gap-3">
+            <HandBrandMark />
+            <span className="qz-superr-caption !text-[20px]">قاع الأفكار · superrbook</span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5">
-            <button
-              type="button"
-              className="qz-sp-pill-btn"
-              onClick={() => {
-                playGlassTap()
-                setSelectedBook(heroBook)
-              }}
-            >
-              <BookMarked className="size-4" aria-hidden="true" />
-              <span>تصفّح دفتر العدد</span>
-            </button>
-            <button
-              type="button"
-              className="qz-sp-pill-btn qz-sp-pill-btn-primary"
-              onClick={() => {
-                playGlassTap()
-                setNewIdeaOpen((v) => !v)
-              }}
-            >
-              <Plus className="size-4" aria-hidden="true" />
-              <span>دوّن شرارة فكرة</span>
-            </button>
-          </div>
-        </div>
+          <button
+            type="button"
+            className="qz-superr-btn"
+            onClick={() => {
+              playGlassTap()
+              setNewIdeaOpen((v) => !v)
+            }}
+          >
+            <span>{newIdeaOpen ? 'إغلاق المسودة' : 'دوّن فكرة جديدة!'}</span>
+          </button>
+        </header>
 
-        {/* ── الواجهة الافتتاحية (Hero Section — DESIGN 3) ── */}
-        <section className="relative mt-8 grid items-center gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-12">
-          <div>
-            <div className="mb-4 inline-flex items-center gap-3">
-              <StickerGraphic type="bolt" size={44} rotate="-10deg" />
-              <span className="qz-sp-handnote">
-                دفاتر حقيقية للمفكرين بعمق — والمشخبطين بحرية!
-              </span>
-              <StickerGraphic type="pink" size={42} rotate="12deg" />
-            </div>
-
-            <h1
-              className="font-[family-name:var(--font-display)] text-[clamp(2.4rem,5.4vw,4.5rem)] font-black leading-[1.08] tracking-[-0.03em] text-[#171717]"
-            >
-              قلع الأفكار: حيث تولد{' '}
-              <MarkerWord>الحكايات</MarkerWord>{' '}
-              قبل أن تضيء الكاميرا.
-            </h1>
-
-            <p className="mt-6 max-w-2xl font-[family-name:var(--font-text)] text-[clamp(1.05rem,1.4vw,1.25rem)] leading-[1.75] text-[#414141]">
-              هنا لا توجد نصوص نهائية مصقولة؛ هنا{' '}
-              <MarkerWord>المسودات الأولى</MarkerWord>، الأسئلة المعلّقة على الهوامش،
-              ورسوم الكادرات التي تتحوّل لاحقاً إلى حلقات وثائقية ومراجعات في «الفِردِكت».
-              افتح أي دفتر لتقرأ الهوامش كما كُتبت.
-            </p>
-
-            {/* بطاقات المواصفات الثلاث من DESIGN (3).md */}
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
-              <div className="qz-sp-dew-card">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-black tracking-wider text-[#ff6f1e]">SPEC 01</span>
-                  <StickerGraphic type="sprout" size={32} rotate="-8deg" />
-                </div>
-                <p className="mt-2 font-[family-name:var(--font-display)] text-xl font-black text-[#171717]">
-                  مترقّم بالكامل
-                </p>
-                <p className="mt-1 text-xs leading-6 text-[#5b5753]">
-                  كل فكرة لها رقم أرشيف وفهرس واضح للرجوع إليها وقت التصوير.
-                </p>
-              </div>
-
-              <div className="qz-sp-dew-card">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-black tracking-wider text-[#3b82f6]">SPEC 02</span>
-                  <StickerGraphic type="sun" size={32} rotate="10deg" />
-                </div>
-                <p className="mt-2 font-[family-name:var(--font-display)] text-xl font-black text-[#171717]">
-                  هوامش حرة
-                </p>
-                <p className="mt-1 text-xs leading-6 text-[#5b5753]">
-                  مساحات جانبية مخصّصة لتفكيك المشاهد وتدوين اقتباسات الكتب.
-                </p>
-              </div>
-
-              <div className="qz-sp-dew-card">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-black tracking-wider text-[#22c55e]">SPEC 03</span>
-                  <StickerGraphic type="bolt" size={32} rotate="6deg" />
-                </div>
-                <p className="mt-2 font-[family-name:var(--font-display)] text-xl font-black text-[#171717]">
-                  تفاعلي ١٠٠٪
-                </p>
-                <p className="mt-1 text-xs leading-6 text-[#5b5753]">
-                  اضغط على أي دفتر لفتحه وقراءة مسوداته أو أضف فكرتك الخاصة.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* عرض الدفتر الرئيسي المائل مع السهم اليدوي واستيكر الاسم المصفّح */}
-          <div className="qz-sp-notebook-stage mx-auto w-full max-w-md">
-            <div className="mb-3 flex items-center justify-end gap-2">
-              <span className="qz-sp-handnote">اضغط على الدفتر لفتح صفحاته المسطّرة!</span>
-              <HandCurvedArrow />
-            </div>
-
-            <motion.div
-              whileHover={reduce ? undefined : { rotate: 0, y: -6 }}
-              className="qz-sp-notebook"
-              style={{
-                '--nb-tilt': '-6deg',
-                backgroundColor: heroBook.coverBg,
-                color: heroBook.coverText,
-              }}
-              onClick={() => {
-                playGlassTap()
-                setSelectedBook(heroBook)
-              }}
-            >
-              <div className="qz-sp-notebook-spine" aria-hidden="true" />
-
-              <div className="flex items-center justify-between gap-2">
-                <span className="rounded-full border border-[#171717] bg-[#fdfbf9] px-3 py-1 text-xs font-extrabold text-[#171717]">
-                  دفتر العدد المميّز · {heroBook.rollNo}
-                </span>
-                <StickerGraphic type="sun" size={40} rotate="12deg" />
-              </div>
-
-              <h2 className="mt-5 font-[family-name:var(--font-display)] text-2xl font-black leading-snug sm:text-3xl">
-                {heroBook.title}
-              </h2>
-
-              <p className="mt-3 text-sm leading-7 opacity-95">
-                {heroBook.summary}
-              </p>
-
-              <div className="mt-6">
-                <NameLabelSticker
-                  title="أحمد قاسم — دفتر المونتاج"
-                  classLabel={heroBook.classLabel}
-                  rollNo={heroBook.rollNo}
-                />
-              </div>
-
-              <div className="mt-5 flex items-center justify-between text-xs font-bold">
-                <span>{heroBook.pages}</span>
-                <span className="inline-flex items-center gap-1 rounded-full border border-[#171717] bg-[#fdfbf9] px-3 py-1 text-[#171717]">
-                  افتح الدفتر
-                  <ArrowUpLeft className="size-3.5" aria-hidden="true" />
-                </span>
-              </div>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* ── نموذج إضافة شرارة فكرة جديدة ── */}
+        {/* ── نموذج تدوين فكرة جديدة في دفتر ── */}
         <AnimatePresence>
           {newIdeaOpen && (
             <motion.form
@@ -525,47 +476,41 @@ export default function IdeasCastle() {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               onSubmit={handleAddNotebook}
-              className="mt-8 overflow-hidden"
+              className="mt-6 overflow-hidden"
             >
-              <div className="qz-sp-dew-card border-2 border-[#171717]">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-2.5">
-                    <PenTool className="size-5 text-[#ff6f1e]" aria-hidden="true" />
-                    <h3 className="font-[family-name:var(--font-display)] text-xl font-black text-[#171717]">
-                      تدوين دفتر أو شرارة فكرة جديدة
-                    </h3>
+              <div className="qz-superr-card">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <span className="qz-superr-caption">افتح صفحة جديدة</span>
+                    <h2 className="mt-1 text-[28px] font-semibold text-[#2b1a07]">
+                      أضف دفتراً أو مسودة إلى قاع الأفكار
+                    </h2>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setNewIdeaOpen(false)}
-                    className="qz-sp-pill-btn !px-3 !py-1.5 text-xs"
-                  >
-                    إغلاق
-                  </button>
+                  <Sticker type="heart" size={44} rotate="-8deg" />
                 </div>
 
-                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                <div className="mt-5 grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="mb-1.5 block text-xs font-bold text-[#414141]">
-                      عنوان الفكرة أو السؤال
+                    <label className="mb-1.5 block text-[16px] font-medium text-[#2b1a07]">
+                      عنوان الدفتر أو الفكرة
                     </label>
                     <input
                       type="text"
                       required
                       value={ideaTitle}
                       onChange={(e) => setIdeaTitle(e.target.value)}
-                      placeholder="مثال: كيف تصنع الإضاءة الخافتة ذاكرة المشهد؟"
-                      className="w-full rounded-xl border-[1.5px] border-[#171717] bg-[#fdfbf9] px-3.5 py-2.5 text-sm font-bold text-[#171717] outline-none focus:border-[#ff6f1e]"
+                      placeholder="مثال: كيف تصنع الإضاءة ذاكرة المشهد؟"
+                      className="qz-superr-input"
                     />
                   </div>
                   <div>
-                    <label className="mb-1.5 block text-xs font-bold text-[#414141]">
-                      تصنيف الدفتر
+                    <label className="mb-1.5 block text-[16px] font-medium text-[#2b1a07]">
+                      القسم / التصنيف
                     </label>
                     <select
                       value={ideaCat}
                       onChange={(e) => setIdeaCat(e.target.value)}
-                      className="w-full rounded-xl border-[1.5px] border-[#171717] bg-[#fdfbf9] px-3.5 py-2.5 text-sm font-bold text-[#171717] outline-none focus:border-[#ff6f1e]"
+                      className="qz-superr-input"
                     >
                       {CATEGORIES.filter((c) => c !== 'كل الدفاتر').map((c) => (
                         <option key={c} value={c}>
@@ -577,22 +522,21 @@ export default function IdeasCastle() {
                 </div>
 
                 <div className="mt-4">
-                  <label className="mb-1.5 block text-xs font-bold text-[#414141]">
-                    ملخص الفكرة أو الهوامش الأولية
+                  <label className="mb-1.5 block text-[16px] font-medium text-[#2b1a07]">
+                    تفاصيل المسودة أو الهوامش
                   </label>
                   <textarea
                     rows={3}
                     value={ideaSummary}
                     onChange={(e) => setIdeaSummary(e.target.value)}
-                    placeholder="اكتب الشرارة الأولى أو الملاحظة التي تريد حفظها في الدفتر..."
-                    className="w-full rounded-xl border-[1.5px] border-[#171717] bg-[#fdfbf9] p-3.5 text-sm text-[#171717] outline-none focus:border-[#ff6f1e]"
+                    placeholder="اكتب الشرارة الأولى أو الفكرة التي تريد حفظها في الدفتر..."
+                    className="qz-superr-input"
                   />
                 </div>
 
-                <div className="mt-4 flex justify-end">
-                  <button type="submit" className="qz-sp-pill-btn qz-sp-pill-btn-primary">
-                    <Sparkles className="size-4" aria-hidden="true" />
-                    <span>إضافة الدفتر إلى قلع الأفكار</span>
+                <div className="mt-5 flex justify-end">
+                  <button type="submit" className="qz-superr-btn">
+                    <span>احفظ الدفتر في قاع الأفكار</span>
                   </button>
                 </div>
               </div>
@@ -600,33 +544,190 @@ export default function IdeasCastle() {
           )}
         </AnimatePresence>
 
-        {/* ── شريط تصفية الدفاتر بأزرار الكبسولة (20px Pill Buttons) ── */}
-        <section className="mt-12">
+        {/* ── ١. الواجهة الافتتاحية (Asymmetric Two-Column Hero — Prompt 1) ── */}
+        <section className="mt-10 grid items-center gap-12 lg:grid-cols-[1.12fr_0.88fr] lg:gap-16">
+          {/* العمود النصي: محاذاة لبداية السطر بدون توسيط بعد السطر الأول */}
+          <div className="text-right">
+            <h1 className="qz-superr-display">
+              قاع الأفكار
+              <br />
+              ودفتر المسودات.
+            </h1>
+
+            <p className="qz-superr-caption mt-6">أهلاً بصنّاع الحكايات،</p>
+
+            <p className="qz-superr-body mt-4 max-w-xl">
+              هنا تجتمع الأفكار الخام قبل أن تتحول إلى حلقات ومراجعات — دفاتر مرقّمة في كل صفحة،
+              هوامش واسعة للشخبطة وتفكيك الكادرات، ومسودات مكتوبة{' '}
+              <MarkerHighlight>بجد!</MarkerHighlight> لكل من يفكر بالصورة والقلم.
+            </p>
+
+            <div className="mt-8">
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  className="qz-superr-btn"
+                  onClick={() => {
+                    playGlassTap()
+                    setSelectedBook(heroBrown)
+                  }}
+                >
+                  <span>افتح الدفتر الرئيسي!</span>
+                </button>
+                <button
+                  type="button"
+                  className="qz-superr-btn"
+                  onClick={() => {
+                    playGlassTap()
+                    setNewIdeaOpen(true)
+                  }}
+                >
+                  <span>أضف فكرتك الخاصة</span>
+                </button>
+              </div>
+              <p className="qz-superr-preorder">
+                الطبعة التفاعلية لعام ٢٠٢٦ · جميع الدفاتر مفتوحة للقراءة والتدوين.
+              </p>
+            </div>
+          </div>
+
+          {/* العمود البصري: الدفتر الجلدي البني المائل 5-8° مع استيكر البرق الأزرق والدب الوردي */}
+          <div className="qz-superr-notebook-wrap relative py-6">
+            <div className="mb-4 flex w-full max-w-[390px] items-center justify-between px-2">
+              <div className="flex items-center gap-2">
+                <Sticker type="bolt" size={50} rotate="-11deg" />
+                <Sticker type="bear" size={52} rotate="9deg" />
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="qz-superr-caption" style={{ transform: 'rotate(-4deg)' }}>
+                  {heroBrown.handCaption}
+                </span>
+                <CharcoalCurvedArrow />
+              </div>
+            </div>
+
+            <ProductNotebookCard notebook={heroBrown} onOpen={setSelectedBook} />
+          </div>
+        </section>
+
+        {/* ── ٢. صف عرض الدفاتر المزدوج (Product Showcase Row — Prompt 2) ── */}
+        <section className="mt-[64px] pt-8">
+          <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto_1fr] lg:gap-8">
+            {/* الدفتر الأزرق بالسحب البيضاء */}
+            <div className="qz-superr-notebook-wrap">
+              <div className="mb-3 flex items-center gap-2">
+                <span className="qz-superr-caption" style={{ transform: 'rotate(-5deg)' }}>
+                  {blueBook.handCaption}
+                </span>
+                <CharcoalCurvedArrow />
+              </div>
+              <ProductNotebookCard notebook={blueBook} onOpen={setSelectedBook} />
+            </div>
+
+            {/* اللحظة الطباعية المتوسطة بين الدفترين */}
+            <div className="mx-auto max-w-xs py-6 text-center">
+              <div className="mb-3 flex justify-center gap-3">
+                <Sticker type="heart" size={46} rotate="-9deg" />
+                <Sticker type="ghost" size={46} rotate="12deg" />
+              </div>
+              <span className="qz-superr-caption">مثل صناعة</span>
+              <h2 className="mt-2 font-[family-name:var(--font-gelica)] text-[36px] font-medium leading-[1.2] text-[#2b1a07]">
+                دفترنا الخاص.
+                <br />
+                بطريقتنا الخاصة.
+              </h2>
+              <p className="mt-3 text-[18px] leading-[1.5] text-[#2b1a07]/85">
+                اضغط على أي دفتر لتقرأ الملاحظات المسطّرة على هوامشه.
+              </p>
+            </div>
+
+            {/* الدفتر الوردي */}
+            <div className="qz-superr-notebook-wrap">
+              <div className="mb-3 flex items-center gap-2">
+                <CharcoalCurvedArrow flip />
+                <span className="qz-superr-caption" style={{ transform: 'rotate(4deg)' }}>
+                  {pinkBook.handCaption}
+                </span>
+              </div>
+              <ProductNotebookCard notebook={pinkBook} onOpen={setSelectedBook} />
+            </div>
+          </div>
+        </section>
+
+        {/* ── ٣. مواصفات دفاتر قاع الأفكار (Dew Drop #f7efe9 Cards — 12px radius) ── */}
+        <section className="mt-[64px]">
+          <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <span className="qz-superr-caption">لماذا قاع الأفكار؟</span>
+              <h2 className="mt-1 text-[46px] font-semibold leading-[1.2] text-[#2b1a07]">
+                مواصفات الدفتر الورقي
+              </h2>
+            </div>
+            <div className="flex items-center gap-3">
+              <Sticker type="sprout" size={44} rotate="-8deg" />
+              <Sticker type="bolt" size={44} rotate="11deg" />
+            </div>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            <div className="qz-superr-card">
+              <span className="qz-superr-caption !text-[20px]">٠١ · مرقّم بالكامل</span>
+              <h3 className="mt-2 text-[28px] font-semibold leading-[1.3] text-[#2b1a07]">
+                فهرس لكل شرارة
+              </h3>
+              <p className="mt-3 text-[18px] leading-[1.5] text-[#2b1a07]">
+                كل صفحة مرقّمة ومربوطة ببطاقة الاسم المصفّحة على الغلاف للوصول لأي مسودة حلقة فوراً.
+              </p>
+            </div>
+
+            <div className="qz-superr-card">
+              <span className="qz-superr-caption !text-[20px]">٠٢ · ورق كريمي دافئ</span>
+              <h3 className="mt-2 text-[28px] font-semibold leading-[1.3] text-[#2b1a07]">
+                مريح للعين والقراءة
+              </h3>
+              <p className="mt-3 text-[18px] leading-[1.5] text-[#2b1a07]">
+                أرضية كريمية غير لامعة (#fdfbf9) مع حبر الكاكاو الداكن (#2b1a07) لقراءة هادئة بلا إجهاد.
+              </p>
+            </div>
+
+            <div className="qz-superr-card">
+              <span className="qz-superr-caption !text-[20px]">٠٣ · هوامش المونتاج</span>
+              <h3 className="mt-2 text-[28px] font-semibold leading-[1.3] text-[#2b1a07]">
+                مساحة للشخبطة الحرة
+              </h3>
+              <p className="mt-3 text-[18px] leading-[1.5] text-[#2b1a07]">
+                ملاحظات جانبية واقتباسات مرسومة بالماركر البرتقالي تربط بين الفكرة الأولى والمشهد النهائي.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── ٤. أرشيف كل الدفاتر مع فلاتر الـ 20px Pill Tags ── */}
+        <section className="mt-[64px]">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
-              <span className="qz-sp-handnote">اختر الرف أو التصنيف المناسب</span>
-              <h2 className="mt-1 font-[family-name:var(--font-display)] text-2xl font-black text-[#171717] sm:text-3xl">
-                رفوف الدفاتر والمسودات ({filtered.length})
+              <span className="qz-superr-caption">تصفّح الرف الكامل</span>
+              <h2 className="mt-1 text-[36px] font-semibold leading-[1.2] text-[#2b1a07]">
+                جميع دفاتر قاع الأفكار ({filtered.length})
               </h2>
             </div>
 
-            <div className="flex flex-wrap gap-2" role="tablist" aria-label="تصنيفات قلع الأفكار">
+            <div className="flex flex-wrap gap-3" role="tablist" aria-label="تصنيفات قاع الأفكار">
               {CATEGORIES.map((cat) => {
-                const active = activeCategory === cat
+                const isAct = activeCategory === cat
                 return (
                   <button
                     key={cat}
                     type="button"
                     role="tab"
-                    aria-selected={active}
-                    data-active={active ? 'true' : undefined}
-                    className="qz-sp-pill-btn text-xs sm:text-sm"
+                    aria-selected={isAct}
+                    data-active={isAct ? 'true' : undefined}
+                    className="qz-superr-tag"
                     onClick={() => {
                       playGlassTap()
                       setActiveCategory(cat)
                     }}
                   >
-                    <Tag className="size-3.5" aria-hidden="true" />
                     <span>{cat}</span>
                   </button>
                 )
@@ -634,190 +735,138 @@ export default function IdeasCastle() {
             </div>
           </div>
 
-          {/* شبكة الدفاتر المائلة (Tilted Notebook Grid 3-col) */}
-          <div className="mt-10 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-12 grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
             {filtered.map((nb, idx) => (
-              <div key={nb.id} className="qz-sp-notebook-stage flex flex-col justify-between">
-                {/* التعليق اليدوي بالماركر البرتقالي + السهم المرسوم باليد */}
-                <div className="mb-3 flex items-center justify-between gap-2 px-2">
-                  <span className="qz-sp-handnote text-base">{nb.handCaption}</span>
-                  <HandCurvedArrow flip={idx % 2 === 1} />
+              <div key={nb.id} className="qz-superr-notebook-wrap">
+                <div className="mb-3 flex items-center gap-2">
+                  <span className="qz-superr-caption !text-[20px]">{nb.handCaption}</span>
+                  <CharcoalCurvedArrow flip={idx % 2 === 1} />
                 </div>
-
-                <div
-                  className="qz-sp-notebook flex h-full flex-col justify-between"
-                  style={{
-                    '--nb-tilt': nb.tilt,
-                    backgroundColor: nb.coverBg,
-                    color: nb.coverText,
-                  }}
-                  onClick={() => {
-                    playGlassTap()
-                    setSelectedBook(nb)
-                  }}
-                >
-                  <div className="qz-sp-notebook-spine" aria-hidden="true" />
-
-                  <div>
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="rounded-full border border-[#171717] bg-[#fdfbf9] px-2.5 py-0.5 text-[11px] font-extrabold text-[#171717]">
-                        {nb.category}
-                      </span>
-                      <StickerGraphic
-                        type={nb.accentSticker}
-                        size={38}
-                        rotate={idx % 2 === 0 ? '10deg' : '-10deg'}
-                      />
-                    </div>
-
-                    <h3 className="mt-4 font-[family-name:var(--font-display)] text-2xl font-black leading-snug">
-                      {nb.title}
-                    </h3>
-
-                    <p className="mt-2.5 text-sm leading-6 opacity-90">
-                      {nb.summary}
-                    </p>
-                  </div>
-
-                  <div className="mt-6 space-y-4">
-                    <NameLabelSticker
-                      title="أحمد قاسم"
-                      classLabel={nb.classLabel}
-                      rollNo={nb.rollNo}
-                    />
-
-                    <div className="flex items-center justify-between pt-1 text-xs font-extrabold">
-                      <span>{nb.pages} · {nb.date}</span>
-                      <span className="inline-flex items-center gap-1 rounded-full border border-[#171717] bg-[#fdfbf9] px-3 py-1 text-[#171717]">
-                        اقرأ الهوامش
-                        <ArrowUpLeft className="size-3.5" aria-hidden="true" />
-                      </span>
-                    </div>
-                  </div>
-                </div>
+                <ProductNotebookCard notebook={nb} onOpen={setSelectedBook} />
               </div>
             ))}
           </div>
         </section>
+      </div>
 
-        {/* ── شريط الفوتر البرتقالي بزاوية 56px العلوية (Footer Brand Band — DESIGN 3) ── */}
-        <section className="qz-sp-footer-band">
-          <div className="relative z-10 flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
+      {/* ── ٥. شريط الفوتر البرتقالي بعرض الصفحة بالكامل (Footer Brand Band — 56px top corners) ── */}
+      <footer className="qz-superr-footer-band">
+        <div className="qz-superr-container">
+          <div className="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
             <div className="max-w-2xl">
-              <div className="inline-flex items-center gap-2 rounded-full border-[1.5px] border-[#171717] bg-[#fdfbf9] px-3.5 py-1 text-xs font-extrabold text-[#171717]">
-                <Lightbulb className="size-3.5 text-[#ff6f1e]" aria-hidden="true" />
-                <span>معمل الأفكار المفتوح · QASSIMZ SUPERBOOK</span>
+              <div className="mb-4 flex items-center gap-3">
+                <Sticker type="bolt" size={44} rotate="-10deg" />
+                <Sticker type="heart" size={44} rotate="8deg" />
+                <Sticker type="ghost" size={44} rotate="-6deg" />
               </div>
-              <h2 className="mt-4 font-[family-name:var(--font-display)] text-[clamp(1.9rem,3.6vw,3rem)] font-black leading-tight text-[#fdfbf9]">
-                الأفكار الكبيرة تبدأ بشخبطة صغيرة على طرف الصفحة.
+              <h2 className="font-[family-name:var(--font-gelica)] text-[clamp(32px,4.5vw,46px)] font-semibold leading-[1.15] text-[#171717]">
+                قاع الأفكار — المكان الذي تبدأ منه كل حكاية في قاسمز.
               </h2>
-              <p className="mt-3 text-sm leading-7 text-[#fdfbf9]/90 sm:text-base">
-                كل دفتر هنا يتحدث باستمرار مع تقدّم البحث والتصوير. شاركنا فكرة أو زاوية
-                تحب أن نفتح لها دفتراً خاصاً في الحلقات القادمة.
+              <p className="mt-3 text-[20px] leading-[1.5] text-[#171717]/85">
+                هل لديك فكرة حلقة أو زاوية سينمائية تستحق دفتراً جديداً؟ افتح مسودة ودوّنها الآن.
               </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
-              <StickerGraphic type="sun" size={52} rotate="-12deg" />
               <button
                 type="button"
-                className="qz-sp-pill-btn !px-6 !py-3 text-base"
+                className="qz-superr-btn"
                 onClick={() => {
                   playGlassTap()
                   setNewIdeaOpen(true)
-                  window.scrollTo({ top: 180, behavior: 'smooth' })
+                  window.scrollTo({ top: 0, behavior: 'smooth' })
                 }}
               >
-                <Plus className="size-4" aria-hidden="true" />
-                <span>افتح دفتراً جديداً الآن</span>
+                <span>دوّن فكرة جديدة الآن!</span>
               </button>
+              <Link to="/" className="qz-superr-btn">
+                <span>العودة للرئيسية</span>
+              </Link>
             </div>
           </div>
-        </section>
-      </div>
 
-      {/* ── نافذة الدفتر المفتوح (Ruled Notebook Pages Reader) ── */}
+          <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-t border-[#171717]/25 pt-6 text-[16px] text-[#171717]">
+            <span>قاسمز · قاع الأفكار (SuperrBook Edition)</span>
+            <span>© {new Date().getFullYear()} جميع الحقوق محفوظة</span>
+          </div>
+        </div>
+      </footer>
+
+      {/* ── نافذة قراءة الدفتر المفتوح ── */}
       <AnimatePresence>
         {selectedBook && (
           <motion.div
             role="dialog"
             aria-modal="true"
             aria-label={selectedBook.title}
-            className="qz-sp-modal-backdrop"
+            className="qz-superr-modal-backdrop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSelectedBook(null)}
           >
             <motion.div
-              className="qz-sp-open-book"
+              className="qz-superr-modal-sheet"
               dir="rtl"
-              initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.94, rotate: -2 }}
-              animate={reduce ? { opacity: 1 } : { opacity: 1, scale: 1, rotate: 0 }}
-              exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.96 }}
+              initial={{ opacity: 0, y: 16, scale: 0.97 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.98 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="qz-sp-margin-line" aria-hidden="true" />
-
-              <div className="flex flex-wrap items-center justify-between gap-4 border-b-2 border-[#171717] pb-4">
-                <div className="flex items-center gap-3">
-                  <StickerGraphic type={selectedBook.accentSticker} size={42} rotate="-6deg" />
-                  <div>
-                    <span className="text-xs font-extrabold text-[#ff6f1e]">
-                      {selectedBook.category} · رقم الدفتر {selectedBook.rollNo}
-                    </span>
-                    <h2 className="font-[family-name:var(--font-display)] text-2xl font-black text-[#171717] sm:text-3xl">
-                      {selectedBook.title}
-                    </h2>
-                  </div>
+              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#171717]/20 pb-5">
+                <div>
+                  <span className="qz-superr-caption !text-[20px]">
+                    {selectedBook.handCaption} · رقم #{selectedBook.rollNo}
+                  </span>
+                  <h2 className="mt-1 text-[36px] font-semibold leading-[1.2] text-[#2b1a07]">
+                    {selectedBook.title}
+                  </h2>
                 </div>
 
                 <button
                   type="button"
+                  className="qz-superr-btn"
                   onClick={() => setSelectedBook(null)}
-                  className="qz-sp-pill-btn !px-3.5 !py-2"
-                  aria-label="إغلاق الدفتر"
                 >
-                  <X className="size-4" aria-hidden="true" />
                   <span>إغلاق الدفتر</span>
                 </button>
               </div>
 
-              <div className="mt-6 pr-6 sm:pr-10">
-                <p className="qz-sp-handnote mb-4">{selectedBook.handCaption}</p>
-                <p className="font-[family-name:var(--font-text)] text-lg leading-[2.1] text-[#171717]">
-                  {selectedBook.summary}
-                </p>
+              <div className="mt-6 space-y-6">
+                <p className="qz-superr-body">{selectedBook.summary}</p>
 
-                <div className="mt-6 rounded-2xl border-2 border-[#171717] bg-[#f7efe9] p-5 shadow-[4px_4px_0_0_#171717]">
-                  <p className="text-xs font-extrabold tracking-wider text-[#ff6f1e]">
-                    اقتباس مرسوم على الهامش
-                  </p>
-                  <blockquote className="mt-2 font-[family-name:var(--font-display)] text-xl font-bold leading-relaxed text-[#171717]">
+                <div className="qz-superr-card">
+                  <span className="qz-superr-caption !text-[20px]">اقتباس على الهامش</span>
+                  <blockquote className="mt-2 text-[24px] font-medium leading-[1.45] text-[#2b1a07]">
                     {selectedBook.sketchQuote}
                   </blockquote>
                 </div>
 
-                <h3 className="mt-8 font-[family-name:var(--font-display)] text-xl font-black text-[#171717]">
-                  الملاحظات المسطّرة داخل الدفتر:
-                </h3>
-                <ul className="mt-4 space-y-3">
-                  {selectedBook.marginNotes.map((note, i) => (
-                    <li
-                      key={i}
-                      className="flex items-start gap-3 font-[family-name:var(--font-text)] text-base leading-[2] text-[#171717]"
-                    >
-                      <span className="mt-1.5 inline-grid size-6 shrink-0 place-items-center rounded-full border-[1.5px] border-[#171717] bg-[#ff6f1e] text-xs font-black text-[#fdfbf9]">
-                        {i + 1}
-                      </span>
-                      <span>{note}</span>
-                    </li>
-                  ))}
-                </ul>
+                <div>
+                  <h3 className="text-[24px] font-semibold text-[#2b1a07]">
+                    الملاحظات المسطّرة داخل الدفتر:
+                  </h3>
+                  <ul className="mt-4 space-y-3">
+                    {selectedBook.marginNotes.map((note, i) => (
+                      <li
+                        key={i}
+                        className="flex items-start gap-3 text-[18px] leading-[1.6] text-[#2b1a07]"
+                      >
+                        <span className="mt-1 inline-grid size-6 shrink-0 place-items-center rounded-full border border-[#171717] bg-[#f7efe9] text-[13px] font-semibold text-[#171717]">
+                          {i + 1}
+                        </span>
+                        <span>{note}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-                <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t-[1.5px] dashed border-[#171717]/25 pt-5 text-xs font-bold text-[#5b5753]">
-                  <span>الكاتب: أحمد قاسم · {selectedBook.classLabel}</span>
-                  <span>{selectedBook.pages} · {selectedBook.date}</span>
+                <div className="pt-2">
+                  <NameLabelSticker
+                    name={selectedBook.studentName}
+                    classLabel={selectedBook.classLabel}
+                    rollNo={selectedBook.rollNo}
+                  />
                 </div>
               </div>
             </motion.div>

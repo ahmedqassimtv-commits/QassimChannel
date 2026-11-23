@@ -1,8 +1,8 @@
 /* ══════════════════════════════════════════════════════════════════════
    QASSIMZ THEME BRIDGE — صفحة «عن أحمد»
    يقرأ ثيم قاسمز الحالي (green | red | gold) ويضبط ألوان WebGL و CSS
-   قبل تشغيل lando.gold-v3.js، ويستقبل تغييرات الثيم مباشرة عبر postMessage
-   و localStorage بدون إعادة تحميل الصفحة.
+   قبل تشغيل lando.gold-v3.js، مع الحفاظ على تباين وتأثيرات مشهد البورتريه
+   والخوذة ثلاثية الأبعاد (headScene) كما في الملف الأصلي تماماً.
    ══════════════════════════════════════════════════════════════════════ */
 ;(function () {
   var STORAGE_KEY = 'qassimz:theme'
@@ -19,13 +19,13 @@
         lime: '#8ef0d2',
       },
       headScene: {
-        COLOR_BACKGROUND: '#051f20',
-        COLOR_FOREGROUND: '#0b2b26',
-        COLOR_OUTLINE: '#235347',
-        COLOR_CURSOR_BACKGROUND: '#163832',
-        COLOR_CURSOR_FOREGROUND: '#1e4d42',
-        COLOR_CURSOR_OUTLINE: '#8ef0d2',
-        COLOR_FILTER: '#163832',
+        COLOR_OUTLINE: '#8eb69b',
+        COLOR_FOREGROUND: '#8ef0d2',
+        COLOR_BACKGROUND: '#eef8f0',
+        COLOR_CURSOR_FOREGROUND: '#8eb69b',
+        COLOR_CURSOR_BACKGROUND: '#daf1de',
+        COLOR_CURSOR_OUTLINE: '#daf1de',
+        COLOR_FILTER: '#235347',
       },
       backgroundScene: {
         COLOR_BACKGROUND: '#051f20',
@@ -48,13 +48,13 @@
         lime: '#ffa046',
       },
       headScene: {
-        COLOR_BACKGROUND: '#1a0a07',
-        COLOR_FOREGROUND: '#261009',
-        COLOR_OUTLINE: '#8a2a12',
-        COLOR_CURSOR_BACKGROUND: '#3b160c',
-        COLOR_CURSOR_FOREGROUND: '#7c2d12',
-        COLOR_CURSOR_OUTLINE: '#ffa046',
-        COLOR_FILTER: '#5c1d0c',
+        COLOR_OUTLINE: '#d9a773',
+        COLOR_FOREGROUND: '#ffa046',
+        COLOR_BACKGROUND: '#fff4e3',
+        COLOR_CURSOR_FOREGROUND: '#e2ac72',
+        COLOR_CURSOR_BACKGROUND: '#ffe7c2',
+        COLOR_CURSOR_OUTLINE: '#ffe7c2',
+        COLOR_FILTER: '#8a2a12',
       },
       backgroundScene: {
         COLOR_BACKGROUND: '#1a0a07',
@@ -77,13 +77,13 @@
         lime: '#e8c96a',
       },
       headScene: {
-        COLOR_BACKGROUND: '#1a1408',
-        COLOR_FOREGROUND: '#2a1f0e',
-        COLOR_OUTLINE: '#8a6d3b',
-        COLOR_CURSOR_BACKGROUND: '#3d2e14',
-        COLOR_CURSOR_FOREGROUND: '#6c5429',
-        COLOR_CURSOR_OUTLINE: '#e8c96a',
-        COLOR_FILTER: '#4a3a1a',
+        COLOR_OUTLINE: '#c9a54e',
+        COLOR_FOREGROUND: '#e8c96a',
+        COLOR_BACKGROUND: '#fff8e8',
+        COLOR_CURSOR_FOREGROUND: '#d4b76a',
+        COLOR_CURSOR_BACKGROUND: '#f5e6c0',
+        COLOR_CURSOR_OUTLINE: '#f5e6c0',
+        COLOR_FILTER: '#8a6d3b',
       },
       backgroundScene: {
         COLOR_BACKGROUND: '#1a1408',
@@ -192,11 +192,4 @@
     },
     true,
   )
-
-  // إعادة تطبيق الثيم مرة واحدة بعد استقرار WebGL لضمان مزامنة الألوان في كل المشاهد
-  window.addEventListener('load', function () {
-    window.setTimeout(function () {
-      applyTheme(currentTheme, false)
-    }, 600)
-  })
 })()

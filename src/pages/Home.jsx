@@ -304,7 +304,7 @@ function HeroHome() {
                   className="inline-flex items-center gap-1.5 rounded-full border border-white/12 bg-white/[0.04] px-5 py-3 text-sm text-[color:var(--qz-accent)] transition duration-200 hover:bg-white/[0.1]"
                 >
                   <Lightbulb className="size-4" aria-hidden="true" />
-                  <span>قلع الأفكار</span>
+                  <span>قاع الأفكار</span>
                 </Link>
               </motion.div>
 
@@ -461,14 +461,14 @@ const CLOSE_LOOK_ITEMS = [
   },
   {
     id: 'ideas',
-    chip: '٠٣ · قلع الأفكار: الدفاتر والمسودات',
-    badge: 'SUPERR NOTEBOOK · IDEAS CASTLE',
+    chip: '٠٣ · قاع الأفكار: الدفاتر والمسودات',
+    badge: 'SUPERR NOTEBOOK · IDEAS BOTTOM',
     title: 'المسودات المرقّمة والهوامش قبل أن تضيء الكاميرا.',
     body: 'دفاتر ورقية تفاعلية تجمع بذور الحلقات، اقتباسات الكتب، ورسوم المشاهد التي تتبلور منها مشاريع القناة القادمة.',
     metricVal: '٦ دفاتر حية',
     metricLabel: 'مفتوحة للقراءة وإضافة الأفكار',
     image: stories[0]?.image,
-    ctaLabel: 'ادخل قلع الأفكار',
+    ctaLabel: 'ادخل قاع الأفكار',
     ctaTo: '/ideas',
     icon: Lightbulb,
   },

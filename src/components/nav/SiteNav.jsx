@@ -101,7 +101,7 @@ function buildSearchIndex() {
   ].map((item) => ({ ...item, key: normalizeAr(`${item.title} ${item.sub} ${item.extra ?? ''}`) }))
 }
 
-function MobileGlassMenu({ active, onClose }) {
+function MobileGlassMenu({ active, surface, onClose }) {
   const reduce = useReducedMotion()
   const [expanded, setExpanded] = useState(null)
 
@@ -111,6 +111,7 @@ function MobileGlassMenu({ active, onClose }) {
       aria-modal="false"
       aria-label="قائمة التنقل"
       className="qz-mob-menu"
+      data-surface={surface}
       dir="rtl"
       initial={reduce ? { opacity: 0 } : { opacity: 0, y: -10, scale: 0.96, filter: 'blur(8px)' }}
       animate={reduce ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
@@ -452,6 +453,7 @@ export default function SiteNav() {
   }
 
   const openItem = NAV.find((n) => n.key === open)
+  const navSurface = active === '/ideas' ? 'superr' : undefined
 
   return (
     <div ref={headerRef}>
@@ -459,6 +461,7 @@ export default function SiteNav() {
         className="qz-island"
         data-compact={compact ? 'true' : undefined}
         data-searching={searchExpanded ? 'true' : undefined}
+        data-surface={navSurface}
         dir="rtl"
       >
         <div className="qz-island-glass">
@@ -738,6 +741,7 @@ export default function SiteNav() {
             ref={menuRef}
             item={openItem}
             anchor={anchor}
+            surface={navSurface}
             onEnter={() => openMenu(openItem.key, true)}
             onLeave={closeMenu}
             onKeyDown={onMenuKeyDown}
@@ -750,7 +754,13 @@ export default function SiteNav() {
       </AnimatePresence>
 
       <AnimatePresence>
-        {mobileOpen && <MobileGlassMenu active={active} onClose={() => setMobileOpen(false)} />}
+        {mobileOpen && (
+          <MobileGlassMenu
+            active={active}
+            surface={navSurface}
+            onClose={() => setMobileOpen(false)}
+          />
+        )}
       </AnimatePresence>
     </div>
   )

@@ -1,328 +1,411 @@
-/* ══ قلع الأفكار — Superr Tactile Notebook & Sticker System (DESIGN 3) ═══
-   دفتر أفكار تفاعلي بملمس الورق الدافئ (#fdfbf9 / #f7efe9)، حدود الحبر الفحمي
-   (#171717)، تعليقات قلم الماركر البرتقالي (#ff6f1e)، أسهم مرسومة باليد،
-   واستيكرات كرتونية مائلة بزاوية 5–15 درجة. */
+/* ══ قاع الأفكار — Superr Full-Page Style Reference ════════════════════
+   صفحة كاملة غير مقصوصة ولا موضوعة داخل برواز، بأرضية الورق الكريمي الدافئ
+   (#fdfbf9) من الحافة للحافة، وفق التوكنز المرفقة (tokens.css / tokens.json / DESIGN.md). */
 
-.qz-ideas-page {
-  --sp-cream: #fdfbf9;
-  --sp-dew: #f7efe9;
-  --sp-charcoal: #171717;
-  --sp-slate: #414141;
-  --sp-muted: #5b5753;
-  --sp-marker: #ff6f1e;
-  --sp-sky: #3b82f6;
-  --sp-pink: #ff66cf;
-  --sp-sprout: #22c55e;
-  --sp-sun: #facc15;
+.qz-superr-page {
+  /* Colors */
+  --color-cream-paper: #fdfbf9;
+  --color-charcoal: #171717;
+  --color-cocoa-ink: #2b1a07;
+  --color-true-black: #000000;
+  --color-dew-drop: #f7efe9;
+  --color-marker-orange: #ff6f1e;
+  --color-burnt-sienna: #ce500a;
+  --color-sky-sticker: #3b82f6;
+  --color-bubblegum-sticker: #ff66cf;
+  --color-sprout-sticker: #22c55e;
+  --color-shadow-mist: #bebcbb;
+
+  /* Typography — Font Families (mapped to Thmanyah Display / Text / Sans) */
+  --font-gelica: var(--font-display), 'gelica', ui-sans-serif, system-ui, sans-serif;
+  --font-geist: var(--font-sans-ui), 'Geist', ui-sans-serif, system-ui, sans-serif;
+
+  /* Typography — Scale */
+  --text-caption: 16px;
+  --leading-caption: 1.5;
+  --text-body-sm: 18px;
+  --leading-body-sm: 1.5;
+  --text-body: 20px;
+  --leading-body: 1.5;
+  --text-subheading: 24px;
+  --leading-subheading: 1.4;
+  --text-heading-sm: 28px;
+  --leading-heading-sm: 1.4;
+  --text-heading: 36px;
+  --leading-heading: 1.2;
+  --text-heading-lg: 46px;
+  --leading-heading-lg: 1.2;
+  --text-display: clamp(54px, 7.8vw, 104px);
+  --leading-display: 1.08;
+
+  /* Spacing */
+  --spacing-unit: 4px;
+  --spacing-4: 4px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-28: 28px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-48: 48px;
+  --spacing-64: 64px;
+  --spacing-116: 116px;
+
+  /* Layout */
+  --page-max-width: 1200px;
+  --section-gap: 64px;
+  --card-padding: 32px;
+  --element-gap: 12px;
+
+  /* Named Radii */
+  --radius-tags: 20px;
+  --radius-cards: 12px;
+  --radius-footer: 56px;
+  --radius-inputs: 8px;
+  --radius-buttons: 20px;
+
+  /* Shadows */
+  --shadow-lg: rgba(0, 0, 0, 0.06) 0px 2px 20px 0px;
+  --shadow-subtle: rgba(0, 0, 0, 0.25) 0px 1px 2px 0px;
+
+  /* Surfaces */
+  --surface-canvas: #fdfbf9;
+  --surface-surface-tint: #f7efe9;
+  --surface-brand-band: #ff6f1e;
+
   position: relative;
-  color: var(--sp-charcoal);
+  min-height: 100dvh;
+  width: 100%;
+  background-color: var(--color-cream-paper);
+  color: var(--color-cocoa-ink);
+  font-family: var(--font-gelica);
+  padding-top: 96px;
+  overflow-x: clip;
 }
 
-/* اللوح الورقي الرئيسي لقلع الأفكار */
-.qz-ideas-canvas {
-  position: relative;
-  overflow: hidden;
-  border-radius: 36px;
-  background-color: var(--sp-cream);
-  background-image:
-    radial-gradient(circle at 18% 12%, rgb(255 111 30 / 0.07), transparent 42%),
-    radial-gradient(circle at 84% 78%, rgb(59 130 246 / 0.06), transparent 45%),
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 31px,
-      rgb(23 23 23 / 0.04) 31px,
-      rgb(23 23 23 / 0.04) 32px
-    );
-  border: 2px solid var(--sp-charcoal);
-  box-shadow: 0 28px 70px -22px rgb(0 0 0 / 0.55);
-  padding: clamp(1.75rem, 4vw, 3.75rem);
+/* حاوية المحتوى الداخلي (max-width: 1200px) فوق الورق الممتد بعرض الشاشة */
+.qz-superr-container {
+  width: 100%;
+  max-width: var(--page-max-width);
+  margin-inline: auto;
+  padding-inline: clamp(20px, 4vw, 40px);
 }
 
-/* شريط علوي داخل الدفتر */
-.qz-ideas-topbar {
+/* الشريط العلوي البسيط داخل الصفحة: أيقونة اليد المرسومة + زر الكبسولة */
+.qz-superr-header {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 1.5px dashed rgb(23 23 23 / 0.18);
+  gap: var(--spacing-16);
+  padding-block: var(--spacing-16);
 }
 
-.qz-ideas-brand-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  padding: 0.45rem 1rem;
-  border-radius: 20px;
-  background: var(--sp-dew);
-  border: 1.5px solid var(--sp-charcoal);
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.25);
-  font-family: var(--font-sans-ui);
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--sp-charcoal);
-}
-
-/* أزرار الكبسولة التكتيكية (20px radius, 1.5px solid #171717, shadow 0 1px 2px) */
-.qz-sp-pill-btn {
+/* Pill Action Button:
+   Cream fill (#fdfbf9), 1.5px Charcoal border (#171717), 20px pill radius,
+   28px horizontal padding / 10-11px vertical padding, gelica 16px weight 500
+   Charcoal text. Subtle 1-2px drop shadow rgba(0,0,0,0.25).
+   No hover fill change — keep the cream background on all states. */
+.qz-superr-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  border-radius: 20px;
-  background: var(--sp-cream);
-  color: var(--sp-charcoal);
-  border: 1.5px solid var(--sp-charcoal);
-  padding: 0.62rem 1.25rem;
-  font-family: var(--font-sans-ui);
-  font-size: 0.92rem;
-  font-weight: 700;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.25);
+  gap: var(--spacing-8);
+  background-color: var(--color-cream-paper);
+  color: var(--color-charcoal);
+  border: 1.5px solid var(--color-charcoal);
+  border-radius: var(--radius-buttons);
+  padding: 10.5px 28px;
+  font-family: var(--font-gelica);
+  font-size: var(--text-caption);
+  font-weight: 500;
+  line-height: var(--leading-caption);
+  box-shadow: var(--shadow-subtle);
   cursor: pointer;
-  transition:
-    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-    background-color 0.2s ease,
-    box-shadow 0.22s ease;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
-.qz-sp-pill-btn:hover {
-  transform: translateY(-2px);
-  background: var(--sp-dew);
-  box-shadow: 0 4px 0 0 var(--sp-charcoal);
+.qz-superr-btn:hover {
+  background-color: var(--color-cream-paper);
+  color: var(--color-charcoal);
+  transform: translateY(-1.5px);
+  box-shadow: rgba(0, 0, 0, 0.3) 0px 2px 3px 0px;
 }
 
-.qz-sp-pill-btn:active {
+.qz-superr-btn:active {
+  background-color: var(--color-cream-paper);
   transform: translateY(0);
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.25);
+  box-shadow: var(--shadow-subtle);
 }
 
-.qz-sp-pill-btn[data-active='true'],
-.qz-sp-pill-btn-primary {
-  background: var(--sp-marker);
-  color: var(--sp-cream);
-  box-shadow: 0 3px 0 0 var(--sp-charcoal);
+/* تاج التصنيف (20px pill radius, Sprout Sticker green #22c55e outline on active/focused) */
+.qz-superr-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  background-color: var(--color-cream-paper);
+  color: var(--color-charcoal);
+  border: 1.5px solid var(--color-charcoal);
+  border-radius: var(--radius-tags);
+  padding: 8px 20px;
+  font-family: var(--font-gelica);
+  font-size: var(--text-caption);
+  font-weight: 500;
+  box-shadow: var(--shadow-subtle);
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease;
 }
 
-.qz-sp-pill-btn[data-active='true']:hover,
-.qz-sp-pill-btn-primary:hover {
-  background: #e85d0c;
-  color: var(--sp-cream);
-  box-shadow: 0 5px 0 0 var(--sp-charcoal);
+.qz-superr-tag[data-active='true'] {
+  border-color: var(--color-sprout-sticker);
+  box-shadow: 0 0 0 1.5px var(--color-sprout-sticker), var(--shadow-subtle);
 }
 
-/* تمييز قلم الماركر البرتقالي مع خط متعرج مرسوم باليد */
-.qz-sp-marker {
+/* العنوان الضخم (Display Headline — 104px, line-height 1.08, weight 600, Cocoa Ink #2b1a07) */
+.qz-superr-display {
+  font-family: var(--font-gelica);
+  font-size: var(--text-display);
+  font-weight: 600;
+  line-height: var(--leading-display);
+  letter-spacing: 0em;
+  color: var(--color-cocoa-ink);
+  margin: 0;
+}
+
+/* التعليق المكتوب باليد (Handwritten Caption — 20-24px weight 400 in Marker Orange #ff6f1e) */
+.qz-superr-caption {
+  display: inline-block;
+  font-family: var(--font-gelica);
+  font-size: var(--text-subheading);
+  font-weight: 400;
+  line-height: var(--leading-subheading);
+  color: var(--color-marker-orange);
+}
+
+/* الكلمة المميزة بالماركر (Marker Highlight — #ff6f1e text + 2-3px rough hand-drawn underline) */
+.qz-superr-highlight {
   position: relative;
   display: inline-block;
-  color: var(--sp-marker);
-  font-weight: 900;
-  padding-inline: 0.15em;
+  color: var(--color-marker-orange);
+  font-weight: 600;
 }
 
-.qz-sp-marker-wave {
+.qz-superr-highlight svg {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -0.22em;
-  width: 100%;
-  height: 0.36em;
-  pointer-events: none;
+  left: -2px;
+  right: -2px;
+  bottom: -5px;
+  width: calc(100% + 4px);
+  height: 8px;
   overflow: visible;
+  pointer-events: none;
 }
 
-/* التعليقات اليدوية بالماركر البرتقالي (Caveat / Hand annotation style) */
-.qz-sp-handnote {
-  display: inline-flex;
+/* نص الفقرات (Body copy — 20px weight 400 Cocoa Ink #2b1a07, line-height 1.5) */
+.qz-superr-body {
+  font-family: var(--font-gelica);
+  font-size: var(--text-body);
+  font-weight: 400;
+  line-height: var(--leading-body);
+  color: var(--color-cocoa-ink);
+}
+
+/* سطر المعلومات الهادئ تحت الزر (Pre-order Info Block — 16px weight 400 Cocoa Ink, 8px gap) */
+.qz-superr-preorder {
+  margin-top: var(--spacing-8);
+  font-family: var(--font-gelica);
+  font-size: var(--text-caption);
+  font-weight: 400;
+  line-height: var(--leading-caption);
+  color: var(--color-cocoa-ink);
+}
+
+/* بطاقة Dew Drop الثانوية (#f7efe9, 12px radius, 32px padding, whisper-light shadow) */
+.qz-superr-card {
+  background-color: var(--color-dew-drop);
+  border: 1.5px solid var(--color-charcoal);
+  border-radius: var(--radius-cards);
+  padding: var(--card-padding);
+  box-shadow: var(--shadow-lg);
+}
+
+/* الدفتر الفعلي (Product Notebook — 12-16px corner radius, tilted 5-8° off-axis) */
+.qz-superr-notebook-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 0.45rem;
-  font-family: var(--font-display);
-  font-size: clamp(1.1rem, 1.8vw, 1.4rem);
-  font-weight: 700;
-  line-height: 1.2;
-  color: var(--sp-marker);
-  transform: rotate(-4deg);
 }
 
-/* الاستيكرات الكرتونية المبعثرة بحدود 2px داكنة */
-.qz-sp-sticker {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  filter: drop-shadow(0 4px 0 rgb(23 23 23 / 0.9));
-  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-  user-select: none;
-}
-
-.qz-sp-sticker:hover {
-  transform: scale(1.12) rotate(0deg) !important;
-}
-
-/* بطاقة سطح Dew Drop (#f7efe9) بحدود 12px radius */
-.qz-sp-dew-card {
+.qz-superr-notebook {
   position: relative;
-  border-radius: 16px;
-  background: var(--sp-dew);
-  border: 1.5px solid var(--sp-charcoal);
-  padding: 1.5rem;
-  box-shadow: 0 4px 0 0 var(--sp-charcoal);
-  transition:
-    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-/* الدفتر المائل (Tilted Notebook Card 5–8 deg) */
-.qz-sp-notebook-stage {
-  position: relative;
-  padding: 1.25rem 0.75rem;
-}
-
-.qz-sp-notebook {
-  position: relative;
-  border-radius: 14px 18px 18px 14px;
-  border: 2px solid var(--sp-charcoal);
-  padding: 1.5rem 1.4rem 1.4rem 1.75rem;
-  box-shadow:
-    6px 8px 0 0 var(--sp-charcoal),
-    inset -12px 0 0 0 rgb(23 23 23 / 0.14);
-  transform: rotate(var(--nb-tilt, -5deg));
-  transition:
-    transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+  width: 100%;
+  max-width: 390px;
+  aspect-ratio: 3 / 3.9;
+  border-radius: 14px;
+  border: 1.5px solid var(--color-charcoal);
+  padding: 28px 26px 26px 32px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   cursor: pointer;
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.qz-sp-notebook:hover {
-  transform: rotate(0deg) translateY(-6px) scale(1.015);
-  box-shadow:
-    10px 14px 0 0 var(--sp-charcoal),
-    inset -12px 0 0 0 rgb(23 23 23 / 0.18);
+.qz-superr-notebook:hover {
+  transform: rotate(0deg) translateY(-4px) !important;
 }
 
-/* كعب الدفتر وحلقات السلك */
-.qz-sp-notebook-spine {
-  position: absolute;
-  top: 12px;
-  bottom: 12px;
-  right: 8px;
-  width: 6px;
-  border-radius: 99px;
-  background: repeating-linear-gradient(
-    180deg,
-    var(--sp-charcoal) 0px,
-    var(--sp-charcoal) 8px,
-    transparent 8px,
-    transparent 18px
-  );
-  opacity: 0.75;
-}
-
-/* استيكر الاسم المصفّح (Name Label Sticker — white card, 1px border, 8px radius, 3 fields) */
-.qz-sp-name-label {
-  position: relative;
-  border-radius: 8px;
-  background: #ffffff;
-  border: 1.5px solid var(--sp-charcoal);
-  padding: 0.7rem 0.85rem;
-  box-shadow: 2px 3px 0 0 rgb(23 23 23 / 0.85);
-  color: var(--sp-charcoal);
-}
-
-.qz-sp-name-label::before {
+/* خياطة كعب الدفتر الجلدي */
+.qz-superr-notebook::after {
   content: '';
   position: absolute;
-  inset: 3px;
-  border-radius: 5px;
-  border: 1px solid rgb(23 23 23 / 0.18);
+  top: 10px;
+  bottom: 10px;
+  right: 12px;
+  width: 2px;
+  border-right: 1.5px dashed rgba(23, 23, 23, 0.32);
   pointer-events: none;
 }
 
-.qz-sp-name-row {
+/* قلم الألوان الموضوع بجانب الدفتر (Colored Pencil tucked alongside) */
+.qz-superr-pencil {
+  position: absolute;
+  left: -18px;
+  bottom: 16px;
+  width: 12px;
+  height: 68%;
+  border-radius: 4px 4px 6px 6px;
+  border: 1.5px solid var(--color-charcoal);
+  transform: rotate(-4deg);
+  pointer-events: none;
+}
+
+.qz-superr-pencil::before {
+  content: '';
+  position: absolute;
+  top: -14px;
+  left: -1.5px;
+  right: -1.5px;
+  height: 14px;
+  background: #f5d0a9;
+  border: 1.5px solid var(--color-charcoal);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+/* استيكر الاسم المصفّح (Name Label Sticker):
+   White card with 1px Charcoal border, 8px corner radius, three fields:
+   Name (20px), Class (16px), Roll no. (16px). */
+.qz-superr-label {
+  background-color: #ffffff;
+  border: 1px solid var(--color-charcoal);
+  border-radius: var(--radius-inputs);
+  padding: 14px 16px;
+  color: var(--color-charcoal);
+  box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 10px 0px;
+}
+
+.qz-superr-label-row {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 0.5rem;
-  padding-block: 0.24rem;
-  border-bottom: 1px solid rgb(23 23 23 / 0.22);
-  font-family: var(--font-sans-ui);
-  font-size: 0.76rem;
+  gap: var(--spacing-8);
+  padding-block: 5px;
+  border-bottom: 1px solid rgba(23, 23, 23, 0.2);
 }
 
-.qz-sp-name-row:last-child {
+.qz-superr-label-row:last-child {
   border-bottom: 0;
-  padding-bottom: 0.1rem;
+  padding-bottom: 0;
 }
 
-.qz-sp-name-key {
-  font-weight: 700;
-  color: var(--sp-muted);
+.qz-superr-label-name {
+  font-family: var(--font-gelica);
+  font-size: var(--text-body);
+  font-weight: 500;
+  color: var(--color-charcoal);
+}
+
+.qz-superr-label-meta {
+  font-family: var(--font-gelica);
+  font-size: var(--text-caption);
+  font-weight: 400;
+  color: var(--color-charcoal);
+}
+
+.qz-superr-label-key {
+  font-family: var(--font-geist);
+  font-size: 13px;
+  font-weight: 500;
+  color: #5b5753;
   flex-shrink: 0;
 }
 
-.qz-sp-name-val {
-  font-weight: 800;
-  color: var(--sp-charcoal);
-  text-align: left;
-}
-
-/* نافذة فتح الدفتر وقراءة المسودات المسطّرة */
-.qz-sp-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 90;
-  display: grid;
-  place-items: center;
-  padding: 1.25rem;
-  background: rgb(10 10 10 / 0.72);
-  backdrop-filter: blur(10px);
-}
-
-.qz-sp-open-book {
-  position: relative;
-  width: min(880px, 100%);
-  max-height: 88dvh;
-  overflow-y: auto;
-  border-radius: 24px;
-  background-color: var(--sp-cream);
-  background-image: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 35px,
-    rgb(59 130 246 / 0.16) 35px,
-    rgb(59 130 246 / 0.16) 36px
-  );
-  border: 2.5px solid var(--sp-charcoal);
-  box-shadow: 12px 14px 0 0 var(--sp-charcoal);
-  padding: clamp(1.5rem, 3.5vw, 2.75rem);
-  color: var(--sp-charcoal);
-  scrollbar-width: none;
-}
-
-.qz-sp-open-book::-webkit-scrollbar {
-  display: none;
-}
-
-/* خط الهامش الأحمر الرأسي في الدفتر المفتوح */
-.qz-sp-margin-line {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: clamp(2.4rem, 5vw, 4rem);
-  width: 2px;
-  background: rgb(255 111 30 / 0.38);
+/* الاستيكرات المسطحة (Sticker Illustration — flat 2D, 2px dark outlines, no drop shadows) */
+.qz-superr-sticker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
   pointer-events: none;
 }
 
-/* شريط الفوتر البرتقالي بزاوية 56px العلوية غير المتماثلة (Footer Brand Band) */
-.qz-sp-footer-band {
+/* الحقول (8px border-radius, 1.5px Charcoal border) */
+.qz-superr-input {
+  width: 100%;
+  border-radius: var(--radius-inputs);
+  border: 1.5px solid var(--color-charcoal);
+  background-color: var(--color-cream-paper);
+  padding: 10px 14px;
+  font-family: var(--font-gelica);
+  font-size: var(--text-caption);
+  color: var(--color-charcoal);
+  outline: none;
+}
+
+.qz-superr-input:focus {
+  border-color: var(--color-sprout-sticker);
+}
+
+/* شريط الفوتر البرتقالي بعرض الصفحة بالكامل (Footer Brand Band):
+   Marker Orange (#ff6f1e) background, 56px asymmetric corner radius on the top edge */
+.qz-superr-footer-band {
+  width: 100%;
+  margin-top: var(--spacing-116);
+  background-color: var(--color-marker-orange);
+  border-top: 1.5px solid var(--color-charcoal);
+  border-radius: var(--radius-footer) var(--radius-footer) 0 0;
+  padding: clamp(48px, 6vw, 80px) clamp(20px, 4vw, 40px) 56px;
+  color: var(--color-charcoal);
+}
+
+/* نافذة قراءة الدفتر المفتوح */
+.qz-superr-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background-color: rgba(23, 23, 23, 0.45);
+}
+
+.qz-superr-modal-sheet {
   position: relative;
-  margin-top: 3.5rem;
-  border-radius: 56px 56px 24px 24px;
-  background: var(--sp-marker);
-  border: 2px solid var(--sp-charcoal);
-  box-shadow: 0 8px 0 0 var(--sp-charcoal);
-  padding: clamp(2rem, 4.5vw, 3.5rem);
-  color: var(--sp-cream);
-  overflow: hidden;
+  width: min(820px, 100%);
+  max-height: 86dvh;
+  overflow-y: auto;
+  background-color: var(--color-cream-paper);
+  border: 1.5px solid var(--color-charcoal);
+  border-radius: var(--radius-cards);
+  padding: var(--card-padding);
+  box-shadow: var(--shadow-lg);
+  color: var(--color-cocoa-ink);
+  scrollbar-width: none;
+}
+
+.qz-superr-modal-sheet::-webkit-scrollbar {
+  display: none;
 }

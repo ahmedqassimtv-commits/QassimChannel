@@ -14,7 +14,7 @@ import {
 } from 'lucide-react'
 
 /* خريطة التنقل الوحيدة للموقع: النافبار والبحث والفوتر كلهم بيقروا منها.
-   motion = حركة الأيقونة لما الماوس يقف على العنصر (beat | tilt | rewind | nudge | spin | pulse | nod) */
+   - «قاع الأفكار» قسم رئيسي مستقل في النافبار العلوي فقط (بدون تكرار داخل قائمة «مساحة»). */
 
 export const VERDICT_ITEMS = [
   {
@@ -34,13 +34,6 @@ export const VERDICT_ITEMS = [
 ]
 
 export const MASAHA_ITEMS = [
-  {
-    to: '/ideas',
-    label: 'قلع الأفكار',
-    sub: 'دفاتر المسودات والتجارب البصرية',
-    icon: Lightbulb,
-    motion: 'tilt',
-  },
   {
     to: '/masaha/on-air',
     label: 'أون إير',
@@ -77,7 +70,14 @@ export const NAV = [
   { key: '/stories', to: '/stories', label: 'الحكايات', icon: History, motion: 'rewind' },
   { key: '/videos', to: '/videos', label: 'الفيديوهات', icon: Video, motion: 'beat' },
   { key: '/articles', to: '/articles', label: 'المقالات', icon: BookOpen, motion: 'nudge' },
-  { key: '/ideas', to: '/ideas', label: 'قلع الأفكار', icon: Lightbulb, motion: 'tilt' },
+  {
+    key: '/ideas',
+    to: '/ideas',
+    label: 'قاع الأفكار',
+    sub: 'دفاتر المسودات والتجارب البصرية',
+    icon: Lightbulb,
+    motion: 'tilt',
+  },
   { key: 'masaha', label: 'مساحة', icon: Compass, motion: 'spin', children: MASAHA_ITEMS },
 ]
 

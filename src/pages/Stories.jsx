@@ -52,7 +52,7 @@ export default function Stories() {
         publisher="منصة قاسمز · QASSIMZ ARCHIVE"
         epigraph="الصورة الفوتوغرافية لا تستعيد الماضي فحسب، بل تمنحه حياةً ثانية على الورق."
         legends={legends}
-        cta={{ label: 'قلع الأفكار', href: '/QassimChannel/ideas' }}
+        cta={{ label: 'قاع الأفكار', href: '/QassimChannel/ideas' }}
         closing={{
           heading: 'دفترُ الأرشيف المفتوح',
           script: 'حكاياتٌ تُحفظ كي لا تُنسى',
@@ -72,7 +72,7 @@ export default function Stories() {
               { label: 'الرئيسية', href: '/QassimChannel/' },
               { label: 'الفِردِكت', href: '/QassimChannel/verdict/movies' },
               { label: 'المقالات المصوّرة', href: '/QassimChannel/articles' },
-              { label: 'قلع الأفكار', href: '/QassimChannel/ideas' },
+              { label: 'قاع الأفكار', href: '/QassimChannel/ideas' },
             ],
           },
           {
