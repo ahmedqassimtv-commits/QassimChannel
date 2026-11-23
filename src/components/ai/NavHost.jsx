@@ -19,6 +19,17 @@ export default function NavHost({ onHome }) {
   const [pos, setPos] = useState(null)
   const slotRef = useRef(null)
 
+  // أي مكان في الموقع (قائمة قاسمز، مركز التحكم) يقدر يفتح اللوح
+  useEffect(() => {
+    const openHost = () => {
+      setArrived(true)
+      setHello(false)
+      setOpen(true)
+    }
+    window.addEventListener('qz:open-host', openHost)
+    return () => window.removeEventListener('qz:open-host', openHost)
+  }, [])
+
   useEffect(() => {
     const t = window.setTimeout(() => {
       setArrived(true)
