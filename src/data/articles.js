@@ -20,12 +20,14 @@ function parseArticle(path, raw) {
     date: metadata.date || '',
     category: metadata.category || 'مقالات',
     excerpt: metadata.excerpt || '',
+    draft: String(metadata.draft).toLowerCase() === 'true',
     body,
   }
 }
 
 export const articles = Object.entries(files)
   .map(([path, raw]) => parseArticle(path, raw))
+  .filter((article) => !article.draft)
   .sort((a, b) => b.date.localeCompare(a.date))
 
 export function useArticle(slug) {
