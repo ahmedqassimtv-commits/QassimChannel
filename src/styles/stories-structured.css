@@ -123,7 +123,7 @@
   position: absolute;
   z-index: 0;
   left: 50%;
-  bottom: calc(0.02 * 100svh - 0.06 * 31vw);
+  bottom: calc(5svh + 0.205 * 31vw);
   translate: -50% 0;
   width: max-content;
   font-family: var(--sx-serif);
@@ -140,7 +140,7 @@
 
 /* ══ ٢. رحلة اللوحة ═══════════════════════════════════════════════════ */
 .qz-sx-journey {
-  --tw: clamp(300px, 46vw, 820px);
+  --tw: clamp(280px, 40vw, 720px);
   position: relative;
   z-index: 2;
   background: #9fb8b4;
@@ -148,8 +148,8 @@
 .qz-sx-trees {
   position: absolute;
   z-index: 4;
-  inset: calc(var(--tw) * -0.3) 0 auto 0;
-  height: calc(var(--tw) * 3);
+  inset: calc(-22svh - var(--tw) * 0.15) 0 auto 0;
+  height: calc(var(--tw) * 1.8);
   overflow: visible;
   overflow-x: clip;
   pointer-events: none;
@@ -163,11 +163,11 @@
 }
 .qz-sx-tree.is-l {
   left: 0;
-  transform-origin: 0% 6%;
+  transform-origin: 0% 8%;
 }
 .qz-sx-tree.is-r {
   right: 0;
-  transform-origin: 100% 6%;
+  transform-origin: 100% 8%;
 }
 .qz-sx-frame {
   position: relative;
@@ -817,7 +817,7 @@
     min-height: 520px;
   }
   .qz-sx-journey {
-    --tw: 58vw;
+    --tw: 56vw;
   }
   .qz-sx-ibis {
     width: 9%;

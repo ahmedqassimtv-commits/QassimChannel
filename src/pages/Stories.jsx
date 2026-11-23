@@ -111,10 +111,10 @@ function HeroAndJourney() {
 
   // الشجر طبقة أمامية: طالع من تحت قدّام الكلمة، وبيطلع أسرع من اللوحة ويكبر
   const { scrollYProgress: treeP } = useScroll({ target: journeyRef, offset: ['start end', 'start start'] })
-  const treeY = useTransform(treeP, [0, 1], reduce ? ['0vh', '0vh'] : ['0vh', '-62vh'])
-  const treeScale = useTransform(treeP, [0, 1], reduce ? [1, 1] : [1, 1.55])
-  const treeLX = useTransform(treeP, [0, 1], reduce ? ['-26%', '-26%'] : ['-26%', '-14%'])
-  const treeRX = useTransform(treeP, [0, 1], reduce ? ['26%', '26%'] : ['26%', '14%'])
+  const treeY = useTransform(treeP, [0, 1], reduce ? ['0vh', '0vh'] : ['0vh', '-105vh'])
+  const treeScale = useTransform(treeP, [0, 1], reduce ? [1, 1] : [1, 1.35])
+  const treeLX = useTransform(treeP, [0, 1], reduce ? ['-26%', '-26%'] : ['-26%', '-12%'])
+  const treeRX = useTransform(treeP, [0, 1], reduce ? ['26%', '26%'] : ['26%', '12%'])
 
   // الكارت بيتفتح من خط رفيع أول ما يظهر، ونصه بيتبدل مع التقدّم في اللوحة
   const cardIn = useInView(cardRef, { once: true, margin: '-20% 0px -20% 0px' })
