@@ -1,16 +1,14 @@
-/* مسافات الموبايل وتقليل الحركة — اتنقل من qz.css */
+/* تقليل الحركة والشفافية */
 
-/* ══ الموبايل: مساحة للتابات العائمة تحت ═════════════════════════════ */
 @media (max-width: 1023.98px) {
-  .qz-main {
-    padding-bottom: calc(var(--qz-tabbar-h) + 48px + env(safe-area-inset-bottom, 0px));
+  .qz-main:not(.qz-main-immersive) {
+    padding-bottom: calc(48px + env(safe-area-inset-bottom, 0px));
   }
   .qz-footer {
-    padding-bottom: calc(var(--qz-tabbar-h) + 40px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
   }
 }
 
-/* ══ تقليل الحركة والشفافية ══════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
   .qz-marquee-track {
     animation: none;
@@ -19,14 +17,16 @@
   .qz-island-row,
   .qz-island-logo,
   .qz-island-menu,
-  .qz-tabbar {
+  .qz-mob-menu {
     transition: none;
   }
 }
+
 @media (prefers-reduced-transparency: reduce) {
   .qz-panel,
-  .qz-sheet,
-  .qz-search {
+  .qz-search,
+  .qz-island-glass,
+  .qz-island-menu-glass {
     background: var(--qz-ink);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;

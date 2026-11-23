@@ -70,7 +70,11 @@ function parseArticle(path, raw) {
   // لو أول سطر في المقال هو نفس العنوان (# ...) بنشيله عشان مايتكررش تحت العنوان الكبير
   body = body.replace(/^\s*#\s+(.+)\r?\n/, (line, h) => (h.trim() === title.trim() ? '' : line))
   const words = body.replace(/[#>*_`-]/g, ' ').split(/\s+/).filter(Boolean).length
-  const cover = meta.cover ? (/^https?:/.test(meta.cover) ? meta.cover : assetUrl(meta.cover)) : ''
+  const cover = meta.cover
+    ? /^https?:/.test(meta.cover)
+      ? meta.cover
+      : assetUrl(meta.cover)
+    : 'https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1200&q=80'
   return {
     slug,
     title,
@@ -78,6 +82,8 @@ function parseArticle(path, raw) {
     category: meta.category || 'مقالات',
     excerpt: meta.excerpt || '',
     cover,
+    isNew: meta.isNew === 'true' || meta.isNew === true,
+    location: meta.location || 'القاهرة · طبعة مصوّرة',
     tags: Array.isArray(meta.tags) ? meta.tags : [],
     draft: meta.draft === 'true' || meta.draft === true,
     minutes: Math.max(1, Math.round(words / WORDS_PER_MINUTE)),

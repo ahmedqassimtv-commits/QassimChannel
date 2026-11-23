@@ -115,7 +115,8 @@ const routeToPageName = {
   '/verdict/series': 'Reviews',
   '/masaha/on-air': 'OnAir',
   '/masaha/books': 'Books',
-  '/masaha/about': 'About',
+  '/masaha/ahmed': 'AboutAhmed',
+  '/masaha/about': 'AboutAhmed',
   '/on-air': 'OnAir',
 };
 

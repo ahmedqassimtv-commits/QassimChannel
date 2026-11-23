@@ -1,11 +1,9 @@
-import { lazy, Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import Lenis from 'lenis'
 import LiquidScene from './components/scene/LiquidScene.jsx'
 import SiteNav from './components/nav/SiteNav.jsx'
-import MobileTabBar from './components/nav/MobileTabBar.jsx'
-import SearchOverlay from './components/layout/SearchOverlay.jsx'
 import Footer from './components/layout/Footer.jsx'
 import BackToTop from './components/ui/BackToTop.jsx'
 import LiquidGlassFilters from './components/glass/LiquidGlassFilters.jsx'
@@ -14,33 +12,22 @@ import { pageVariants, pageVariantsReduced } from './components/motion/Motion.js
 import { setLenis } from './lib/scroll.js'
 import { playGlassTap } from './utils/glassSound.js'
 
-// تحميل الصفحات بشكل كسول لتقليل حزمة الصفحة الأولى
-const Home = lazy(() => import('./pages/Home.jsx'))
-const Videos = lazy(() => import('./pages/Videos.jsx'))
-const Reviews = lazy(() => import('./pages/Reviews.jsx'))
-const Stories = lazy(() => import('./pages/Stories.jsx'))
-const Articles = lazy(() => import('./pages/Articles.jsx'))
-const ArticleView = lazy(() => import('./pages/ArticleView.jsx'))
-const OnAir = lazy(() => import('./pages/OnAir.jsx'))
-const About = lazy(() => import('./pages/About.jsx'))
-const Books = lazy(() => import('./pages/Books.jsx'))
-
-function PageFallback() {
-  return (
-    <div className="flex min-h-[70vh] items-center justify-center" role="status" aria-live="polite">
-      <span className="sr-only">جارٍ تحميل الصفحة…</span>
-      <span className="h-px w-24 overflow-hidden rounded-full bg-[rgb(var(--qz-mint-rgb)/0.12)]" aria-hidden="true">
-        <span className="block h-full w-1/2 animate-[qz-load_1.1s_ease-in-out_infinite] rounded-full bg-[color:var(--qz-accent)]" />
-      </span>
-    </div>
-  )
-}
+// استيراد مباشر للصفحات لإلغاء شاشة «جارٍ التحميل» عند الدخول لأي قسم
+import Home from './pages/Home.jsx'
+import Videos from './pages/Videos.jsx'
+import Reviews from './pages/Reviews.jsx'
+import Stories from './pages/Stories.jsx'
+import Articles from './pages/Articles.jsx'
+import ArticleView from './pages/ArticleView.jsx'
+import OnAir from './pages/OnAir.jsx'
+import AboutAhmed from './pages/AboutAhmed.jsx'
+import Books from './pages/Books.jsx'
+import IdeasCastle from './pages/IdeasCastle.jsx'
 
 /* ══ الانتقال بين الصفحات ═════════════════════════════════════════════
-   الصفحة القديمة بتنسحب لورا (blur + تصغير بسيط)، وبعد ما تخلص بنرجع
-   لأول الصفحة، والجديدة بتتجسّد من تحت. التمرير لفوق بيحصل بين الاتنين
-   (مش قبل الخروج) عشان القديمة ماتقفزش وهي بتختفي. المشهد الحي في
-   الخلفية بيغيّر مزاجه في نفس اللحظة (LiquidScene بيقرا المسار). */
+   انتقال فوري وسلس بدون أي شاشة تحميل عند الدخول لقسم جديد:
+   الصفحة القديمة تنسحب بخفة، التمرير يُضبط قبل ظهور الجديدة، والمشهد
+   الحي في الخلفية يغيّر مزاجه في نفس اللحظة. */
 function AnimatedRoutes() {
   const location = useLocation()
   const reduce = useReducedMotion()
@@ -67,14 +54,12 @@ function AnimatedRoutes() {
   }, [])
 
   const variants = reduce ? pageVariantsReduced : pageVariants
-  // كل مقال صفحة لوحده، لكن /videos و /videos/shorts صفحة واحدة بفلتر، وكذلك أفلام/مسلسلات الفِردِكت
   const pageKey = location.pathname.startsWith('/videos')
     ? '/videos'
     : location.pathname.startsWith('/verdict')
       ? '/verdict'
       : location.pathname
 
-  // نفس الصفحة (رابط # أو أول تحميل): مفيش خروج فبنظبط التمرير هنا
   const prevKey = useRef(pageKey)
   useEffect(() => {
     if (prevKey.current === pageKey && location.hash) requestAnimationFrame(settleScroll)
@@ -85,37 +70,76 @@ function AnimatedRoutes() {
   return (
     <AnimatePresence mode="wait" initial={false} onExitComplete={settleScroll}>
       <motion.div key={pageKey} variants={variants} initial="initial" animate="enter" exit="exit">
-        <Suspense fallback={<PageFallback />}>
-          <Routes location={location}>
-            <Route path="/" element={<Home />} />
-            <Route path="/videos" element={<Videos />} />
-            <Route path="/videos/shorts" element={<Videos shorts />} />
-            <Route path="/verdict/movies" element={<Reviews defaultTab="فيلم" />} />
-            <Route path="/verdict/series" element={<Reviews defaultTab="مسلسل" />} />
-            <Route path="/reviews" element={<Navigate to="/verdict/movies" replace />} />
-            <Route path="/stories" element={<Stories />} />
-            <Route path="/articles" element={<Articles />} />
-            <Route path="/articles/:slug" element={<ArticleView />} />
-            <Route path="/masaha/on-air" element={<OnAir />} />
-            <Route path="/masaha/books" element={<Books />} />
-            <Route path="/masaha/about" element={<About />} />
-            <Route path="/on-air" element={<Navigate to="/masaha/on-air" replace />} />
-            <Route path="/about" element={<Navigate to="/masaha/about" replace />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </Suspense>
+        <Routes location={location}>
+          <Route path="/" element={<Home />} />
+          <Route path="/videos" element={<Videos />} />
+          <Route path="/videos/shorts" element={<Videos shorts />} />
+          <Route path="/verdict/movies" element={<Reviews defaultTab="فيلم" />} />
+          <Route path="/verdict/series" element={<Reviews defaultTab="مسلسل" />} />
+          <Route path="/reviews" element={<Navigate to="/verdict/movies" replace />} />
+          <Route path="/stories" element={<Stories />} />
+          <Route path="/articles" element={<Articles />} />
+          <Route path="/articles/:slug" element={<ArticleView />} />
+          <Route path="/ideas" element={<IdeasCastle />} />
+          <Route path="/masaha/ideas" element={<IdeasCastle />} />
+          <Route path="/masaha/on-air" element={<OnAir />} />
+          <Route path="/masaha/books" element={<Books />} />
+          <Route path="/masaha/ahmed" element={<AboutAhmed />} />
+          <Route path="/masaha/about" element={<Navigate to="/masaha/ahmed" replace />} />
+          <Route path="/on-air" element={<Navigate to="/masaha/on-air" replace />} />
+          <Route path="/about" element={<Navigate to="/masaha/ahmed" replace />} />
+          <Route path="/ahmed" element={<Navigate to="/masaha/ahmed" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </motion.div>
     </AnimatePresence>
   )
 }
 
+function AppShell({ lenisRef }) {
+  const { pathname } = useLocation()
+  const isImmersive =
+    pathname === '/masaha/ahmed' ||
+    pathname.startsWith('/verdict') ||
+    pathname.startsWith('/stories')
+
+  return (
+    <div className="relative min-h-screen overflow-x-clip bg-[color:var(--qz-ink)] text-[color:var(--qz-text)]">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:right-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-[color:var(--qz-mint)] focus:px-5 focus:py-3 focus:text-[color:var(--qz-ink)]"
+      >
+        انتقل للمحتوى
+      </a>
+      <LiquidGlassFilters />
+      <LiquidScene />
+      <SiteNav />
+      <main
+        id="main"
+        className={
+          isImmersive
+            ? 'qz-main qz-main-immersive relative z-10 min-h-dvh w-full'
+            : 'qz-main relative z-10 mx-auto min-h-[80vh] w-full max-w-[1320px] px-[var(--qz-page-x)] pb-20 pt-28 lg:pt-32'
+        }
+      >
+        <AnimatedRoutes />
+      </main>
+      {!isImmersive && <Footer />}
+      {!isImmersive && (
+        <div className="hidden lg:block">
+          <BackToTop lenisRef={lenisRef} />
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function App() {
   const lenisRef = useRef(null)
-  const [searchOpen, setSearchOpen] = useState(false)
 
   useEffect(() => {
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return undefined
-    const lenis = new Lenis({ duration: 1.1, smoothWheel: true })
+    const lenis = new Lenis({ duration: 1.05, smoothWheel: true })
     lenisRef.current = lenis
     window.__qzLenis = lenis
     setLenis(lenis)
@@ -134,22 +158,6 @@ export default function App() {
     }
   }, [])
 
-  // ⌘K / Ctrl+K أو «/» بيفتحوا البحث (إلا لو المستخدم بيكتب في حقل)
-  useEffect(() => {
-    const onKey = (e) => {
-      const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target?.tagName) || e.target?.isContentEditable
-      if ((e.key === 'k' || e.key === 'K') && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault()
-        setSearchOpen((v) => !v)
-      } else if (e.key === '/' && !typing) {
-        e.preventDefault()
-        setSearchOpen(true)
-      }
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [])
-
   // المؤثر الصوتي الزجاجي على أزرار المحتوى
   useEffect(() => {
     const handleGlobalClick = (e) => {
@@ -163,26 +171,7 @@ export default function App() {
   return (
     <BrowserRouter basename={import.meta.env.BASE_URL}>
       <CinemaProvider>
-        <div className="relative min-h-screen overflow-x-clip bg-[color:var(--qz-ink)] text-[color:var(--qz-text)]">
-          <a
-            href="#main"
-            className="sr-only focus:not-sr-only focus:fixed focus:right-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-[color:var(--qz-mint)] focus:px-5 focus:py-3 focus:text-[color:var(--qz-ink)]"
-          >
-            انتقل للمحتوى
-          </a>
-          <LiquidGlassFilters />
-          <LiquidScene />
-          <SiteNav onOpenSearch={() => setSearchOpen(true)} />
-          <main id="main" className="qz-main relative z-10 mx-auto min-h-[80vh] w-full max-w-[1320px] px-[var(--qz-page-x)] pb-24 pt-28 lg:pt-32">
-            <AnimatedRoutes />
-          </main>
-          <Footer />
-          <MobileTabBar />
-          <div className="hidden lg:block">
-            <BackToTop lenisRef={lenisRef} />
-          </div>
-          <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
-        </div>
+        <AppShell lenisRef={lenisRef} />
       </CinemaProvider>
     </BrowserRouter>
   )

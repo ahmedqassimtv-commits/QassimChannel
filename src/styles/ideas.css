@@ -1,0 +1,328 @@
+/* ══ قلع الأفكار — Superr Tactile Notebook & Sticker System (DESIGN 3) ═══
+   دفتر أفكار تفاعلي بملمس الورق الدافئ (#fdfbf9 / #f7efe9)، حدود الحبر الفحمي
+   (#171717)، تعليقات قلم الماركر البرتقالي (#ff6f1e)، أسهم مرسومة باليد،
+   واستيكرات كرتونية مائلة بزاوية 5–15 درجة. */
+
+.qz-ideas-page {
+  --sp-cream: #fdfbf9;
+  --sp-dew: #f7efe9;
+  --sp-charcoal: #171717;
+  --sp-slate: #414141;
+  --sp-muted: #5b5753;
+  --sp-marker: #ff6f1e;
+  --sp-sky: #3b82f6;
+  --sp-pink: #ff66cf;
+  --sp-sprout: #22c55e;
+  --sp-sun: #facc15;
+  position: relative;
+  color: var(--sp-charcoal);
+}
+
+/* اللوح الورقي الرئيسي لقلع الأفكار */
+.qz-ideas-canvas {
+  position: relative;
+  overflow: hidden;
+  border-radius: 36px;
+  background-color: var(--sp-cream);
+  background-image:
+    radial-gradient(circle at 18% 12%, rgb(255 111 30 / 0.07), transparent 42%),
+    radial-gradient(circle at 84% 78%, rgb(59 130 246 / 0.06), transparent 45%),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 31px,
+      rgb(23 23 23 / 0.04) 31px,
+      rgb(23 23 23 / 0.04) 32px
+    );
+  border: 2px solid var(--sp-charcoal);
+  box-shadow: 0 28px 70px -22px rgb(0 0 0 / 0.55);
+  padding: clamp(1.75rem, 4vw, 3.75rem);
+}
+
+/* شريط علوي داخل الدفتر */
+.qz-ideas-topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1.5px dashed rgb(23 23 23 / 0.18);
+}
+
+.qz-ideas-brand-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 1rem;
+  border-radius: 20px;
+  background: var(--sp-dew);
+  border: 1.5px solid var(--sp-charcoal);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.25);
+  font-family: var(--font-sans-ui);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--sp-charcoal);
+}
+
+/* أزرار الكبسولة التكتيكية (20px radius, 1.5px solid #171717, shadow 0 1px 2px) */
+.qz-sp-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 20px;
+  background: var(--sp-cream);
+  color: var(--sp-charcoal);
+  border: 1.5px solid var(--sp-charcoal);
+  padding: 0.62rem 1.25rem;
+  font-family: var(--font-sans-ui);
+  font-size: 0.92rem;
+  font-weight: 700;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.25);
+  cursor: pointer;
+  transition:
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.2s ease,
+    box-shadow 0.22s ease;
+}
+
+.qz-sp-pill-btn:hover {
+  transform: translateY(-2px);
+  background: var(--sp-dew);
+  box-shadow: 0 4px 0 0 var(--sp-charcoal);
+}
+
+.qz-sp-pill-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.25);
+}
+
+.qz-sp-pill-btn[data-active='true'],
+.qz-sp-pill-btn-primary {
+  background: var(--sp-marker);
+  color: var(--sp-cream);
+  box-shadow: 0 3px 0 0 var(--sp-charcoal);
+}
+
+.qz-sp-pill-btn[data-active='true']:hover,
+.qz-sp-pill-btn-primary:hover {
+  background: #e85d0c;
+  color: var(--sp-cream);
+  box-shadow: 0 5px 0 0 var(--sp-charcoal);
+}
+
+/* تمييز قلم الماركر البرتقالي مع خط متعرج مرسوم باليد */
+.qz-sp-marker {
+  position: relative;
+  display: inline-block;
+  color: var(--sp-marker);
+  font-weight: 900;
+  padding-inline: 0.15em;
+}
+
+.qz-sp-marker-wave {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.22em;
+  width: 100%;
+  height: 0.36em;
+  pointer-events: none;
+  overflow: visible;
+}
+
+/* التعليقات اليدوية بالماركر البرتقالي (Caveat / Hand annotation style) */
+.qz-sp-handnote {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 1.8vw, 1.4rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--sp-marker);
+  transform: rotate(-4deg);
+}
+
+/* الاستيكرات الكرتونية المبعثرة بحدود 2px داكنة */
+.qz-sp-sticker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 4px 0 rgb(23 23 23 / 0.9));
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  user-select: none;
+}
+
+.qz-sp-sticker:hover {
+  transform: scale(1.12) rotate(0deg) !important;
+}
+
+/* بطاقة سطح Dew Drop (#f7efe9) بحدود 12px radius */
+.qz-sp-dew-card {
+  position: relative;
+  border-radius: 16px;
+  background: var(--sp-dew);
+  border: 1.5px solid var(--sp-charcoal);
+  padding: 1.5rem;
+  box-shadow: 0 4px 0 0 var(--sp-charcoal);
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* الدفتر المائل (Tilted Notebook Card 5–8 deg) */
+.qz-sp-notebook-stage {
+  position: relative;
+  padding: 1.25rem 0.75rem;
+}
+
+.qz-sp-notebook {
+  position: relative;
+  border-radius: 14px 18px 18px 14px;
+  border: 2px solid var(--sp-charcoal);
+  padding: 1.5rem 1.4rem 1.4rem 1.75rem;
+  box-shadow:
+    6px 8px 0 0 var(--sp-charcoal),
+    inset -12px 0 0 0 rgb(23 23 23 / 0.14);
+  transform: rotate(var(--nb-tilt, -5deg));
+  transition:
+    transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+  cursor: pointer;
+}
+
+.qz-sp-notebook:hover {
+  transform: rotate(0deg) translateY(-6px) scale(1.015);
+  box-shadow:
+    10px 14px 0 0 var(--sp-charcoal),
+    inset -12px 0 0 0 rgb(23 23 23 / 0.18);
+}
+
+/* كعب الدفتر وحلقات السلك */
+.qz-sp-notebook-spine {
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  right: 8px;
+  width: 6px;
+  border-radius: 99px;
+  background: repeating-linear-gradient(
+    180deg,
+    var(--sp-charcoal) 0px,
+    var(--sp-charcoal) 8px,
+    transparent 8px,
+    transparent 18px
+  );
+  opacity: 0.75;
+}
+
+/* استيكر الاسم المصفّح (Name Label Sticker — white card, 1px border, 8px radius, 3 fields) */
+.qz-sp-name-label {
+  position: relative;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1.5px solid var(--sp-charcoal);
+  padding: 0.7rem 0.85rem;
+  box-shadow: 2px 3px 0 0 rgb(23 23 23 / 0.85);
+  color: var(--sp-charcoal);
+}
+
+.qz-sp-name-label::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 5px;
+  border: 1px solid rgb(23 23 23 / 0.18);
+  pointer-events: none;
+}
+
+.qz-sp-name-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-block: 0.24rem;
+  border-bottom: 1px solid rgb(23 23 23 / 0.22);
+  font-family: var(--font-sans-ui);
+  font-size: 0.76rem;
+}
+
+.qz-sp-name-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0.1rem;
+}
+
+.qz-sp-name-key {
+  font-weight: 700;
+  color: var(--sp-muted);
+  flex-shrink: 0;
+}
+
+.qz-sp-name-val {
+  font-weight: 800;
+  color: var(--sp-charcoal);
+  text-align: left;
+}
+
+/* نافذة فتح الدفتر وقراءة المسودات المسطّرة */
+.qz-sp-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: rgb(10 10 10 / 0.72);
+  backdrop-filter: blur(10px);
+}
+
+.qz-sp-open-book {
+  position: relative;
+  width: min(880px, 100%);
+  max-height: 88dvh;
+  overflow-y: auto;
+  border-radius: 24px;
+  background-color: var(--sp-cream);
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 35px,
+    rgb(59 130 246 / 0.16) 35px,
+    rgb(59 130 246 / 0.16) 36px
+  );
+  border: 2.5px solid var(--sp-charcoal);
+  box-shadow: 12px 14px 0 0 var(--sp-charcoal);
+  padding: clamp(1.5rem, 3.5vw, 2.75rem);
+  color: var(--sp-charcoal);
+  scrollbar-width: none;
+}
+
+.qz-sp-open-book::-webkit-scrollbar {
+  display: none;
+}
+
+/* خط الهامش الأحمر الرأسي في الدفتر المفتوح */
+.qz-sp-margin-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: clamp(2.4rem, 5vw, 4rem);
+  width: 2px;
+  background: rgb(255 111 30 / 0.38);
+  pointer-events: none;
+}
+
+/* شريط الفوتر البرتقالي بزاوية 56px العلوية غير المتماثلة (Footer Brand Band) */
+.qz-sp-footer-band {
+  position: relative;
+  margin-top: 3.5rem;
+  border-radius: 56px 56px 24px 24px;
+  background: var(--sp-marker);
+  border: 2px solid var(--sp-charcoal);
+  box-shadow: 0 8px 0 0 var(--sp-charcoal);
+  padding: clamp(2rem, 4.5vw, 3.5rem);
+  color: var(--sp-cream);
+  overflow: hidden;
+}

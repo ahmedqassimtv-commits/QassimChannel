@@ -4,7 +4,6 @@
 /* نظام قاسمز — كل ملف لجزء واحد من الموقع (الترتيب مهم) */
 @import "./styles/base.css";
 @import "./styles/nav.css";
-@import "./styles/tabbar.css";
 @import "./styles/search.css";
 @import "./styles/cinema.css";
 @import "./styles/reading.css";
@@ -12,6 +11,9 @@
 @import "./styles/books.css";
 @import "./styles/footer.css";
 @import "./styles/about.css";
+@import "./styles/ideas.css";
+@import "./styles/home.css";
+@import "./styles/articles-miranda.css";
 @import "./styles/a11y.css";
 
 @custom-variant dark (&:is(.dark *));
@@ -135,62 +137,22 @@
 }
 
 /* ==========================================================================
-   4. خط Quiverleaf Arabic CF — الخط الأساسي للموقع (Connary Fagen، 5 أوزان)
-   الواجهة والعناوين والنافبار والكروت كلها بـ Quiverleaf؛ ثمانية فاضل
-   بنفس إعداداته (Sans احتياطي، Display للعناوين التحريرية، Text لنص المقالات).
-   ========================================================================== */
-@font-face {
-  font-family: 'Quiverleaf Arabic CF';
-  src: url('/fonts/quiverleaf/woff2/quiverleafarabiccf-light.woff2') format('woff2');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Quiverleaf Arabic CF';
-  src: url('/fonts/quiverleaf/woff2/quiverleafarabiccf-regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Quiverleaf Arabic CF';
-  src: url('/fonts/quiverleaf/woff2/quiverleafarabiccf-demibold.woff2') format('woff2');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Quiverleaf Arabic CF';
-  src: url('/fonts/quiverleaf/woff2/quiverleafarabiccf-bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Quiverleaf Arabic CF';
-  src: url('/fonts/quiverleaf/woff2/quiverleafarabiccf-extrabold.woff2') format('woff2');
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* ==========================================================================
-   6. التوزيع التلقائي للخطوط وخصائص OpenType
+   4. التوزيع التلقائي لعائلات خط ثمانية الثلاث (حسب دليل جماليات خط ثمانية)
+   - خط ثمانية للعناوين (Thmanyah Display): للعناوين الرئيسية والافتتاحية (5 أوزان)
+   - خط ثمانية للنصوص (Thmanyah Text): للمقدمات والمقالات والنصوص الطويلة (5 أوزان)
+   - خط ثمانية الرقمي (Thmanyah Sans): للواجهة، النافبار، الأزرار، البطاقات، والأرقام (5 أوزان)
    ========================================================================== */
 :root {
-  --font-quiver: 'Quiverleaf Arabic CF', 'Thmanyah Sans', system-ui, sans-serif;
-  /* النصوص والفقرات بثمانية (Quiverleaf خط عرض: وصلاته الطويلة بتتعب العين في الأحجام الصغيرة) */
-  --font-sans-ui: 'Thmanyah Sans', system-ui, sans-serif;
-  --font-display: var(--font-quiver);
+  --font-display: 'Thmanyah Display', 'Thmanyah Sans', serif;
   --font-text: 'Thmanyah Text', 'Thmanyah Sans', serif;
-  /* ثمانية بنفس إعداداته الأصلية لأي مكان عايز يستخدمه صراحةً */
-  --font-thmanyah: 'Thmanyah Sans', system-ui, sans-serif;
+  --font-sans-ui: 'Thmanyah Sans', system-ui, -apple-system, sans-serif;
+  --font-thmanyah: 'Thmanyah Sans', system-ui, -apple-system, sans-serif;
   --font-thmanyah-display: 'Thmanyah Display', 'Thmanyah Sans', serif;
-  /* الأسماء القديمة (Liftaswash / A Farhood اتشالوا) بقت بتشاور على Quiverleaf */
-  --font-cinema: var(--font-quiver);
-  --font-afarhood: var(--font-quiver);
-  --font-history: var(--font-quiver);
+  /* توافق مع أي كلاس قديم في الصفحات */
+  --font-quiver: var(--font-display);
+  --font-cinema: var(--font-display);
+  --font-afarhood: var(--font-display);
+  --font-history: var(--font-display);
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -227,31 +189,46 @@
 
 body {
   font-family: var(--font-sans-ui);
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
   background-color: var(--qz-ink);
   color: var(--qz-mint);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, .font-display {
+/* خط ثمانية للعناوين (Thmanyah Display): تفعيل الكشيدة المائلة ss01 والأحرف المرسلة salt باعتدال في العناوين */
+h1, .font-display {
   font-family: var(--font-display);
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "ss01" 1, "salt" 1;
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "ss01" 1;
+}
+
+h3, h4 {
+  font-family: var(--font-sans-ui);
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
 }
 
 .thmanyah-swash {
   font-family: var(--font-display);
-  font-feature-settings: "ss01" 1, "salt" 1;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "ss01" 1, "salt" 1;
 }
 
-.qz-prose, .font-text {
+/* خط ثمانية للنصوص (Thmanyah Text): إيقاف الكشيدة المائلة والأحرف المرسلة في النصوص الطويلة (صفحة 15 من الدليل) */
+article, .qz-prose, .font-text {
   font-family: var(--font-text);
-  font-feature-settings: "ss01" 0, "salt" 0;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "ss01" 0, "salt" 0;
   line-height: 1.95;
 }
 
 .font-cinema,
 .font-history,
 .font-afarhood {
-  font-family: var(--font-quiver) !important;
+  font-family: var(--font-display) !important;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "ss01" 1;
 }
 
 /* ==========================================================================
@@ -421,7 +398,7 @@ html[data-theme='gold'] {
 }
 
 html[data-theme='red'] img:not(.grayscale):not([data-no-tint]),
-html[data-theme='red'] iframe {
+html[data-theme='red'] iframe:not([data-no-tint]) {
   filter: sepia(0.5) saturate(1.55) hue-rotate(-16deg) contrast(1.04);
   transition: filter 0.6s ease;
 }
@@ -1028,22 +1005,6 @@ html[data-theme='gold'] .qz-glass-rim {
   white-space: normal;
 }
 
-/* صفحة «عني» */
-.qz-about {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-.qz-about-hero {
-  display: grid;
-  gap: 1.5rem;
-  align-items: center;
-}
-@media (min-width: 768px) {
-  .qz-about-hero {
-    grid-template-columns: 1fr 1fr;
-  }
-}
 .qz-eyebrow {
   font-size: 0.75rem;
   font-weight: 700;

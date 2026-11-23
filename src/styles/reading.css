@@ -3,6 +3,7 @@
 /* ══ القراءة (المقالات) ═══════════════════════════════════════════════ */
 .qz-prose {
   font-family: var(--font-text);
+  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1, 'ss01' 0, 'salt' 0;
   font-size: clamp(1.08rem, 1.25vw, 1.22rem);
   line-height: 2.05;
   color: rgb(var(--qz-mint-rgb) / 0.86);
@@ -13,20 +14,22 @@
 }
 .qz-prose h2,
 .qz-prose h3 {
-  font-family: var(--font-quiver);
+  font-family: var(--font-display);
   color: var(--qz-text);
   scroll-margin-top: 110px;
 }
 .qz-prose h2 {
   margin-top: 2.2em;
   font-size: clamp(1.6rem, 2.4vw, 2.1rem);
-  font-weight: 400;
+  font-weight: 700;
   line-height: 1.35;
+  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1, 'ss01' 1;
 }
 .qz-prose h3 {
+  font-family: var(--font-sans-ui);
   margin-top: 1.8em;
   font-size: 1.3rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 .qz-prose a {
   color: var(--qz-accent);
@@ -77,10 +80,11 @@
   margin-block: 2em;
   padding: 0.2em 1.4em 0.2em 0;
   border-inline-start: 2px solid var(--qz-accent);
-  font-family: var(--font-quiver);
-  font-size: 1.35em;
-  font-weight: 300;
-  line-height: 1.75;
+  font-family: var(--font-text);
+  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1, 'ss01' 0, 'salt' 0;
+  font-size: 1.3em;
+  font-weight: 500;
+  line-height: 1.8;
   color: var(--qz-text);
 }
 .qz-progress {

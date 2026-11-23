@@ -1,36 +1,21 @@
 import { useEffect, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 
-/* ══ المشهد الحي (خلفية 3D) ══════════════════════════════════════════
-   شيدر WebGL2 واحد بيرسم الخلفية كلها، من غير أي مكتبة:
-
-   ── حرير سائل ──────────────────────────────────────────────
-   حقل ضوء بيتلوّى (domain-warped fbm) بألوان الثيم نفسه: الحبر في
-   العمق، الطحلب في الطيات، والوهج على الحواف. له عمق حقيقي: 3 طبقات
-   بسرعات وإزاحات مختلفة (parallax) بتتحرك مع الماوس والتمرير.
-
-   ── ورا زجاج مضلّع ─────────────────────────────────────────
-   هوية قاسمز القديمة (الزجاج المضلّع فوق الفراكتال) بقت جزء من المشهد:
-   كل ضلع بيكسر الضوء اللي وراه بزاوية (refraction حقيقي في الشيدر)،
-   ومعاه لمعة على حافة كل ضلع وتشتت ألوان خفيف (RGB split).
-
-   ── بيتشكّل مع كل قسم ──────────────────────────────────────
-   كل قسم له «مزاج» (عرض الأضلاع، سرعة، كثافة الطيات، زاوية الضوء)،
-   وعند الانتقال بين الصفحات القيم بتنساب لبعض بنابض ناعم — فالخلفية
-   نفسها جزء من الانتقال. الألوان بتتقري من متغيرات الثيم وبتتبدّل بنعومة.
-
-   ── أداء ──────────────────────────────────────────────────
-   بيترسم بدقة أقل من الشاشة (الحقل ناعم أصلاً)، وبيقف لما التبويب
-   يستخبى، وبيرسم فريم ثابت واحد مع prefers-reduced-motion أو
-   Save-Data. من غير WebGL2 بيرجع لتدرّج CSS بنفس الألوان. */
+/* ══ المشهد الجوي الموحّد (Midnight Ambient Canvas) ═════════════════════
+   خلفية سينمائية موحّدة فائقة النعومة مستوحاة من فلسفة Origin & Apple Midnight:
+   - بدون أي شرائح رأسية (Slats/Ribs) تفصل الخلفية أو تكسر الدمج البصري
+   - بدون خطوط كنتور مزعجة أو حركات سريعة
+   - تدرّج ضوئي حريري هادئ يتنفس ببطء (إيقاع 1.8s–2.2s) ويتبع المؤشر بنعومة
+   - يتكيّف لحظياً مع الثيمات الثلاثة (الزمردي / الجمري / الذهبي). */
 
 const MOODS = {
-  home: { rib: 46, speed: 0.55, warp: 1.0, fold: 2.2, light: [0.62, 0.3], glow: 1.0 },
-  verdict: { rib: 30, speed: 0.4, warp: 1.25, fold: 2.8, light: [0.25, 0.25], glow: 0.85 },
-  stories: { rib: 64, speed: 0.3, warp: 0.8, fold: 1.6, light: [0.75, 0.6], glow: 0.7 },
-  videos: { rib: 38, speed: 0.7, warp: 1.15, fold: 2.5, light: [0.45, 0.2], glow: 1.1 },
-  articles: { rib: 80, speed: 0.25, warp: 0.65, fold: 1.4, light: [0.55, 0.5], glow: 0.6 },
-  masaha: { rib: 52, speed: 0.45, warp: 0.95, fold: 2.0, light: [0.35, 0.65], glow: 0.9 },
+  home: { speed: 0.18, aura: 1.0, light: [0.34, 0.36], depth: 0.95 },
+  verdict: { speed: 0.14, aura: 0.82, light: [0.28, 0.28], depth: 1.05 },
+  stories: { speed: 0.12, aura: 0.78, light: [0.66, 0.42], depth: 0.9 },
+  videos: { speed: 0.16, aura: 0.92, light: [0.46, 0.26], depth: 0.95 },
+  articles: { speed: 0.11, aura: 0.68, light: [0.52, 0.44], depth: 0.85 },
+  ideas: { speed: 0.15, aura: 0.85, light: [0.42, 0.38], depth: 0.9 },
+  masaha: { speed: 0.15, aura: 0.88, light: [0.38, 0.56], depth: 0.92 },
 }
 
 function moodFor(pathname) {
@@ -38,7 +23,8 @@ function moodFor(pathname) {
   if (pathname.startsWith('/stories')) return MOODS.stories
   if (pathname.startsWith('/video')) return MOODS.videos
   if (pathname.startsWith('/article')) return MOODS.articles
-  if (pathname.startsWith('/masaha') || pathname.startsWith('/on-air')) return MOODS.masaha
+  if (pathname.startsWith('/ideas') || pathname.startsWith('/masaha/ideas')) return MOODS.ideas
+  if (pathname.startsWith('/masaha') || pathname.startsWith('/on-air') || pathname.startsWith('/ahmed')) return MOODS.masaha
   return MOODS.home
 }
 
@@ -49,181 +35,201 @@ void main(){ gl_Position = vec4(p, 0.0, 1.0); }`
 const FRAG = `#version 300 es
 precision highp float;
 out vec4 o;
+
 uniform vec2 uRes;
 uniform float uTime;
-uniform vec2 uMouse;     // 0..1
-uniform float uScroll;   // px
-uniform float uRib;      // px
-uniform float uWarp;
-uniform float uFold;
+uniform vec2 uMouse;
+uniform float uScroll;
+uniform float uAura;
+uniform float uDepth;
 uniform vec2 uLight;
-uniform float uGlow;
 uniform vec3 cInk, cDeep, cMoss, cSage, cGlow;
 
-float hash(vec2 p){ p = fract(p*vec2(123.34, 456.21)); p += dot(p, p+45.32); return fract(p.x*p.y); }
-float noise(vec2 p){
-  vec2 i = floor(p), f = fract(p);
-  vec2 u = f*f*(3.0-2.0*f);
-  return mix(mix(hash(i), hash(i+vec2(1,0)), u.x), mix(hash(i+vec2(0,1)), hash(i+vec2(1,1)), u.x), u.y);
-}
-float fbm(vec2 p){
-  float v = 0.0, a = 0.5;
-  mat2 r = mat2(0.8, -0.6, 0.6, 0.8);
-  for (int i = 0; i < 4; i++){ v += a*noise(p); p = r*p*2.03 + 7.1; a *= 0.5; }
-  return v;
-}
-
-// شرايط حرير: موجات طويلة بيلويها حقل ضوضاء بطيء، ولمعة ساتان على القمم.
-// ترجع (شدة الشريط، اللمعة)
-vec2 ribbons(vec2 uv, float t, float scale, float seed){
-  vec2 q = uv*scale;
-  float w1 = fbm(q*0.55 + vec2(seed, t*0.07));
-  float w2 = fbm(q*0.55 + vec2(3.7 - t*0.05, seed*1.3));
-  float phase = q.x*0.55 + q.y*1.25 + uWarp*(3.2*w1 + 1.6*w2) + t*0.22 + seed;
-  float band = sin(phase*uFold);
-  float sheen = pow(0.5 + 0.5*band, 7.0);
-  return vec2(0.5 + 0.5*band, sheen);
-}
-
-vec3 field(vec2 uv, float t){
-  vec2 m = (uMouse - 0.5);
-  // طبقتين عمق: البعيدة أكبر وأبطأ وبتتحرك أقل مع الماوس (parallax)
-  vec2 far = ribbons(uv + m*0.04 + vec2(0.0, uScroll*0.00010), t*0.7, 0.75, 1.3);
-  vec2 near = ribbons(uv + m*0.11 + vec2(0.6, uScroll*0.00022), t, 1.25, 6.1);
-  vec3 col = mix(cInk, cDeep, far.x*0.9);
-  col = mix(col, cMoss, near.x*near.x*0.55);
-  col += cSage * far.y * 0.16;
-  col += cMoss * near.y * 0.5;
-  col += cGlow * pow(near.y, 2.5) * 0.16 * uGlow;
-  // ضوء ناعم ناحية مصدر الضوء والماوس
-  vec2 L = mix(uLight, uMouse, 0.35) - 0.5;
-  vec2 P = uv / vec2(uRes.x/uRes.y, 1.0) * 0.5;
-  float d = length(P - L);
-  col += cGlow * uGlow * 0.16 * exp(-d*d*5.0);
-  return col;
+// ضوضاء simplex ثلاثية الأبعاد فائقة النعومة للتدرجات الحريرية المدمجة
+vec3 mod289(vec3 x){ return x - floor(x * (1.0 / 289.0)) * 289.0; }
+vec4 mod289(vec4 x){ return x - floor(x * (1.0 / 289.0)) * 289.0; }
+vec4 permute(vec4 x){ return mod289(((x * 34.0) + 1.0) * x); }
+vec4 taylorInvSqrt(vec4 r){ return 1.79284291400159 - 0.85373472095314 * r; }
+float snoise(vec3 v){
+  const vec2 C = vec2(1.0 / 6.0, 1.0 / 3.0);
+  const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+  vec3 i = floor(v + dot(v, C.yyy));
+  vec3 x0 = v - i + dot(i, C.xxx);
+  vec3 g = step(x0.yzx, x0.xyz);
+  vec3 l = 1.0 - g;
+  vec3 i1 = min(g.xyz, l.zxy);
+  vec3 i2 = max(g.xyz, l.zxy);
+  vec3 x1 = x0 - i1 + C.xxx;
+  vec3 x2 = x0 - i2 + C.yyy;
+  vec3 x3 = x0 - D.yyy;
+  i = mod289(i);
+  vec4 p = permute(permute(permute(
+    i.z + vec4(0.0, i1.z, i2.z, 1.0))
+    + i.y + vec4(0.0, i1.y, i2.y, 1.0))
+    + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+  float n_ = 0.142857142857;
+  vec3 ns = n_ * D.wyz - D.xzx;
+  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+  vec4 x_ = floor(j * ns.z);
+  vec4 y_ = floor(j - 7.0 * x_);
+  vec4 x = x_ * ns.x + ns.yyyy;
+  vec4 y = y_ * ns.x + ns.yyyy;
+  vec4 h = 1.0 - abs(x) - abs(y);
+  vec4 b0 = vec4(x.xy, y.xy);
+  vec4 b1 = vec4(x.zw, y.zw);
+  vec4 s0 = floor(b0) * 2.0 + 1.0;
+  vec4 s1 = floor(b1) * 2.0 + 1.0;
+  vec4 sh = -step(h, vec4(0.0));
+  vec4 a0 = b0.xzyw + s0.xzyw * sh.xxyy;
+  vec4 a1 = b1.xzyw + s1.xzyw * sh.zzww;
+  vec3 p0 = vec3(a0.xy, h.x);
+  vec3 p1 = vec3(a0.zw, h.y);
+  vec3 p2 = vec3(a1.xy, h.z);
+  vec3 p3 = vec3(a1.zw, h.w);
+  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2,p2), dot(p3,p3)));
+  p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+  m = m * m;
+  return 42.0 * dot(m * m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
 }
 
 void main(){
-  vec2 frag = gl_FragCoord.xy;
-  float aspect = uRes.x/uRes.y;
-  float t = uTime;
+  vec2 uv = gl_FragCoord.xy / uRes;
+  float asp = uRes.x / max(uRes.y, 1.0);
+  vec2 p = (uv - 0.5) * vec2(asp, 1.0);
 
-  // ── الأضلاع: x جوه الضلع من 0 لـ 1 ──
-  float ribPx = uRib * (uRes.x/1440.0) * 1.6 + 6.0;
-  float k = fract(frag.x/ribPx);
-  float slope = cos(k*3.14159);                 // ميل سطح الضلع (محدّب)
-  float edge = smoothstep(0.86, 1.0, k) + smoothstep(0.14, 0.0, k);
-  // الانكسار: كل ضلع بيزيح اللي وراه أفقياً حسب ميله، والقنوات اللونية بنسب مختلفة
-  float bend = slope * 0.045;
-  vec2 uv = (frag/uRes - 0.5) * vec2(aspect, 1.0) * 2.0;
-  vec3 col = field(uv + vec2(bend, 0.0), t);
-  // تشتت ألوان خفيف على حواف الأضلاع (بديل رخيص لقراءة الحقل 3 مرات)
-  col.r *= 1.0 + edge*0.06;
-  col.b *= 1.0 - edge*0.04;
+  // إزاحة تمرير هادئة جداً بدون قفزات
+  p.y -= uScroll * 0.05;
 
-  // الضلع نفسه: ظل ناحية جانب ولمعة رفيعة على الحافة
-  col *= 0.9 + 0.1*slope;
-  col += cGlow * edge * 0.035;
-  float spec = pow(max(0.0, 1.0 - abs(k - mix(0.3, 0.7, uMouse.x))*7.0), 3.0);
-  col += cSage * spec * 0.05;
+  // تموّج حريري عريض وبطيء جداً (بدون أي خطوط أو تقطيع)
+  float n1 = snoise(vec3(p * 0.85, uTime * 0.14));
+  float n2 = snoise(vec3(p * 1.45 - n1 * 0.35, uTime * 0.11 + 4.2));
+  float silk = smoothstep(-0.65, 0.85, n1 * 0.55 + n2 * 0.45);
 
-  // تعتيم الأطراف عشان النص يفضل مقروء + حبيبات فيلم
-  vec2 v = frag/uRes - 0.5;
-  col *= 1.0 - dot(v, v)*1.15;
-  col = mix(col, cInk, 0.18);
-  col += (hash(frag + fract(t)*100.0) - 0.5) * 0.028;
-  o = vec4(max(col, 0.0), 1.0);
+  // أرضية ليلية عميقة مدمجة بالكامل
+  vec3 col = mix(cInk, cDeep, smoothstep(0.0, 0.9, uv.y * 0.75 + silk * 0.35));
+  col = mix(col, cMoss * 0.72, silk * 0.32 * uDepth);
+
+  // بؤرة ضوء جوية رئيسية (Atmospheric Horizon Pool)
+  vec2 lp1 = (uLight - 0.5) * vec2(asp, 1.0);
+  float d1 = length(p - lp1);
+  float pool1 = exp(-d1 * d1 * 1.85) * uAura;
+  col += cMoss * pool1 * 0.34;
+  col += cGlow * exp(-d1 * d1 * 4.2) * uAura * 0.12;
+
+  // بؤرة ضوء ثانوية متكاملة في العمق
+  vec2 lp2 = vec2(-lp1.x * 0.75, -lp1.y * 0.65);
+  float d2 = length(p - lp2);
+  col += cDeep * exp(-d2 * d2 * 1.6) * 0.42;
+
+  // هالة ضوئية ناعمة تتبع المؤشر بهدوء
+  vec2 mp = (uMouse - 0.5) * vec2(asp, 1.0);
+  float md = length((uv - 0.5) * vec2(asp, 1.0) - mp);
+  float mHalo = exp(-md * md * 4.5);
+  col += mix(cMoss, cSage, 0.38) * mHalo * 0.11 * uAura;
+
+  // تعتيم أطراف سينمائي ناعم يحافظ على اندماج كل العناصر والـ Footer
+  float vig = smoothstep(1.38, 0.25, length((uv - 0.5) * vec2(1.08, 1.04)));
+  col *= mix(0.62, 1.0, vig);
+
+  // dithering خفيف لمنع أي banding في التدرجات الداكنة
+  float dith = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+  col += (dith - 0.5) / 255.0;
+
+  o = vec4(clamp(col, 0.0, 1.0), 1.0);
 }`
 
-function cssRgb(name, fallback) {
-  const raw = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
-  const s = raw || fallback
-  if (s.startsWith('#')) {
-    const n = parseInt(s.slice(1), 16)
-    return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255]
+function readRgbVar(style, name, fallback) {
+  const raw = style.getPropertyValue(name).trim()
+  if (!raw) return fallback
+  const parts = raw.split(/[\s,]+/).map(Number)
+  if (parts.length >= 3 && parts.every((n) => !Number.isNaN(n))) {
+    return [parts[0] / 255, parts[1] / 255, parts[2] / 255]
   }
-  const parts = s.split(/[\s,/]+/).map(Number).filter((x) => !Number.isNaN(x))
-  return parts.length >= 3 ? parts.slice(0, 3).map((x) => x / 255) : [0, 0, 0]
+  return fallback
 }
 
 function readPalette() {
+  const s = getComputedStyle(document.documentElement)
   return {
-    cInk: cssRgb('--qz-ink', '#051F20'),
-    cDeep: cssRgb('--qz-deep', '#0B2B26'),
-    cMoss: cssRgb('--qz-moss', '#235347'),
-    cSage: cssRgb('--qz-sage', '#8EB69B'),
-    cGlow: cssRgb('--qz-glow-rgb', '142 240 210'),
+    cInk: readRgbVar(s, '--qz-ink-rgb', [5 / 255, 31 / 255, 32 / 255]),
+    cDeep: readRgbVar(s, '--qz-deep-rgb', [11 / 255, 43 / 255, 38 / 255]),
+    cMoss: readRgbVar(s, '--qz-moss-rgb', [35 / 255, 83 / 255, 71 / 255]),
+    cSage: readRgbVar(s, '--qz-sage-rgb', [142 / 255, 182 / 255, 155 / 255]),
+    cGlow: readRgbVar(s, '--qz-glow-rgb', [168 / 255, 224 / 255, 184 / 255]),
   }
-}
-
-function compile(gl, type, src) {
-  const sh = gl.createShader(type)
-  gl.shaderSource(sh, src)
-  gl.compileShader(sh)
-  if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
-    const log = gl.getShaderInfoLog(sh)
-    gl.deleteShader(sh)
-    throw new Error(log || 'shader compile failed')
-  }
-  return sh
 }
 
 export default function LiquidScene() {
   const canvasRef = useRef(null)
+  const moodRef = useRef(MOODS.home)
   const { pathname } = useLocation()
-  const targetMood = useRef(moodFor(pathname))
-  targetMood.current = moodFor(pathname)
-  const kick = useRef(null)
 
-  // تغيير القسم بيصحّي الحلقة (لو كانت نايمة في reduced-motion)
   useEffect(() => {
-    kick.current?.()
+    moodRef.current = moodFor(pathname)
   }, [pathname])
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return undefined
-    const gl = canvas.getContext('webgl2', { antialias: false, alpha: false, powerPreference: 'low-power' })
+
+    const gl = canvas.getContext('webgl2', {
+      alpha: false,
+      antialias: false,
+      depth: false,
+      stencil: false,
+      powerPreference: 'high-performance',
+    })
     if (!gl) {
       canvas.dataset.fallback = 'true'
       return undefined
     }
-    let prog
-    try {
-      prog = gl.createProgram()
-      gl.attachShader(prog, compile(gl, gl.VERTEX_SHADER, VERT))
-      gl.attachShader(prog, compile(gl, gl.FRAGMENT_SHADER, FRAG))
-      gl.linkProgram(prog)
-      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog) || 'link failed')
-    } catch (error) {
-      if (import.meta.env?.DEV) console.warn('LiquidScene fallback:', error)
-      canvas.dataset.fallback = 'true'
-      return undefined
+
+    const compile = (type, src) => {
+      const sh = gl.createShader(type)
+      gl.shaderSource(sh, src)
+      gl.compileShader(sh)
+      if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
+        gl.deleteShader(sh)
+        return null
+      }
+      return sh
     }
+    const vs = compile(gl.VERTEX_SHADER, VERT)
+    const fs = compile(gl.FRAGMENT_SHADER, FRAG)
+    if (!vs || !fs) return undefined
+
+    const prog = gl.createProgram()
+    gl.attachShader(prog, vs)
+    gl.attachShader(prog, fs)
+    gl.linkProgram(prog)
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return undefined
     gl.useProgram(prog)
+
     const buf = gl.createBuffer()
     gl.bindBuffer(gl.ARRAY_BUFFER, buf)
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW)
-    const loc = gl.getAttribLocation(prog, 'p')
-    gl.enableVertexAttribArray(loc)
-    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0)
-    const U = (n) => gl.getUniformLocation(prog, n)
-    const u = {
-      res: U('uRes'), time: U('uTime'), mouse: U('uMouse'), scroll: U('uScroll'),
-      rib: U('uRib'), warp: U('uWarp'), fold: U('uFold'), light: U('uLight'), glow: U('uGlow'),
-      cInk: U('cInk'), cDeep: U('cDeep'), cMoss: U('cMoss'), cSage: U('cSage'), cGlow: U('cGlow'),
-    }
+    const locP = gl.getAttribLocation(prog, 'p')
+    gl.enableVertexAttribArray(locP)
+    gl.vertexAttribPointer(locP, 2, gl.FLOAT, false, 0, 0)
 
-    const coarse = window.matchMedia('(pointer: coarse), (max-width: 760px)').matches
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    const saveData = Boolean(navigator.connection?.saveData)
-    const still = reduce || saveData
-    // الحقل ناعم، فدقة أقل من الشاشة مش باينة وبتوفر كتير
-    const scale = coarse ? 0.42 : 0.6
+    const U = Object.fromEntries(
+      ['uRes', 'uTime', 'uMouse', 'uScroll', 'uAura', 'uDepth', 'uLight', 'cInk', 'cDeep', 'cMoss', 'cSage', 'cGlow'].map(
+        (n) => [n, gl.getUniformLocation(prog, n)],
+      ),
+    )
+
+    let pal = readPalette()
+    const curPal = structuredClone(pal)
+    const mo = new MutationObserver(() => {
+      pal = readPalette()
+    })
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'style', 'class'] })
 
     const resize = () => {
-      const w = Math.max(1, Math.round(window.innerWidth * scale))
-      const h = Math.max(1, Math.round(window.innerHeight * scale))
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5)
+      const w = Math.max(1, Math.floor(window.innerWidth * dpr))
+      const h = Math.max(1, Math.floor(window.innerHeight * dpr))
       if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w
         canvas.height = h
@@ -231,120 +237,87 @@ export default function LiquidScene() {
       }
     }
     resize()
+    window.addEventListener('resize', resize, { passive: true })
 
-    // القيم الحالية بتنساب ناحية القيم المطلوبة (مزاج القسم + ألوان الثيم)
-    const cur = { ...targetMood.current, light: [...targetMood.current.light] }
-    let pal = readPalette()
-    let palTarget = pal
-    const mouse = [0.5, 0.5]
-    const mouseTarget = [0.5, 0.5]
-    let scrollY = window.scrollY
-
+    const mouse = { x: 0.5, y: 0.5, tx: 0.5, ty: 0.5 }
     const onMove = (e) => {
-      mouseTarget[0] = e.clientX / window.innerWidth
-      mouseTarget[1] = 1 - e.clientY / window.innerHeight
-      wake()
-    }
-    const onScroll = () => {
-      scrollY = window.scrollY
-      wake()
+      mouse.tx = e.clientX / Math.max(window.innerWidth, 1)
+      mouse.ty = 1.0 - e.clientY / Math.max(window.innerHeight, 1)
     }
     window.addEventListener('pointermove', onMove, { passive: true })
+
+    let scroll = 0
+    let targetScroll = 0
+    const onScroll = () => {
+      targetScroll = window.scrollY / Math.max(window.innerHeight, 1)
+    }
     window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', resize)
-    const themeWatch = new MutationObserver(() => {
-      palTarget = readPalette()
-      wake()
-    })
-    themeWatch.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
 
-    let raf = 0
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    const cur = { ...moodRef.current, light: [...moodRef.current.light] }
+    let t = 10
     let last = performance.now()
-    let clock = 8 // بداية من نقطة فيها حركة حلوة بدل الصفر
-    let running = false
-    const approach = (a, b, k) => a + (b - a) * k
+    let raf = 0
 
-    const draw = () => {
-      const m = targetMood.current
-      const k = 0.045
-      cur.rib = approach(cur.rib, m.rib, k)
-      cur.speed = approach(cur.speed, m.speed, k)
-      cur.warp = approach(cur.warp, m.warp, k)
-      cur.fold = approach(cur.fold, m.fold, k)
-      cur.glow = approach(cur.glow, m.glow, k)
-      cur.light[0] = approach(cur.light[0], m.light[0], k)
-      cur.light[1] = approach(cur.light[1], m.light[1], k)
-      mouse[0] = approach(mouse[0], mouseTarget[0], 0.05)
-      mouse[1] = approach(mouse[1], mouseTarget[1], 0.05)
-      const next = {}
-      for (const key of Object.keys(pal)) next[key] = pal[key].map((v, i) => approach(v, palTarget[key][i], 0.06))
-      pal = next
-
-      gl.uniform2f(u.res, canvas.width, canvas.height)
-      gl.uniform1f(u.time, clock)
-      gl.uniform2f(u.mouse, mouse[0], mouse[1])
-      gl.uniform1f(u.scroll, scrollY)
-      gl.uniform1f(u.rib, cur.rib)
-      gl.uniform1f(u.warp, cur.warp)
-      gl.uniform1f(u.fold, cur.fold)
-      gl.uniform2f(u.light, cur.light[0], cur.light[1])
-      gl.uniform1f(u.glow, cur.glow)
-      for (const key of Object.keys(pal)) gl.uniform3fv(u[key], pal[key])
-      gl.drawArrays(gl.TRIANGLES, 0, 3)
-    }
-
-    // في الوضع الثابت: بنرسم لحد ما الانتقال (لون/مزاج) يخلص وبعدين ننام
-    let settleFrames = 0
     const frame = (now) => {
-      const dt = Math.min(0.05, (now - last) / 1000)
+      const dt = Math.min((now - last) / 1000, 0.05)
       last = now
-      if (!still) clock += dt * cur.speed
-      draw()
-      if (still) {
-        settleFrames += 1
-        if (settleFrames > 90) {
-          running = false
-          return
-        }
+      const target = moodRef.current
+      const k = 1 - Math.exp(-dt * 2.4)
+
+      cur.speed += (target.speed - cur.speed) * k
+      cur.aura += (target.aura - cur.aura) * k
+      cur.depth += (target.depth - cur.depth) * k
+      cur.light[0] += (target.light[0] - cur.light[0]) * k
+      cur.light[1] += (target.light[1] - cur.light[1]) * k
+
+      for (const key of ['cInk', 'cDeep', 'cMoss', 'cSage', 'cGlow']) {
+        curPal[key][0] += (pal[key][0] - curPal[key][0]) * k
+        curPal[key][1] += (pal[key][1] - curPal[key][1]) * k
+        curPal[key][2] += (pal[key][2] - curPal[key][2]) * k
       }
-      raf = requestAnimationFrame(frame)
+
+      mouse.x += (mouse.tx - mouse.x) * 0.045
+      mouse.y += (mouse.ty - mouse.y) * 0.045
+      scroll += (targetScroll - scroll) * 0.06
+      if (!reduce) t += dt * cur.speed
+
+      gl.uniform2f(U.uRes, canvas.width, canvas.height)
+      gl.uniform1f(U.uTime, t)
+      gl.uniform2f(U.uMouse, mouse.x, mouse.y)
+      gl.uniform1f(U.uScroll, scroll)
+      gl.uniform1f(U.uAura, cur.aura)
+      gl.uniform1f(U.uDepth, cur.depth)
+      gl.uniform2f(U.uLight, cur.light[0], cur.light[1])
+      gl.uniform3fv(U.cInk, curPal.cInk)
+      gl.uniform3fv(U.cDeep, curPal.cDeep)
+      gl.uniform3fv(U.cMoss, curPal.cMoss)
+      gl.uniform3fv(U.cSage, curPal.cSage)
+      gl.uniform3fv(U.cGlow, curPal.cGlow)
+
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
+      if (!reduce) raf = requestAnimationFrame(frame)
     }
-    function wake() {
-      if (still) settleFrames = 0
-      if (running || document.hidden) return
-      running = true
-      last = performance.now()
-      raf = requestAnimationFrame(frame)
+
+    const onVis = () => {
+      if (document.hidden) cancelAnimationFrame(raf)
+      else if (!reduce) {
+        last = performance.now()
+        raf = requestAnimationFrame(frame)
+      }
     }
-    kick.current = wake
-    const onVisibility = () => {
-      if (document.hidden) {
-        cancelAnimationFrame(raf)
-        running = false
-      } else wake()
-    }
-    document.addEventListener('visibilitychange', onVisibility)
-    wake()
-    canvas.dataset.ready = 'true'
+    document.addEventListener('visibilitychange', onVis)
+    raf = requestAnimationFrame(frame)
 
     return () => {
       cancelAnimationFrame(raf)
-      kick.current = null
+      mo.disconnect()
+      window.removeEventListener('resize', resize)
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('scroll', onScroll)
-      window.removeEventListener('resize', resize)
-      document.removeEventListener('visibilitychange', onVisibility)
-      themeWatch.disconnect()
-      gl.deleteBuffer(buf)
-      gl.deleteProgram(prog)
+      document.removeEventListener('visibilitychange', onVis)
     }
   }, [])
 
-  return (
-    <div className="qz-scene" aria-hidden="true">
-      <canvas ref={canvasRef} className="qz-scene-canvas" />
-      <div className="qz-scene-fallback" />
-      <div className="qz-scene-veil" />
-    </div>
-  )
+  return <canvas ref={canvasRef} className="qz-scene" aria-hidden="true" />
 }
