@@ -1,16 +1,13 @@
-# Deploy the QassimChannel site to GitHub Pages
+# نشر الموقع على GitHub Pages مع كل push على main
+# دومين خاص (مثلاً .me أو .tech مجاني من GitHub Student Pack):
+#   حط الدومين في متغير الريبو PAGES_DOMAIN (Settings › Secrets and variables › Actions › Variables)
+#   فالبيلد يبقى على / بدل /QassimChannel/ ويتكتب ملف CNAME لوحده.
 name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
-    inputs:
-      merge_about:
-        description: Merge the requested About update before deploying
-        required: false
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -22,24 +19,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  merge_about:
-    if: github.event_name == 'workflow_dispatch' && inputs.merge_about == true
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-    steps:
-      - name: Merge the reviewed About update
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          gh pr ready 14 --repo "${GITHUB_REPOSITORY}"
-          gh pr merge 14 --squash --delete-branch --repo "${GITHUB_REPOSITORY}"
-
   build:
-    if: github.event_name == 'push' || inputs.merge_about != true
     runs-on: ubuntu-latest
+    env:
+      PAGES_DOMAIN: ${{ vars.PAGES_DOMAIN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -47,17 +30,20 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run build -- --base=/QassimChannel/
+      - name: Build
+        run: |
+          if [ -n "$PAGES_DOMAIN" ]; then BASE=/; else BASE=/QassimChannel/; fi
+          npm run build -- --base="$BASE"
+          cp dist/index.html dist/404.html
+          if [ -n "$PAGES_DOMAIN" ]; then echo "$PAGES_DOMAIN" > dist/CNAME; fi
         env:
           VITE_QZ_AI_ENDPOINT: ${{ vars.QZ_AI_ENDPOINT }}
-      - run: cp dist/index.html dist/404.html
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
   deploy:
-    if: github.event_name == 'push' || inputs.merge_about != true
     needs: build
     runs-on: ubuntu-latest
     environment:

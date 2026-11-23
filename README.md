@@ -6,11 +6,16 @@
 
 <p align="center" dir="rtl">
   <strong>منصة أحمد قاسم: فيديوهات، أحكام سينما ومسلسلات، أرشيف حكايات، ومقالات.</strong><br />
-  واجهة عربية RTL بالكامل، نافبار زجاج سائل، ثلاث ثيمات، وقاسم افتراضي 3D بيرد عليك.
+  واجهة عربية RTL بالكامل، نافبار زجاج سائل، ثلاث ثيمات داكنة، وقاسم افتراضي 3D بيرد عليك.
 </p>
 
 <p align="center">
   <a href="https://ahmedqassimtv-commits.github.io/QassimChannel/"><img src=".github/badges/live-demo.svg" alt="الموقع على GitHub Pages" height="32" /></a>
+</p>
+
+<p align="center" dir="rtl">
+  🔗 <strong>الموقع:</strong> <a href="https://ahmedqassimtv-commits.github.io/QassimChannel/">ahmedqassimtv-commits.github.io/QassimChannel</a>
+  &nbsp;·&nbsp; ✍️ <strong>صفحة الكتابة:</strong> <a href="https://ahmedqassimtv-commits.github.io/QassimChannel/admin/">/admin</a>
 </p>
 
 <p align="center">
@@ -34,13 +39,15 @@
 - [بنية المشروع](#بنية-المشروع)
 - [التشغيل](#التشغيل)
 - [النشر](#النشر)
+- [مميزات GitHub للطلاب](#مميزات-github-للطلاب)
 - [ملاحظات](#ملاحظات)
 
 ## الموقع في سطور
 
 - **التصميم:** تصميم «قاسمز بورتال» الأصلي (زجاج سائل فوق خلفية فراكتال بتتغير مع كل قسم).
 - **النافبار:** كبسولة زجاج سائل (نفس مادة macOS 26: أبيض 10% + بلور 26 + حافة منورة) فيها انكسار حقيقي على Chromium، وبلور، ولمعة ناعمة من فوق، وضوء بيتبع الماوس. التصغير مع السكرول وفتح البحث بيتحركوا بـFLIP، يعني transform بس ونابض واحد، فمفيش تقطيع.
-- **البحث:** جوّه النافبار (Ctrl/⌘ K)، والنتايج بتنزل تحته.
+- **البحث:** جوّه النافبار، والنتايج بتنزل تحته.
+- **الكتابة:** صفحة `/admin` (Sveltia CMS) بتكتب المقالات وتعملها commit على `main`، والنشر بيحصل لوحده.
 - **الحركة:** Framer Motion وLenis للتمرير الناعم، ومع `prefers-reduced-motion` الحركة بتقل.
 - **الصوت:** مفيش أصوات حالياً. الدوال موجودة في `src/utils/glassSound.js` بس مابتعملش حاجة، لحد ما الأصوات تتعمل من جديد.
 
@@ -93,8 +100,8 @@
 src/
 ├─ App.jsx                 المسارات + Lenis + الخلفية
 ├─ components/
-│  ├─ layout/              Navbar (الكبسولة) · Footer · CommandSearch
-│  ├─ glass/               الزجاج: GlassBackground · GlassCard · LiquidGlassFilters (#qz-refract)
+│  ├─ layout/              Navbar (الكبسولة) · Footer
+│  ├─ glass/               الزجاج: GlassBackground · GlassCard · LiquidGlassFilters (#qz-refract) · NavGlassOverlay (WebGL)
 │  ├─ ai/                  NavHost · LogoIntro · AiHost · Avatar3D · AnimeAvatar · brain · speech
 │  ├─ cards/ · ui/         الكروت والمكونات الصغيرة (ThemeSwitch, PlanSwitch, ...)
 │  └─ brand/BrandLogo.jsx  شعار قاسمز (LOGO_PATH)
@@ -102,14 +109,20 @@ src/
 ├─ data/                   الفيديوهات، المراجعات، المقالات، الحكايات، إعدادات يوتيوب
 ├─ content/articles/       المقالات بصيغة Markdown
 └─ utils/ · hooks/ · lib/  الثيم، الزجاج، المسارات (assetUrl)
+src/vendor/webgl-liquid-glass/  زجاج النافبار السائل (MIT © Clay Harmon)
 public/
 ├─ fonts/ · fractal/ · images/
+├─ admin/                  صفحة الكتابة (Sveltia CMS)
 ├─ avatar/                 qassim-3d.glb + صور الأنمي
 └─ vendor/three-gltf.js    three.js + GLTFLoader
 workers/qz-ai/             Cloudflare Worker لردود قاسم الافتراضي
 ```
 
 ## التشغيل
+
+أسهل طريقة: من صفحة الريبو اختار **Code › Codespaces › Create codespace** — البيئة بتتجهز لوحدها (`.devcontainer`) والموقع بيفتح في معاينة.
+
+أو على جهازك:
 
 ```bash
 npm ci
@@ -123,15 +136,30 @@ npm run preview
 ## النشر
 
 - **`main`:** `deploy-pages.yml` بيبني بـ`--base=/QassimChannel/` وبينشر على GitHub Pages.
+- **دومين خاص:** حط الدومين في متغير الريبو `PAGES_DOMAIN` والبيلد هيبقى على `/` ويكتب `CNAME` لوحده (وظبط الدومين من Settings › Pages).
 - **أي فرع تاني:** `preview-build.yml` بيبني ويحط النسخة في فرع `preview-dist` للمراجعة.
 - **رابط الـWorker:** متغير الريبو `QZ_AI_ENDPOINT` بيدخل في البيلد على إنه `VITE_QZ_AI_ENDPOINT`.
 - **المسارات تحت `/QassimChannel/`:** علشان الموقع شغال تحت المسار ده، الراوتر عليه `basename`، وكل صور `public` بتتنادى بـ`import.meta.env.BASE_URL` أو بـ`assetUrl()`.
+
+## مميزات GitHub للطلاب
+
+الحساب عليه GitHub Student Developer Pack، والمشروع متظبط يستفيد منه:
+
+| الميزة | في المشروع |
+|---|---|
+| **Codespaces** (ساعات مجانية كل شهر) | `.devcontainer/` — بيئة Node 22 جاهزة بـ`npm ci` وPrettier وTailwind وCopilot |
+| **GitHub Copilot** (مجاني للطلاب) | `.github/copilot-instructions.md` بيعرّف Copilot بقواعد المشروع (RTL، الثيمات، assetUrl…) |
+| **Dependabot** | `.github/dependabot.yml` — تحديثات مجمّعة كل أسبوع للـnpm وكل شهر للـActions |
+| **CodeQL** | `.github/workflows/codeql.yml` — فحص أمان على كل PR وكل أسبوع |
+| **GitHub Pages + Actions** | النشر التلقائي ونسخة معاينة لكل فرع (`preview-dist`) |
+| **دومين مجاني** (.me من Namecheap أو .tech من get.tech) | بعد ما تاخده من [education.github.com/pack](https://education.github.com/pack) حطه في `PAGES_DOMAIN` |
 
 ## ملاحظات
 
 - **العربي:** ممنوع تقسيم النص العربي لحروف لأنه بيكسر الاتصال، والتقسيم بالكلمات بس. وكمان مفيش `letter-spacing` على العربي.
 - **الرخص:**
   - three.js (MIT)
+  - webgl-liquid-glass (MIT © Clay Harmon)
   - الصور من Unsplash حسب رخصتها
   - باقي المشروع [MIT](./LICENSE)
 
