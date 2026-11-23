@@ -13,7 +13,6 @@ import { ArrowDown, X } from 'lucide-react'
 import { stories } from '../data/stories.js'
 import { assetUrl } from '../utils/assets.js'
 import ClothRibbon from '../components/stories/ClothRibbon.jsx'
-import NileWater from '../components/stories/NileWater.jsx'
 
 /* ══ قسم الحكايات — على إيقاع Structured (structured.money) ══════════════
    نفس تسلسل وتفاصيل فيديو المرجع، بمحتوى أرشيف الحكايات:
@@ -30,14 +29,20 @@ import NileWater from '../components/stories/NileWater.jsx'
    اللوحات أصلية (متولّدة) بأسلوب زيتي كلاسيكي — مش منسوخة من المرجع. */
 
 const IMG = (name) => assetUrl(`/images/stories/structured/${name}`)
+// اللوحة بدقة 4K (3840px) + نسخ أصغر للشاشات الأقل
 const PAINTING = {
-  src: IMG('nile-painting-1600.webp'),
-  srcSet: `${IMG('nile-painting-900.webp')} 900w, ${IMG('nile-painting-1600.webp')} 1600w`,
+  src: IMG('nile-painting-2400.webp'),
+  srcSet: `${IMG('nile-painting-1280.webp')} 1280w, ${IMG('nile-painting-2400.webp')} 2400w, ${IMG('nile-painting-3840.webp')} 3840w`,
 }
 const TREE_L = { src: IMG('tree-left-800.webp'), srcSet: `${IMG('tree-left-420.webp')} 420w, ${IMG('tree-left-800.webp')} 800w` }
 const TREE_R = { src: IMG('tree-right-800.webp'), srcSet: `${IMG('tree-right-420.webp')} 420w, ${IMG('tree-right-800.webp')} 800w` }
 
 const EASE = [0.22, 1, 0.36, 1]
+// [x%, y%, delay] — نقط لمعان على سطح المية
+const GLINTS = [
+  [12, 47.5, 0], [24, 50, 1.2], [37, 48.6, 2.1], [55, 46.8, 0.6], [57, 52.5, 1.8], [70, 49.4, 2.7],
+  [83, 51, 0.9], [46, 55.5, 2.4], [30, 56.4, 1.5], [64, 57, 0.3], [18, 61.4, 2], [40, 62.5, 0.8],
+]
 const years = stories.map((s) => Number(s.year)).filter(Boolean)
 const SPAN = years.length ? `${Math.min(...years)}–${Math.max(...years)}` : ''
 
@@ -48,19 +53,19 @@ const VIGNETTES = [
   {
     title: 'ذاكرة المكان',
     img: IMG('vignette-ibis.webp'),
-    alt: 'لوحة زيتية لطائر أبو منجل يمشي في المرج',
+    alt: 'تفصيلة من اللوحة: طائر أبو منجل بين البردي وزهور اللوتس',
     more: 'المدن بتتغير، لكن الصورة بتحفظ إيقاعها: شارع قبل الزحمة، رصيف ميناء، ومقهى ماكانش لسه عرف السرعة.',
   },
   {
     title: 'مخطوطة الزمن',
     img: IMG('vignette-amphora.webp'),
-    alt: 'لوحة زيتية لجرّة فخار مصرية منقوشة على العشب',
+    alt: 'تفصيلة من اللوحة: تمثال فرعوني بغطاء النمس على ضفة النيل',
     more: 'كل حكاية هنا صورة ونص ميداني معاها، يتقروا مع بعض بتأنٍّ، زي البطاقات اللي جنب اللوحات في المتاحف.',
   },
   {
     title: 'حكايات حيّة',
     img: IMG('vignette-butterflies.webp'),
-    alt: 'لوحة زيتية لفراشتين على زهور برية',
+    alt: 'تفصيلة من اللوحة: معبد كشك حجري بين النخيل على النيل',
     more: 'لحظة واحدة بتلقطها العدسة، وبعد عقود بتبقى شهادة حيّة — من ضباب الشتا لأشرعة الفلوكة في النيل.',
   },
 ]
@@ -191,21 +196,22 @@ function HeroAndJourney() {
               src={PAINTING.src}
               srcSet={PAINTING.srcSet}
               sizes="(max-width: 760px) 120svh, 100vw"
-              alt="لوحة زيتية طويلة: أهرامات الجيزة بين السحاب، والنيل بفلوكته ونخيله، ومعابد بأعمدة البردي، وشلال، وتمثال كاتب فرعوني بين اللوتس والبردي"
+              alt="لوحة زيتية طويلة: أهرامات الجيزة تحت السحاب، والنيل بفلوكته ونخيله ومعابده، وتمثال فرعوني جالس بين البردي واللوتس وأبو منجل"
               fetchPriority="high"
               data-no-tint="true"
             />
-            <NileWater imgRef={paintRef} maskSrc={IMG('nile-water-mask.png')} range={[0.39, 0.985]} className="qz-sx-water" />
-
+            {/* لمعة الشمس على النيل */}
+            <div className="qz-sx-glints" aria-hidden="true">
+              {GLINTS.map(([x, y, d], i) => (
+                <i key={i} style={{ left: `${x}%`, top: `${y}%`, animationDelay: `${d}s` }} />
+              ))}
+            </div>
             <div className="qz-sx-sprite-lane is-ibis" aria-hidden="true">
               <img className="qz-sx-ibis" src={IMG('ibis.webp')} alt="" data-no-tint="true" />
             </div>
-            <div className="qz-sx-sprite-lane is-felucca" aria-hidden="true">
-              <img className="qz-sx-felucca" src={IMG('felucca.webp')} alt="" data-no-tint="true" />
-            </div>
-            <Butterfly style={{ left: '17%', top: '83%' }} path="a" />
-            <Butterfly style={{ left: '74%', top: '89%' }} path="b" delay={-3.5} />
-            <Butterfly style={{ left: '30%', top: '64%' }} path="c" delay={-6} />
+            <Butterfly style={{ left: '64%', top: '79%' }} path="a" />
+            <Butterfly style={{ left: '86%', top: '88%' }} path="b" delay={-3.5} />
+            <Butterfly style={{ left: '22%', top: '71%' }} path="c" delay={-6} />
           </div>
         </div>
 
