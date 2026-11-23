@@ -80,17 +80,19 @@
   color: var(--sx-ink);
 }
 
-/* ══ ١. الافتتاحية ═══════════════════════════════════════════════════ */
+/* ══ ١. الافتتاحية ═══════════════════════════════════════════════════
+   الكلمة تحت (z أقل)، واللوحة طالعة فوقها بالسكرول فتغطيها وتختفي،
+   والشجر طبقة أمامية طالعة من تحت قدّام الكلمة. */
 .qz-sx-hero {
   position: relative;
-  height: 88svh;
-  min-height: 560px;
+  height: 100svh;
+  min-height: 600px;
   background: var(--sx-canvas);
 }
 .qz-sx-hero-cluster {
   position: relative;
-  z-index: 4;
-  padding-top: max(15svh, 120px);
+  z-index: 1;
+  padding-top: max(15svh, 118px);
   text-align: center;
 }
 .qz-sx-hero-title {
@@ -117,47 +119,239 @@
 .qz-sx-hero-cluster .qz-sx-hexbtn {
   margin-top: 26px;
 }
-/* الكلمة الضخمة: بتعدّي حافة الافتتاحية لتحت فتقع فوق سما اللوحة وتحت الشجر */
 .qz-sx-wordmark {
   position: absolute;
-  z-index: 2;
+  z-index: 0;
   left: 50%;
-  bottom: calc(-0.36 * 31vw);
+  bottom: calc(0.02 * 100svh - 0.06 * 31vw);
   translate: -50% 0;
   width: max-content;
   font-family: var(--sx-serif);
   font-weight: 500;
   font-size: 31vw;
   line-height: 0.84;
+  letter-spacing: -0.009em;
   color: var(--sx-ink);
   white-space: nowrap;
   pointer-events: none;
   user-select: none;
+  will-change: transform;
 }
 
 /* ══ ٢. رحلة اللوحة ═══════════════════════════════════════════════════ */
 .qz-sx-journey {
+  --tw: clamp(300px, 46vw, 820px);
   position: relative;
-  background: #b9c9c2;
+  z-index: 2;
+  background: #9fb8b4;
 }
-.qz-sx-painting {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  height: max(177.78vw, 230svh);
-  object-fit: cover;
-  object-position: 50% 0;
-}
-.qz-sx-foliage {
+.qz-sx-trees {
   position: absolute;
-  z-index: 3;
-  inset: 0 0 auto 0;
-  width: 100%;
-  height: calc(max(177.78vw, 230svh) * 0.24);
-  object-fit: cover;
-  object-position: 50% 0;
+  z-index: 4;
+  inset: calc(var(--tw) * -0.3) 0 auto 0;
+  height: calc(var(--tw) * 3);
+  overflow: visible;
+  overflow-x: clip;
   pointer-events: none;
 }
+.qz-sx-tree {
+  position: absolute;
+  top: 0;
+  width: var(--tw);
+  height: auto;
+  will-change: transform;
+}
+.qz-sx-tree.is-l {
+  left: 0;
+  transform-origin: 0% 6%;
+}
+.qz-sx-tree.is-r {
+  right: 0;
+  transform-origin: 100% 6%;
+}
+.qz-sx-frame {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+.qz-sx-pbox {
+  position: relative;
+  left: 50%;
+  translate: -50% 0;
+  width: max(100%, 112svh);
+  aspect-ratio: 1600 / 2867;
+}
+.qz-sx-painting {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.qz-sx-water {
+  position: absolute;
+  left: 0;
+  top: 39%;
+  width: 100%;
+  height: 59.5%;
+  pointer-events: none;
+}
+
+/* كائنات حيّة جوه اللوحة */
+.qz-sx-sprite-lane {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.qz-sx-sprite-lane.is-ibis {
+  animation: sx-ibis-lane 34s linear infinite;
+}
+.qz-sx-ibis {
+  position: absolute;
+  left: 0;
+  top: 9.5%;
+  width: 6.5%;
+  animation: sx-ibis-flap 1.1s ease-in-out infinite alternate;
+  transform-origin: 50% 45%;
+}
+@keyframes sx-ibis-lane {
+  0% {
+    transform: translate3d(-10%, 2%, 0);
+  }
+  50% {
+    transform: translate3d(48%, 0.6%, 0);
+  }
+  100% {
+    transform: translate3d(108%, 1.8%, 0);
+  }
+}
+@keyframes sx-ibis-flap {
+  from {
+    transform: scaleY(1) translateY(0);
+  }
+  to {
+    transform: scaleY(0.78) translateY(4%);
+  }
+}
+.qz-sx-sprite-lane.is-felucca {
+  animation: sx-felucca-lane 52s linear infinite;
+}
+.qz-sx-felucca {
+  position: absolute;
+  left: 0;
+  top: 51.3%;
+  width: 5.2%;
+  animation: sx-bob 4.2s ease-in-out infinite alternate;
+  transform-origin: 50% 90%;
+}
+@keyframes sx-felucca-lane {
+  0% {
+    transform: translate3d(43%, 0, 0);
+    opacity: 0;
+  }
+  8%,
+  88% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(63%, 0.25%, 0);
+    opacity: 0;
+  }
+}
+@keyframes sx-bob {
+  from {
+    transform: rotate(-1.4deg) translateY(0);
+  }
+  to {
+    transform: rotate(1.2deg) translateY(-4%);
+  }
+}
+.qz-sx-bfly {
+  position: absolute;
+  width: 3.6%;
+  pointer-events: none;
+}
+.qz-sx-bfly-path {
+  animation: sx-bfly-a 11s ease-in-out infinite alternate;
+}
+.qz-sx-bfly-path.is-b {
+  animation-name: sx-bfly-b;
+  animation-duration: 13s;
+}
+.qz-sx-bfly-path.is-c {
+  animation-name: sx-bfly-c;
+  animation-duration: 15s;
+}
+.qz-sx-bfly-body {
+  display: flex;
+  perspective: 240px;
+  transform: rotate(-12deg);
+}
+.qz-sx-bfly-w {
+  width: 50%;
+  height: auto;
+  animation: sx-wing-l 0.32s ease-in-out infinite alternate;
+  transform-origin: 100% 50%;
+}
+.qz-sx-bfly-w.is-r {
+  animation-name: sx-wing-r;
+  transform-origin: 0% 50%;
+}
+@keyframes sx-wing-l {
+  from {
+    transform: rotateY(-8deg);
+  }
+  to {
+    transform: rotateY(-72deg);
+  }
+}
+@keyframes sx-wing-r {
+  from {
+    transform: rotateY(8deg);
+  }
+  to {
+    transform: rotateY(72deg);
+  }
+}
+@keyframes sx-bfly-a {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  30% {
+    transform: translate(160%, -120%) rotate(14deg);
+  }
+  60% {
+    transform: translate(60%, -260%) rotate(-10deg);
+  }
+  100% {
+    transform: translate(260%, -60%) rotate(8deg);
+  }
+}
+@keyframes sx-bfly-b {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  35% {
+    transform: translate(-180%, -140%) rotate(-16deg);
+  }
+  70% {
+    transform: translate(-60%, -300%) rotate(10deg);
+  }
+  100% {
+    transform: translate(-260%, -90%) rotate(-6deg);
+  }
+}
+@keyframes sx-bfly-c {
+  0% {
+    transform: translate(0, 0) rotate(0deg) scale(0.8);
+  }
+  50% {
+    transform: translate(220%, -160%) rotate(12deg) scale(0.8);
+  }
+  100% {
+    transform: translate(420%, 40%) rotate(-8deg) scale(0.8);
+  }
+}
+
 .qz-sx-card-track {
   position: absolute;
   z-index: 5;
@@ -319,8 +513,9 @@
   display: block;
   font-family: var(--sx-serif);
   font-weight: 400;
-  font-size: clamp(120px, 15vw, 240px);
-  line-height: 1.02;
+  font-size: clamp(96px, 15vw, 240px);
+  line-height: 1.15;
+  padding-block: 0.04em;
   color: var(--sx-glyph);
   will-change: transform;
 }
@@ -489,9 +684,22 @@
 .qz-sx-envelope-flap {
   position: absolute;
   inset: 0 0 auto 0;
-  width: 100%;
   height: 34%;
   pointer-events: none;
+}
+.qz-sx-envelope-flap svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.qz-sx-envelope-flap i {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  margin: -3.5px 0 0 -3.5px;
+  border: 1px solid #9a9993;
+  background: var(--sx-ink);
+  rotate: 45deg;
 }
 .qz-sx-envelope-flap path {
   fill: none;
@@ -605,7 +813,21 @@
 /* ══ الموبايل ═════════════════════════════════════════════════════════ */
 @media (max-width: 760px) {
   .qz-sx-hero {
-    height: 78svh;
+    height: 76svh;
+    min-height: 520px;
+  }
+  .qz-sx-journey {
+    --tw: 58vw;
+  }
+  .qz-sx-ibis {
+    width: 9%;
+  }
+  .qz-sx-felucca {
+    width: 7%;
+    top: 50.5%;
+  }
+  .qz-sx-bfly {
+    width: 6%;
   }
   .qz-sx-stats {
     gap: 18px;
@@ -639,5 +861,15 @@
   .qz-sx *,
   .qz-sx *::before {
     transition-duration: 1ms !important;
+  }
+  .qz-sx-sprite-lane,
+  .qz-sx-ibis,
+  .qz-sx-felucca,
+  .qz-sx-bfly-path,
+  .qz-sx-bfly-w {
+    animation: none !important;
+  }
+  .qz-sx-sprite-lane.is-felucca {
+    transform: translateX(50%);
   }
 }
