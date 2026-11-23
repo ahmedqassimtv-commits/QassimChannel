@@ -6,7 +6,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300..900&display=swap" rel="stylesheet" />
-    <meta name="theme-color" content="#051F20" />
+    <meta name="theme-color" content="#070A1F" />
     <meta name="color-scheme" content="dark" />
     <meta name="description" content="منصة قاسم للأفلام والوثائقيات والمراجعات والمقالات." />
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
@@ -30,18 +30,22 @@
 
     <!-- تطبيق الثيم المحفوظ قبل تحميل React (مفيش وميض) -->
     <script>
-      // الثيمات الثلاثة فقط: green (أخضر) و red (أحمر) و blue (لبني)
-      // أي قيمة أخرى (ومنها emerald/sand القديمتان) تُعاد إلى الأخضر الافتراضي
-      var THEME_COLORS = { green: '#051F20', red: '#1A0A07', blue: '#EBE2CC' }
-      document.documentElement.dataset.theme = 'green'
+      // الثيمات: night (ليلي — الافتراضي، خلفية macOS الداكنة) و green و red و blue (لبني فاتح)
+      var THEME_COLORS = { night: '#070A1F', green: '#051F20', red: '#1A0A07', blue: '#EBE2CC' }
+      document.documentElement.dataset.theme = 'night'
       try {
+        // نقلة التصميم الجديد: كل الزوار بيبدأوا مرة واحدة على الليلي
+        if (localStorage.getItem('qassimz:theme-v2') !== '1') {
+          localStorage.setItem('qassimz:theme', 'night')
+          localStorage.setItem('qassimz:theme-v2', '1')
+        }
         var t = localStorage.getItem('qassimz:theme')
-        if (t === 'green' || t === 'red' || t === 'blue') {
+        if (t === 'night' || t === 'green' || t === 'red' || t === 'blue') {
           document.documentElement.dataset.theme = t
         }
         var themeNow = document.documentElement.dataset.theme
         document.querySelector('meta[name="theme-color"]').setAttribute('content', THEME_COLORS[themeNow])
-        // الثيم اللبني فاتح، والثيمان الآخران داكنان
+        // الثيم اللبني فاتح، والباقي داكن
         document.querySelector('meta[name="color-scheme"]').setAttribute('content', themeNow === 'blue' ? 'light' : 'dark')
       } catch (e) {}
     </script>

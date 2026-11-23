@@ -1,10 +1,10 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import Lenis from 'lenis'
-import GlassBackground from './components/glass/GlassBackground.jsx'
-import Navbar from './components/layout/Navbar.jsx'
+import MacWallpaper from './components/mac/MacWallpaper.jsx'
+import MenuBar from './components/mac/MenuBar.jsx'
+import Dock from './components/mac/Dock.jsx'
 import Footer from './components/layout/Footer.jsx'
-import BackToTop from './components/ui/BackToTop.jsx'
 import LiquidGlassFilters from './components/glass/LiquidGlassFilters.jsx'
 import { playGlassTap } from './utils/glassSound.js'
 
@@ -126,13 +126,13 @@ export default function App() {
       <ScrollToTop lenisRef={lenisRef} />
       <div className="relative min-h-screen overflow-x-clip bg-[color:var(--qz-ink)] text-[color:var(--qz-mint)]">
         <LiquidGlassFilters />
-        <GlassBackground />
-        <Navbar />
-        <main className="relative z-10 mx-auto min-h-[75vh] w-full max-w-7xl px-5 pb-20 pt-32 sm:px-8">
+        <MacWallpaper />
+        <MenuBar />
+        <main className="relative z-10 mx-auto min-h-[75vh] w-full max-w-7xl px-5 pb-28 pt-24 sm:px-8 sm:pt-28">
           <AppRoutes />
         </main>
         <Footer />
-        <BackToTop lenisRef={lenisRef} />
+        <Dock />
       </div>
     </BrowserRouter>
   )

@@ -1,15 +1,17 @@
 import { useSyncExternalStore } from 'react'
 
 /*
- * الثيمات الثلاثة:
+ * الثيمات:
+ * - 'night' → الليلي: خلفية macOS الداكنة (نيلي ⇠ بنفسجي) — الافتراضي
  * - 'green' → الأخضر الزمردي (الأصلي)
  * - 'red'   → الجمري: تدريج أحمر ⇠ أصفر
  * - 'blue'  → اللبني: الثيم الفاتح (خلفية فاتحة ونص داكن)
  */
 
-export const THEMES = ['green', 'red', 'blue']
+export const THEMES = ['night', 'green', 'red', 'blue']
 const STORAGE_KEY = 'qassimz:theme'
 const META_COLORS = {
+  night: '#070A1F',
   green: '#051F20',
   red: '#1A0A07',
   blue: '#EBE2CC',
@@ -30,8 +32,8 @@ function readTheme() {
   } catch {
     /* وضع التصفح الخاص */
   }
-  document.documentElement.dataset.theme = 'green'
-  return 'green'
+  document.documentElement.dataset.theme = 'night'
+  return 'night'
 }
 
 let theme = readTheme()
@@ -67,5 +69,5 @@ export function subscribeTheme(fn) {
 }
 
 export function useTheme() {
-  return useSyncExternalStore(subscribeTheme, getTheme, () => 'green')
+  return useSyncExternalStore(subscribeTheme, getTheme, () => 'night')
 }

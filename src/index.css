@@ -358,6 +358,26 @@ article, .font-text {
   --qz-grad: linear-gradient(120deg, var(--qz-mint), var(--qz-sage));
 }
 
+/* الليلي — ألوان خلفية macOS Tahoe الداكنة (نيلي ⇠ بنفسجي) */
+html[data-theme='night'] {
+  --qz-ink: #070A1F;    --qz-ink-rgb: 7 10 31;
+  --qz-deep: #0D1440;   --qz-deep-rgb: 13 20 64;
+  --qz-forest: #1A2370; --qz-forest-rgb: 26 35 112;
+  --qz-moss: #3340B8;   --qz-moss-rgb: 51 64 184;
+  --qz-sage: #9AA6F2;   --qz-sage-rgb: 154 166 242;
+  --qz-mint: #E6E9FF;   --qz-mint-rgb: 230 233 255;
+  --qz-x1: #2A3394; --qz-x2: #232B80; --qz-x3: #1A2166; --qz-x4: #141A52;
+  --qz-x5: #0F1542; --qz-x6: #04060F; --qz-x7: #F2F3FF;
+  --qz-glow-rgb: 132 150 255;
+  --qz-grad: linear-gradient(120deg, #E6E9FF 0%, #B9C1FF 45%, #9AA6F2 75%, #B48CF2 100%);
+  --qz-bg-tint: linear-gradient(160deg, #070A1F 0%, #0D1440 40%, #1A2370 75%, #3340B8 100%);
+  --color-emerald-100: #E6E9FF;
+  --color-emerald-200: #C6CDFF;
+  --color-emerald-300: #9EAAFF;
+  --color-emerald-400: #7180F5;
+  color-scheme: dark;
+}
+
 html[data-theme='red'] {
   --qz-ink: #1A0A07;    --qz-ink-rgb: 26 10 7;
   --qz-deep: #261009;   --qz-deep-rgb: 38 16 9;
