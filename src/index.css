@@ -1171,3 +1171,14 @@ html.qz-chromium .qz-liquid-nav .qz-glass-layer {
     background-color: rgb(var(--qz-ink-rgb) / 0.94);
   }
 }
+
+/* Cross-fade the existing theme palettes, without moving the page or focus. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 450ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none !important; }
+}
