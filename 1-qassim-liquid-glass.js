@@ -1572,6 +1572,7 @@ function GlassLayer({
   blur = 0,
   backdrop,
   live = false,
+  liveFrameRate = 10,
   trigger,
   disabled = false,
   swell = true,
@@ -1660,7 +1661,7 @@ function GlassLayer({
         host.style.scale = scale.x === 1 ? "" : scale.x.toFixed(4);
         const fading = 1 - colorT > 4e-3;
         colorT = fading ? colorT + (1 - colorT) * Math.min(1, dt * 14) : 1;
-        return a || b || c || d || e || fading || clear && live && view.visible;
+        return a || b || c || d || e || fading;
       },
       lens: (refresh) => {
         if (refresh) {
@@ -1937,7 +1938,15 @@ function GlassLayer({
     };
     if (clear) addEventListener("scroll", onScroll, { passive: true, capture: true });
     engine2.add(view);
+    // Capture animated backdrops at a bounded cadence, not on every display frame.
+    // The engine sleeps between captures, and hidden pages do no background work.
+    const liveTimer = clear && live ? setInterval(() => {
+      if (!view.visible || document.hidden) return;
+      view.repaint = true;
+      engine2.wake();
+    }, 1000 / Math.max(1, Math.min(30, liveFrameRate))) : null;
     return () => {
+      if (liveTimer !== null) clearInterval(liveTimer);
       engine2.remove(view);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       io.disconnect();
@@ -1954,7 +1963,7 @@ function GlassLayer({
       host.style.scale = "";
       pokeRef.current = null;
     };
-  }, [material, backdrop, live, trigger, disabled, swell]);
+  }, [material, backdrop, live, liveFrameRate, trigger, disabled, swell]);
   return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement(GlassStyles, null), /* @__PURE__ */ React.createElement(
     "canvas",
     {
