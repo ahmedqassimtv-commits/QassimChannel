@@ -1,697 +1,498 @@
-import { useMemo, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpLeft } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+import {
+  AnimatePresence,
+  motion,
+  useInView,
+  useMotionValueEvent,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from 'framer-motion'
+import { ArrowDown, X } from 'lucide-react'
 import { stories } from '../data/stories.js'
-import structuredTokens from '../design-systems/structured/tokens.json'
 import { assetUrl } from '../utils/assets.js'
-import { playGlassTap } from '../utils/glassSound.js'
+import ClothRibbon from '../components/stories/ClothRibbon.jsx'
 
-/* ══ قسم الحكايات — Structured: Renaissance Gallery on Putty Paper (DESIGN 8) ══
-   معرض أرشيفي مستلهم بالكامل من نظام التصميم المرفق (src/design-systems/structured/):
-   - قاعة افتتاحية بلون Putty (#c4c3b6) مع كلمة عرض ضخمة مقصوصة على حواف الشاشة (374px scale)
-   - لوحة زيتية كلاسيكية بعرض الشاشة تتوسطها بطاقة داكنة مقصوصة الزوايا (Notched Showcase Card)
-   - قاعة Ink Room سوداء (#000000) بشبكة ثلاثية من القصّات الدائرية والمؤشرات السداسية
-   - غرفة القراءة الكاملة على بطاقات Bone (#e7e5e4) وحدود Vellum (#dfdcd5)
-   - بطاقة عيّنة نظام التصميم وتذييل Chalk (#ebebeb) يربط بأقسام منصة قاسمز. */
+/* ══ قسم الحكايات — على إيقاع Structured (structured.money) ══════════════
+   نفس تسلسل وتفاصيل فيديو المرجع، بمحتوى أرشيف الحكايات:
+   ١ افتتاحية فاتحة: عنوان صغير + أرقام + زرار سداسي، وكلمة «الحكايات»
+     ضخمة مقصوصة على الحواف، بتنزل أبطأ من الصفحة فبتغطس ورا شجر اللوحة.
+   ٢ لوحة زيتية طويلة (الأهرامات › وادي النيل › المعابد › التمثال ›
+     البحيرة) والصفحة بتنزل فيها، وكارت أسود ثابت في النص بيتفتح من خط
+     رفيع، ونصه بيتبدل مع كل حكاية + شريط تقدّم.
+   ٣ غرفة سودا: عنوان ٣ سطور + سطر صغير.
+   ٤ حروف «أرشيف» عملاقة بتطلع من ورا الخطوط الهندسية، وقماشة حرير
+     بتعدّي فوقها (WebGL)، وبعدها خلايا «صورة واحدة».
+   ٥ شريط المدن › «الأرشيف مشروحاً» بـ٣ دواير وأزرار سداسية › كروت ظرف
+     للحكايات (بتفتح القارئ) › خاتمة فاتحة.
+   اللوحات أصلية (متولّدة) بأسلوب زيتي كلاسيكي — مش منسوخة من المرجع. */
 
-const PAINTING_LANDSCAPE = assetUrl('/images/stories/renaissance-landscape.jpg')
-const PAINTING_AMPHORA = assetUrl('/images/stories/still-life-amphora.jpg')
-const PAINTING_HOURGLASS = assetUrl('/images/stories/still-life-hourglass.jpg')
+const IMG = (name) => assetUrl(`/images/stories/structured/${name}`)
+const PAINTING = { src: IMG('nile-journey-1600.webp'), srcSet: `${IMG('nile-journey-900.webp')} 900w, ${IMG('nile-journey-1600.webp')} 1600w` }
+const FOLIAGE = { src: IMG('nile-foliage-1600.webp'), srcSet: `${IMG('nile-foliage-900.webp')} 900w, ${IMG('nile-foliage-1600.webp')} 1600w` }
 
-const CURATORIAL_VIGNETTES = [
+const EASE = [0.22, 1, 0.36, 1]
+const years = stories.map((s) => Number(s.year)).filter(Boolean)
+const SPAN = years.length ? `${Math.min(...years)}–${Math.max(...years)}` : ''
+
+// حروف «أرشيف» بأشكالها الموصولة (بالتطويل) عشان كل سطر يفضل شكله صح
+const GLYPHS = ['أر', 'شـ', 'ـيـ', 'ـف']
+
+const VIGNETTES = [
   {
-    id: 'memory',
     title: 'ذاكرة المكان',
-    latin: 'ARCHITECTURAL MEMORY',
-    image: PAINTING_LANDSCAPE,
-    objectPosition: '18% 45%',
-    short: 'كل شارع قديم وواجهة حجرية يحفظ إيقاع المدينة قبل أن تغيّرها السرعة.',
-    detail:
-      'نوثّق في هذه القاعة تحوّلات المدن العربية منذ مطلع الثلاثينيات: الترام الأول، أرصفة الموانئ، والمقاهي التي صنعت ملامح الذاكرة اليومية.',
-    linkedStoryIndex: 0,
+    img: IMG('vignette-ibis.webp'),
+    alt: 'لوحة زيتية لطائر أبو منجل يمشي في المرج',
+    more: 'المدن بتتغير، لكن الصورة بتحفظ إيقاعها: شارع قبل الزحمة، رصيف ميناء، ومقهى ماكانش لسه عرف السرعة.',
   },
   {
-    id: 'manuscript',
-    title: 'مخطوطة الأرشيف',
-    latin: 'ARCHIVAL FOLIO',
-    image: PAINTING_AMPHORA,
-    objectPosition: '50% 50%',
-    short: 'الصورة المطبوعة على الورق المعتّق تمنح التفاصيل العابرة خلود اللوحة.',
-    detail:
-      'كل فصل هنا يجمع بين الكادر الفوتوغرافي الأصلي والنص الميداني المرافق له، ليُقرأ بتأنٍّ كما تُقرأ اللوحات التفسيرية على جدران المتاحف.',
-    linkedStoryIndex: 2,
+    title: 'مخطوطة الزمن',
+    img: IMG('vignette-amphora.webp'),
+    alt: 'لوحة زيتية لجرّة فخار مصرية منقوشة على العشب',
+    more: 'كل حكاية هنا صورة ونص ميداني معاها، يتقروا مع بعض بتأنٍّ، زي البطاقات اللي جنب اللوحات في المتاحف.',
   },
   {
-    id: 'tempo',
-    title: 'إيقاع الزمن',
-    latin: 'CADENCE OF TIME',
-    image: PAINTING_HOURGLASS,
-    objectPosition: '50% 50%',
-    short: 'الضوء عند الفجر والغروب هو الخيط الذي يربط بين أربعين عاماً من الحكايات.',
-    detail:
-      'من ضباب الإسكندرية الشتوي إلى أشرعة الفلوكة في أسوان، نتابع كيف تحفظ العدسة لحظة واحدة فتتحول بعد عقود إلى شهادة تاريخية حيّة.',
-    linkedStoryIndex: 3,
+    title: 'حكايات حيّة',
+    img: IMG('vignette-butterflies.webp'),
+    alt: 'لوحة زيتية لفراشتين على زهور برية',
+    more: 'لحظة واحدة بتلقطها العدسة، وبعد عقود بتبقى شهادة حيّة — من ضباب الشتا لأشرعة الفلوكة في النيل.',
   },
 ]
 
-const COLOR_LABELS_AR = {
-  putty: 'أرضية المعرض',
-  ink: 'الحبر والغرفة الداكنة',
-  bone: 'بطاقات القراءة',
-  chalk: 'تذييل المعرض',
-  vellum: 'حافة الورق',
-  graphite: 'النص الثانوي',
-  ash: 'إطار الصور',
-  paper: 'النص العكسي',
+/* ── زرار أسود بأطراف سداسية ── */
+function HexButton({ children, onClick, light = false }) {
+  return (
+    <button type="button" onClick={onClick} className={`qz-sx-hexbtn ${light ? 'is-light' : ''}`}>
+      {children}
+    </button>
+  )
 }
 
-function HexIndicator({ active = false, light = false, size = 12 }) {
-  const stroke = light ? '#ffffff' : '#000000'
-  const fill = active ? stroke : 'transparent'
+function scrollTo(el) {
+  if (!el) return
+  const lenis = window.__qzLenis
+  if (lenis?.scrollTo) lenis.scrollTo(el, { duration: 1.4 })
+  else el.scrollIntoView({ behavior: 'smooth' })
+}
+
+/* ══ ١ + ٢: الافتتاحية ورحلة اللوحة ══════════════════════════════════ */
+function HeroAndJourney() {
+  const reduce = useReducedMotion()
+  const heroRef = useRef(null)
+  const journeyRef = useRef(null)
+  const cardRef = useRef(null)
+  const [step, setStep] = useState(0)
+
+  // الكلمة بتنزل أبطأ من الصفحة (parallax) فاللوحة بتطلع وراها والشجر يغطيها
+  const { scrollYProgress: heroP } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
+  const wordY = useTransform(heroP, [0, 1], reduce ? ['0vh', '0vh'] : ['0vh', '42vh'])
+  const clusterY = useTransform(heroP, [0, 1], reduce ? ['0vh', '0vh'] : ['0vh', '12vh'])
+
+  // الكارت بيتفتح من خط رفيع أول ما يظهر، ونصه بيتبدل مع التقدّم في اللوحة
+  const cardIn = useInView(cardRef, { once: true, margin: '-20% 0px -20% 0px' })
+  const { scrollYProgress: journeyP } = useScroll({ target: journeyRef, offset: ['start start', 'end end'] })
+  useMotionValueEvent(journeyP, 'change', (v) => {
+    const next = Math.min(stories.length - 1, Math.max(0, Math.floor(((v - 0.12) / 0.8) * stories.length)))
+    setStep((prev) => (prev === next ? prev : next))
+  })
+  const story = stories[step]
+
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 14 14"
-      fill="none"
-      aria-hidden="true"
-    >
-      <polygon
-        points="7,1 12.5,4 12.5,10 7,13 1.5,10 1.5,4"
-        stroke={stroke}
-        strokeWidth="1.2"
-        fill={fill}
-      />
+    <>
+      <section ref={heroRef} className="qz-sx-hero" data-structured-surface="putty" aria-label="افتتاحية أرشيف الحكايات">
+        <motion.div className="qz-sx-hero-cluster" style={{ y: clusterY }}>
+          <motion.h1
+            className="qz-sx-hero-title"
+            initial={reduce ? false : { opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: EASE }}
+          >
+            حكاياتٌ حقيقية
+            <br />
+            <span className="is-soft">على</span> ورق الزمن
+          </motion.h1>
+          <motion.div
+            className="qz-sx-stats"
+            initial={reduce ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.8 }}
+          >
+            <span>الحكايات: {stories.length}</span>
+            <span className="qz-num">الحقبة: {SPAN}</span>
+          </motion.div>
+          <motion.div initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35, duration: 0.8 }}>
+            <HexButton onClick={() => scrollTo(journeyRef.current)}>
+              ادخل الأرشيف
+              <ArrowDown className="size-3" aria-hidden="true" />
+            </HexButton>
+          </motion.div>
+        </motion.div>
+        <motion.div className="qz-sx-wordmark" style={{ y: wordY }} aria-hidden="true">
+          الحكايات
+        </motion.div>
+      </section>
+
+      <section ref={journeyRef} className="qz-sx-journey" data-structured-surface="putty" aria-label="رحلة اللوحة عبر الحكايات">
+        <img
+          className="qz-sx-painting"
+          src={PAINTING.src}
+          srcSet={PAINTING.srcSet}
+          sizes="100vw"
+          alt="لوحة زيتية طويلة: أهرامات بين السحاب، ووادي النيل بمعابده، وتمثال وطائر أبو منجل، وبحيرة باللوتس"
+          fetchPriority="high"
+          data-no-tint="true"
+        />
+        <img className="qz-sx-foliage" src={FOLIAGE.src} srcSet={FOLIAGE.srcSet} sizes="100vw" alt="" aria-hidden="true" data-no-tint="true" />
+
+        <div className="qz-sx-card-track">
+          <div className="qz-sx-card-sticky">
+            <motion.article
+              ref={cardRef}
+              className="qz-sx-card"
+              data-structured-surface="ink"
+              initial={reduce ? false : { clipPath: 'inset(0% 49.4% 0% 49.4% round 9px)' }}
+              animate={cardIn ? { clipPath: 'inset(0% 0% 0% 0% round 9px)' } : undefined}
+              transition={{ duration: 1.1, ease: EASE, delay: 0.1 }}
+              aria-live="polite"
+            >
+              <span className="qz-sx-card-rail" style={{ right: 14 }} aria-hidden="true" />
+              <span className="qz-sx-card-rail" style={{ left: 14 }} aria-hidden="true" />
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={story.id}
+                  className="flex min-h-0 flex-1 flex-col"
+                  initial={reduce ? false : { opacity: 0, filter: 'blur(6px)' }}
+                  animate={{ opacity: 1, filter: 'blur(0px)' }}
+                  exit={reduce ? undefined : { opacity: 0, filter: 'blur(6px)' }}
+                  transition={{ duration: 0.45, ease: EASE }}
+                >
+                  <h2 className="qz-sx-card-title">{story.title}</h2>
+                  <p className="qz-sx-card-body">{story.caption}</p>
+                </motion.div>
+              </AnimatePresence>
+              <div className="qz-sx-card-foot">
+                <span className="qz-sx-latin">SCROLL</span>
+                <span className="qz-sx-progress" aria-label={`الحكاية ${step + 1} من ${stories.length}`}>
+                  {stories.map((s, i) => (
+                    <i key={s.id} data-on={i === step ? 'true' : undefined} />
+                  ))}
+                </span>
+                <span className="qz-num ms-auto">
+                  {story.year} · {story.location}
+                </span>
+              </div>
+            </motion.article>
+          </div>
+        </div>
+      </section>
+    </>
+  )
+}
+
+/* ── الخطوط الهندسية (بيت/خيمة بعُقد معيّنة) ── */
+function GeoFrame() {
+  const nodes = [
+    [90, 300],
+    [720, 40],
+    [1350, 300],
+    [90, 1180],
+    [1350, 1180],
+    [720, 1030],
+    [470, 1180],
+    [970, 1180],
+    [0, 560],
+    [1440, 560],
+  ]
+  return (
+    <svg className="qz-sx-geo" viewBox="0 0 1440 1400" preserveAspectRatio="xMidYMin slice" aria-hidden="true">
+      <path d="M90 300 L720 40 L1350 300" />
+      <path d="M0 300 H1440 M0 1180 H1440" />
+      <path d="M90 300 V1180 M1350 300 V1180" />
+      <path d="M720 1030 V1400" />
+      <path d="M470 1180 L720 1030 L970 1180" />
+      <path d="M0 470 L90 560 L0 650 M1440 470 L1350 560 L1440 650" />
+      <path d="M90 940 L190 1180 M1350 940 L1250 1180" />
+      {nodes.map(([x, y]) => (
+        <rect key={`${x}-${y}`} className="node" x={x - 5} y={y - 5} width="10" height="10" transform={`rotate(45 ${x} ${y})`} />
+      ))}
     </svg>
   )
 }
 
-function scrollToRef(ref) {
-  const el = ref?.current
-  if (!el) return
-  const lenis = window.__qzLenis
-  if (lenis && typeof lenis.scrollTo === 'function') {
-    lenis.scrollTo(el, { offset: -20, duration: 1.1 })
-  } else {
-    el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
+function GlyphRow({ glyph, progress, from, to }) {
+  const reduce = useReducedMotion()
+  const y = useTransform(progress, [from, to], reduce ? ['0%', '0%'] : ['105%', '0%'])
+  return (
+    <div className="qz-sx-glyph-row">
+      <motion.span style={{ y }}>{glyph}</motion.span>
+    </div>
+  )
+}
+
+/* ══ ٣ + ٤: الغرفة السودا وبرج الحروف ═════════════════════════════════ */
+function InkRooms() {
+  const towerRef = useRef(null)
+  const clothProgress = useRef(0)
+  const { scrollYProgress } = useScroll({ target: towerRef, offset: ['start end', 'end start'] })
+  useMotionValueEvent(scrollYProgress, 'change', (v) => {
+    clothProgress.current = v
+  })
+
+  return (
+    <div className="qz-sx-ink" data-structured-surface="ink">
+      <section className="qz-sx-statement" aria-label="الأرشيف">
+        <motion.h2 initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-15%' }} transition={{ duration: 1, ease: EASE }}>
+          ذاكرةٌ حيّة،
+          <span className="is-soft">تُحفظ بالضوء</span>
+          وتُروى
+        </motion.h2>
+        <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ delay: 0.3, duration: 0.8 }}>
+          أرشيف قاسمز بيجمع صور نادرة من مدن عربية، وكل صورة معاها حكايتها الميدانية — من الثلاثينيات للسبعينيات.
+        </motion.p>
+      </section>
+
+      <section ref={towerRef} className="qz-sx-tower" aria-label="أرشيف">
+        <GeoFrame />
+        <div className="qz-sx-glyphs" aria-hidden="true">
+          {GLYPHS.map((g, i) => (
+            <GlyphRow key={g} glyph={g} progress={scrollYProgress} from={0.08 + i * 0.07} to={0.2 + i * 0.07} />
+          ))}
+        </div>
+        <span className="sr-only">أرشيف</span>
+        <ClothRibbon progressRef={clothProgress} className="qz-sx-cloth" />
+
+        <div className="qz-sx-cells">
+          <motion.div className="qz-sx-cell" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, margin: '-20%' }} transition={{ duration: 0.9 }}>
+            <h3>
+              صورة واحدة،
+              <br />
+              حكايات لا تنتهي
+            </h3>
+          </motion.div>
+          <motion.div className="qz-sx-cell" initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, margin: '-20%' }} transition={{ delay: 0.15, duration: 0.9 }}>
+            <p>الحكاية أكبر من أي لقطة لوحدها. كل صورة في الأرشيف بتفتح باب لمدينة وزمن وناس، والحكايات بتكمّل بعض في مكان واحد.</p>
+          </motion.div>
+        </div>
+      </section>
+
+      <section className="qz-sx-trusted" aria-label="مدن الأرشيف">
+        <p className="qz-sx-micro qz-sx-latin" style={{ color: 'rgb(255 255 255 / 0.7)' }}>
+          من أرشيف المدن
+        </p>
+        <div className="qz-sx-trusted-row">
+          {stories.map((s) => (
+            <span key={s.id}>{s.city}</span>
+          ))}
+        </div>
+      </section>
+    </div>
+  )
+}
+
+/* ══ ٥: مشروحاً + الظروف ══════════════════════════════════════════════ */
+function HexPlus({ open, onClick, label }) {
+  return (
+    <button type="button" className="qz-sx-hexplus" aria-expanded={open} aria-label={label} onClick={onClick}>
+      <svg width="38" height="22" viewBox="0 0 38 22" fill="none" aria-hidden="true">
+        <path d="M10 1 H28 L37 11 L28 21 H10 L1 11 Z" stroke="currentColor" strokeWidth="1" />
+        <path d="M19 7.5 V14.5 M15.5 11 H22.5" stroke="currentColor" strokeWidth="1" />
+      </svg>
+    </button>
+  )
+}
+
+function Explained() {
+  const [open, setOpen] = useState(-1)
+  return (
+    <section className="qz-sx-explained" aria-label="الأرشيف مشروحاً">
+      <span className="qz-sx-corner qz-sx-latin" style={{ right: 24 }}>
+        مدخل إلى الأرشيف
+      </span>
+      <span className="qz-sx-corner qz-sx-latin" style={{ left: 24 }}>
+        ثلاث عدسات
+      </span>
+      <motion.h2 initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.9, ease: EASE }}>
+        الأرشيف
+        <br />
+        مشروحاً
+      </motion.h2>
+      <div className="qz-sx-vignettes">
+        {VIGNETTES.map((v, i) => (
+          <motion.div
+            key={v.title}
+            className="qz-sx-vignette"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-10%' }}
+            transition={{ duration: 0.9, ease: EASE, delay: i * 0.12 }}
+          >
+            <h3>{v.title}</h3>
+            <div className="qz-sx-circle">
+              <img src={v.img} alt={v.alt} loading="lazy" data-no-tint="true" />
+            </div>
+            <HexPlus open={open === i} label={`اعرف أكتر عن ${v.title}`} onClick={() => setOpen((o) => (o === i ? -1 : i))} />
+            <AnimatePresence initial={false}>
+              {open === i && (
+                <motion.p
+                  className="qz-sx-vignette-more"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1, marginTop: 18 }}
+                  exit={{ height: 0, opacity: 0, marginTop: 0 }}
+                  transition={{ duration: 0.45, ease: EASE }}
+                >
+                  {v.more}
+                </motion.p>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function EnvelopeFlap() {
+  return (
+    <svg className="qz-sx-envelope-flap" viewBox="0 0 300 120" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 2 L150 70 L300 2" />
+      <path d="M0 38 H300" />
+      <path d="M0 22 L12 38 L0 54 M300 22 L288 38 L300 54" />
+      <path d="M118 56 L150 70 L182 56" />
+    </svg>
+  )
+}
+
+function Cases({ onOpen }) {
+  return (
+    <section className="qz-sx-cases" aria-label="اقرأ الحكايات">
+      <motion.h2 initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
+        اقرأ الحكايات
+      </motion.h2>
+      <div className="qz-sx-envelopes">
+        {stories.map((s, i) => (
+          <motion.button
+            key={s.id}
+            type="button"
+            className="qz-sx-envelope"
+            onClick={() => onOpen(i)}
+            initial={{ opacity: 0, y: 120 }}
+            whileInView={{ opacity: 1, y: i * 10 }}
+            viewport={{ once: true, margin: '-8%' }}
+            transition={{ duration: 1, ease: EASE, delay: i * 0.12 }}
+          >
+            <EnvelopeFlap />
+            <span className="qz-sx-micro qz-num" style={{ color: 'rgb(255 255 255 / 0.55)' }}>
+              {s.year} · {s.location}
+            </span>
+            <h3 className="mt-3">{s.title}</h3>
+            <p>{s.caption}</p>
+          </motion.button>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+/* ── قارئ الحكاية ── */
+function Reader({ index, onClose, onMove }) {
+  const s = stories[index]
+  const closeRef = useRef(null)
+  useEffect(() => {
+    const lenis = window.__qzLenis
+    lenis?.stop?.()
+    document.documentElement.style.overflow = 'hidden'
+    const prev = document.activeElement
+    closeRef.current?.focus()
+    const onKey = (e) => {
+      if (e.key === 'Escape') onClose()
+      if (e.key === 'ArrowLeft') onMove(1)
+      if (e.key === 'ArrowRight') onMove(-1)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => {
+      lenis?.start?.()
+      document.documentElement.style.overflow = ''
+      window.removeEventListener('keydown', onKey)
+      prev?.focus?.()
+    }
+  }, [onClose, onMove])
+
+  return createPortal(
+    <div dir="rtl" className="qz-sx">
+      <motion.div className="qz-sx-reader-scrim" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} />
+      <motion.div
+        role="dialog"
+        aria-modal="true"
+        aria-label={s.title}
+        className="qz-sx-reader"
+        data-lenis-prevent
+        initial={{ opacity: 0, y: 40, clipPath: 'inset(8% 8% 8% 8% round 9px)' }}
+        animate={{ opacity: 1, y: 0, clipPath: 'inset(0% 0% 0% 0% round 9px)' }}
+        exit={{ opacity: 0, y: 24 }}
+        transition={{ duration: 0.7, ease: EASE }}
+      >
+        <div className="qz-sx-reader-close">
+          <HexButton onClick={onClose}>
+            <X className="size-3.5" aria-hidden="true" /> إغلاق
+          </HexButton>
+        </div>
+        <div className="qz-sx-reader-inner">
+          <div className="qz-sx-reader-media">
+            <img className="qz-sx-reader-img" src={s.image} alt={s.title} />
+            <p className="qz-sx-micro mt-3" style={{ color: 'var(--sx-graphite)' }}>
+              {s.note}
+            </p>
+          </div>
+          <div>
+            <p className="qz-sx-micro qz-num" style={{ color: 'var(--sx-graphite)' }}>
+              {s.year} · {s.era} · {s.location}
+            </p>
+            <h2 className="mt-4">{s.title}</h2>
+            <p className="mt-6 text-lg leading-9" style={{ color: 'var(--sx-graphite)' }}>
+              {s.caption}
+            </p>
+            <div className="qz-sx-reader-text mt-8 space-y-6">
+              <p>{s.story}</p>
+              {s.continued && <p>{s.continued}</p>}
+            </div>
+            <div className="mt-12 flex items-center justify-between gap-4 border-t border-[color:var(--sx-vellum)] pt-6">
+              <HexButton onClick={() => onMove(-1)}>الحكاية السابقة</HexButton>
+              <span className="qz-num text-sm" style={{ color: 'var(--sx-graphite)' }}>
+                {index + 1} / {stories.length}
+              </span>
+              <HexButton onClick={() => onMove(1)}>الحكاية التالية</HexButton>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </div>,
+    document.body,
+  )
 }
 
 export default function Stories() {
-  const reduce = useReducedMotion()
-  const paintingRef = useRef(null)
-  const archiveRef = useRef(null)
-
-  const [featuredIndex, setFeaturedIndex] = useState(0)
-  const [activeVignette, setActiveVignette] = useState(0)
-  const [selectedStoryIdx, setSelectedStoryIdx] = useState(0)
-
-  const featuredStory = stories[featuredIndex] || stories[0]
-  const currentStory = stories[selectedStoryIdx] || stories[0]
-  const currentVignette = CURATORIAL_VIGNETTES[activeVignette] || CURATORIAL_VIGNETTES[0]
-
-  const paletteSwatches = useMemo(
-    () =>
-      Object.entries(structuredTokens.color || {}).map(([key, token]) => ({
-        key,
-        name: key.charAt(0).toUpperCase() + key.slice(1),
-        value: token.$value,
-        roleAr: COLOR_LABELS_AR[key] || key,
-      })),
-    [],
-  )
-
-  const selectStoryAndScroll = (idx) => {
-    playGlassTap()
-    setSelectedStoryIdx(idx)
-    setFeaturedIndex(idx)
-    requestAnimationFrame(() => scrollToRef(archiveRef))
-  }
-
-  const cycleFeatured = (delta) => {
-    playGlassTap()
-    setFeaturedIndex((prev) => (prev + delta + stories.length) % stories.length)
-  }
-
-  const cycleSelected = (delta) => {
-    playGlassTap()
-    setSelectedStoryIdx((prev) => (prev + delta + stories.length) % stories.length)
-  }
+  const [reader, setReader] = useState(null)
+  const close = useRef(() => setReader(null)).current
+  const move = useRef((d) => setReader((i) => (i === null ? i : (i + d + stories.length) % stories.length))).current
 
   return (
-    <div className="qz-stories-structured" dir="rtl">
-      {/* ═══════════════════════════════════════════════════════════════
-          ١. القاعة الافتتاحية (Hero Wordmark Section — Putty #c4c3b6)
-         ═══════════════════════════════════════════════════════════════ */}
-      <section className="qz-st-hero" data-structured-surface="putty" aria-label="افتتاحية معرض الحكايات">
-        {/* Minimal Gallery Header Bar (Logo Mark + Ghost Text Link) */}
-        <div className="qz-st-minimal-bar">
-          <div className="qz-st-monogram-wrap">
-            <span className="qz-st-monogram" aria-hidden="true">
-              S
-            </span>
-            <span className="qz-st-micro-meta qz-st-grotesk-latin">
-              QASSIMZ ARCHIVE · FOLIO VIII
-            </span>
-          </div>
-
-          <button
-            type="button"
-            className="qz-st-ghost-link"
-            onClick={() => {
-              playGlassTap()
-              scrollToRef(archiveRef)
-            }}
-          >
-            <span>فهرس الفصول الأربعة</span>
-            <ArrowDown className="size-3.5" aria-hidden="true" />
-          </button>
-        </div>
-
-        {/* Centered Editorial Cluster */}
-        <motion.div
-          className="qz-st-hero-cluster"
-          initial={reduce ? false : { opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <h1 className="qz-st-hero-subhead">حِكاياتٌ على وَرقِ الزَّمن</h1>
-          <p className="qz-st-hero-subhead-latin qz-st-latin">
-            REAL MEMORY <em>on</em> PUTTY PAPER
-          </p>
-
-          {/* Stat Pair — 16px weight 500, 28px gap, zero borders */}
-          <div className="qz-st-stat-row" aria-label="إحصائيات المعرض">
-            <div className="qz-st-stat-item">
-              <span className="qz-st-stat-key">الفصول:</span>
-              <span className="qz-num">0{stories.length} حكايات</span>
-            </div>
-            <div className="qz-st-stat-item">
-              <span className="qz-st-stat-key">الحقبة:</span>
-              <span className="qz-num">1932 — 1976</span>
-            </div>
-            <div className="qz-st-stat-item">
-              <span className="qz-st-stat-key">النسخة:</span>
-              <span className="qz-st-grotesk-latin text-xs">RENAISSANCE GALLERY</span>
-            </div>
-          </div>
-
-          {/* Primary Pill Action Button — #000000, 9px 17px, 28.8px radius */}
-          <div className="mt-7 flex flex-wrap items-center justify-center gap-4">
-            <button
-              type="button"
-              className="qz-st-pill-btn"
-              onClick={() => {
-                playGlassTap()
-                scrollToRef(paintingRef)
-              }}
-            >
-              <span>ادخل المعرض</span>
-              <ArrowDown className="size-3.5" aria-hidden="true" />
-            </button>
-
-            <button
-              type="button"
-              className="qz-st-ghost-link"
-              onClick={() => selectStoryAndScroll(0)}
-            >
-              <span>اقرأ الفصل الأول</span>
-              <ArrowUpLeft className="size-3.5" aria-hidden="true" />
-            </button>
-          </div>
-        </motion.div>
-
-        {/* Monumental Edge-Cropped Hero Wordmark (374px scale) */}
-        <div className="qz-st-wordmark-stage">
-          <div className="qz-st-wordmark-ar" aria-hidden="true">
-            الحِكايات
-          </div>
-          <div className="qz-st-wordmark-edge">
-            <span>قاعة المعرض الأولى · ذاكرة المدن والعدسة</span>
-            <span className="qz-st-grotesk-latin">PUTTY CANVAS · #C4C3B6</span>
-          </div>
-        </div>
+    <div className="qz-sx" dir="rtl">
+      <HeroAndJourney />
+      <InkRooms />
+      <div className="qz-sx-ink" data-structured-surface="ink">
+        <Explained />
+        <Cases onOpen={setReader} />
+        <div className="h-16" />
+      </div>
+      <section className="qz-sx-finale" data-structured-surface="chalk" aria-label="خاتمة">
+        <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 1, ease: EASE }}>
+          <span className="is-soft">حكايات</span> حقيقية،
+          <br />
+          تستحق أن تُروى
+        </motion.h2>
       </section>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          ٢. لوحة الزيت الكلاسيكية + البطاقة المقصوصة (Classical Painting Panel)
-         ═══════════════════════════════════════════════════════════════ */}
-      <section
-        ref={paintingRef}
-        className="qz-st-painting-section"
-        data-structured-surface="ink"
-        aria-label="اللوحة الكلاسيكية والفصل المختار"
-      >
-        <img
-          src={PAINTING_LANDSCAPE}
-          alt="لوحة زيتية كلاسيكية لأقواس حجرية وجبال وسحب"
-          data-no-tint="true"
-          className="qz-st-painting-bg"
-          loading="eager"
-        />
-
-        {/* Floating Notched Showcase Card — #000000 with hexagonal corner cuts */}
-        <div className="qz-st-notched-card">
-          <div className="qz-st-notched-top">
-            <span className="qz-num">
-              {String(featuredIndex + 1).padStart(2, '0')} / {String(stories.length).padStart(2, '0')}
-            </span>
-            <span>{featuredStory.location}</span>
-            <span className="qz-num">{featuredStory.year}</span>
-          </div>
-
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={featuredStory.id}
-              initial={reduce ? false : { opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={reduce ? undefined : { opacity: 0, y: -10 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <p className="qz-st-grotesk-latin text-[10px] text-[#dfdcd5]/80">
-                FEATURED ARCHIVAL PLATE · {featuredStory.era}
-              </p>
-              <h2 className="qz-st-notched-title mt-3">{featuredStory.title}</h2>
-              <p className="qz-st-notched-excerpt">{featuredStory.caption}</p>
-            </motion.div>
-          </AnimatePresence>
-
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <button
-              type="button"
-              className="qz-st-pill-btn qz-st-pill-btn-inverted"
-              onClick={() => selectStoryAndScroll(featuredIndex)}
-            >
-              <span>اقرأ الحكاية كاملة</span>
-              <ArrowUpLeft className="size-3.5" aria-hidden="true" />
-            </button>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                className="qz-st-ghost-link qz-st-ghost-link-light"
-                aria-label="الفصل السابق"
-                onClick={() => cycleFeatured(-1)}
-              >
-                <ArrowRight className="size-4" aria-hidden="true" />
-              </button>
-              <div className="qz-st-hex-row" role="tablist" aria-label="تبديل اللوحة المعروضة">
-                {stories.map((s, idx) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={idx === featuredIndex}
-                    aria-label={s.title}
-                    className="qz-st-hex-btn"
-                    onClick={() => {
-                      playGlassTap()
-                      setFeaturedIndex(idx)
-                    }}
-                  >
-                    <HexIndicator active={idx === featuredIndex} light size={12} />
-                  </button>
-                ))}
-              </div>
-              <button
-                type="button"
-                className="qz-st-ghost-link qz-st-ghost-link-light"
-                aria-label="الفصل التالي"
-                onClick={() => cycleFeatured(1)}
-              >
-                <ArrowLeft className="size-4" aria-hidden="true" />
-              </button>
-            </div>
-          </div>
-
-          <div className="qz-st-notched-foot">
-            <span className="qz-st-scroll-micro">SCROLL · تصفّح للأسفل</span>
-            <span className="qz-st-grotesk-latin text-[10px] text-[#dfdcd5]/70">
-              INK MONOLITH · #000000
-            </span>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          ٣. القاعة الداكنة (Dark Feature Section — Ink Room #000000)
-         ═══════════════════════════════════════════════════════════════ */}
-      <section className="qz-st-ink-room" data-structured-surface="ink" aria-label="قاعة الدراسات الكلاسيكية">
-        <div className="qz-st-corner-labels">
-          <span>قاعة الدراسات الكلاسيكية · 03 محاور</span>
-          <span className="qz-st-grotesk-latin">INK ROOM · CURATORIAL STUDIES</span>
-        </div>
-
-        <h2 className="qz-st-section-header">الحِكايةُ كما تُرى</h2>
-        <p className="qz-st-section-sub">
-          ثلاث عدسات متحفية لقراءة أرشيف الصور: عمارة المكان، مخطوطة الورق، وإيقاع الضوء عبر العقود.
-        </p>
-
-        {/* 3-Column Circular Feature Vignettes Grid */}
-        <div className="qz-st-vignettes-grid">
-          {CURATORIAL_VIGNETTES.map((item, idx) => {
-            const isAct = activeVignette === idx
-            return (
-              <button
-                key={item.id}
-                type="button"
-                className="qz-st-vignette"
-                data-active={isAct ? 'true' : undefined}
-                onClick={() => {
-                  playGlassTap()
-                  setActiveVignette(idx)
-                }}
-              >
-                <div>
-                  <span className="qz-st-grotesk-latin block text-[10px] text-[#dfdcd5]/70">
-                    {item.latin}
-                  </span>
-                  <span className="qz-st-vignette-caption mt-1 block">{item.title}</span>
-                </div>
-
-                <div className="qz-st-vignette-circle">
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    data-no-tint="true"
-                    style={{ objectPosition: item.objectPosition }}
-                    loading="lazy"
-                  />
-                </div>
-
-                <p className="qz-st-vignette-copy">{item.short}</p>
-
-                <span className="qz-st-hex-row" aria-hidden="true">
-                  {CURATORIAL_VIGNETTES.map((v, hi) => (
-                    <HexIndicator key={v.id} active={hi === idx && isAct} light size={12} />
-                  ))}
-                </span>
-              </button>
-            )
-          })}
-        </div>
-
-        {/* Active Curatorial Wall Note */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentVignette.id}
-            className="qz-st-curatorial-note"
-            initial={reduce ? false : { opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={reduce ? undefined : { opacity: 0, y: -8 }}
-            transition={{ duration: 0.3 }}
-          >
-            <p className="qz-st-grotesk-latin text-[11px] text-[#dfdcd5]/75">
-              CURATORIAL NOTE · {currentVignette.latin}
-            </p>
-            <p className="font-[family-name:var(--st-font-reading)] text-base leading-8 text-[#e7e5e4]">
-              {currentVignette.detail}
-            </p>
-            <div className="mt-2 flex justify-center">
-              <button
-                type="button"
-                className="qz-st-pill-btn qz-st-pill-btn-inverted"
-                onClick={() => selectStoryAndScroll(currentVignette.linkedStoryIndex)}
-              >
-                <span>افتح الفصل المرتبط في الأرشيف</span>
-                <ArrowUpLeft className="size-3.5" aria-hidden="true" />
-              </button>
-            </div>
-          </motion.div>
-        </AnimatePresence>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          ٤. قاعة القراءة الكاملة (Putty #c4c3b6 + Bone Folio #e7e5e4)
-         ═══════════════════════════════════════════════════════════════ */}
-      <section
-        ref={archiveRef}
-        className="qz-st-archive-room"
-        data-structured-surface="putty"
-        aria-label="فصول أرشيف الحكايات المصوّرة"
-      >
-        <div className="qz-st-archive-inner">
-          <div className="qz-st-archive-top">
-            <div>
-              <span className="qz-st-grotesk-latin text-[11px] text-[#595855]">
-                EXHIBITION FOLIO · COMPLETE ARCHIVE
-              </span>
-              <h2 className="mt-2 font-[family-name:var(--st-font-display)] text-[clamp(2.2rem,4.6vw,3.4rem)] font-medium leading-[1.04] text-black">
-                فصولُ الأرشيف المصوّر
-              </h2>
-            </div>
-
-            {/* Chapter Selector Tabs */}
-            <div className="qz-st-archive-tabs" role="tablist" aria-label="اختر فصل الحكاية">
-              {stories.map((story, idx) => {
-                const isSel = idx === selectedStoryIdx
-                return (
-                  <button
-                    key={story.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={isSel}
-                    data-active={isSel ? 'true' : undefined}
-                    className="qz-st-chapter-tab"
-                    onClick={() => {
-                      playGlassTap()
-                      setSelectedStoryIdx(idx)
-                      setFeaturedIndex(idx)
-                    }}
-                  >
-                    <HexIndicator active={isSel} light={isSel} size={11} />
-                    <span>{story.city}</span>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Elevated Bone Reading Folio Card — #e7e5e4, 9px radius, 1px Vellum hairline */}
-          <AnimatePresence mode="wait">
-            <motion.article
-              key={currentStory.id}
-              className="qz-st-folio-card"
-              initial={reduce ? false : { opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={reduce ? undefined : { opacity: 0, y: -10 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <div className="qz-st-folio-media">
-                <img
-                  src={currentStory.image}
-                  alt={currentStory.title}
-                  data-no-tint="true"
-                  loading="lazy"
-                />
-                <span className="qz-st-folio-plate-tag qz-num">
-                  لوحة {String(selectedStoryIdx + 1).padStart(2, '0')} · {currentStory.year}
-                </span>
-              </div>
-
-              <div className="qz-st-folio-body">
-                <div>
-                  <div className="flex flex-wrap items-center gap-x-7 gap-y-2 text-[14px] font-medium text-black">
-                    <span>
-                      <span className="text-[#595855]">المكان: </span>
-                      {currentStory.location}
-                    </span>
-                    <span>
-                      <span className="text-[#595855]">الحقبة: </span>
-                      {currentStory.era}
-                    </span>
-                  </div>
-
-                  <h3 className="qz-st-folio-title">{currentStory.title}</h3>
-                  <p className="qz-st-folio-lead">{currentStory.caption}</p>
-                  <p className="qz-st-folio-text">{currentStory.story}</p>
-                  {currentStory.continued && (
-                    <p className="qz-st-folio-text">{currentStory.continued}</p>
-                  )}
-                </div>
-
-                <div>
-                  <p className="qz-st-folio-note">
-                    <strong className="font-medium text-black">بطاقة التوثيق المتحفية: </strong>
-                    {currentStory.note}
-                  </p>
-
-                  <div className="qz-st-folio-nav mt-5">
-                    <button
-                      type="button"
-                      className="qz-st-ghost-link"
-                      onClick={() => cycleSelected(-1)}
-                    >
-                      <ArrowRight className="size-4" aria-hidden="true" />
-                      <span>الفصل السابق</span>
-                    </button>
-
-                    <div className="qz-st-hex-row" aria-label="ترتيب الفصل">
-                      {stories.map((s, idx) => (
-                        <button
-                          key={s.id}
-                          type="button"
-                          className="qz-st-hex-btn"
-                          aria-label={`الانتقال إلى ${s.title}`}
-                          onClick={() => {
-                            playGlassTap()
-                            setSelectedStoryIdx(idx)
-                          }}
-                        >
-                          <HexIndicator active={idx === selectedStoryIdx} size={12} />
-                        </button>
-                      ))}
-                    </div>
-
-                    <button
-                      type="button"
-                      className="qz-st-ghost-link"
-                      onClick={() => cycleSelected(1)}
-                    >
-                      <span>الفصل التالي</span>
-                      <ArrowLeft className="size-4" aria-hidden="true" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </motion.article>
-          </AnimatePresence>
-
-          {/* All 4 Archival Chapters Index (Bone Cards with Circular Crops) */}
-          <div className="qz-st-chapters-grid" aria-label="قائمة فصول الحكايات">
-            {stories.map((story, idx) => {
-              const isAct = idx === selectedStoryIdx
-              return (
-                <button
-                  key={story.id}
-                  type="button"
-                  className="qz-st-chapter-card"
-                  data-active={isAct ? 'true' : undefined}
-                  onClick={() => {
-                    playGlassTap()
-                    setSelectedStoryIdx(idx)
-                    setFeaturedIndex(idx)
-                  }}
-                >
-                  <div className="flex w-full items-center justify-between gap-2">
-                    <div className="qz-st-chapter-thumb">
-                      <img src={story.image} alt={story.city} data-no-tint="true" loading="lazy" />
-                    </div>
-                    <HexIndicator active={isAct} light={isAct} size={13} />
-                  </div>
-                  <div>
-                    <span
-                      className={`qz-num block text-xs ${isAct ? 'text-[#dfdcd5]' : 'text-[#595855]'}`}
-                    >
-                      {story.year} · {story.era}
-                    </span>
-                    <span className="mt-1 block font-[family-name:var(--st-font-display)] text-lg font-medium leading-snug">
-                      {story.title}
-                    </span>
-                  </div>
-                </button>
-              )
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          ٥. بطاقة نظام المعرض (Structured Design System Specimen — Chalk #ebebeb)
-         ═══════════════════════════════════════════════════════════════ */}
-      <section
-        className="qz-st-specimen-room"
-        data-structured-surface="chalk"
-        aria-label="لوحة ألوان ونظام المعرض"
-      >
-        <div className="qz-st-archive-inner">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <span className="qz-st-grotesk-latin text-[11px] text-[#595855]">
-                EXHIBITION COLOPHON · STRUCTURED SYSTEM SPECIMEN
-              </span>
-              <h2 className="mt-1 font-[family-name:var(--st-font-display)] text-2xl font-medium text-black sm:text-3xl">
-                لوحة ألوان المعرض والمواد
-              </h2>
-            </div>
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-[#595855]">
-              <span>بطاقات: {structuredTokens.radius?.lg?.$value || '9px'}</span>
-              <span>أزرار: {structuredTokens.radius?.['3xl']?.$value || '28.8px'}</span>
-              <span>روابط: {structuredTokens.radius?.sm?.$value || '2px'}</span>
-            </div>
-          </div>
-
-          <div className="qz-st-swatch-grid">
-            {paletteSwatches.map((swatch) => (
-              <div key={swatch.key} className="qz-st-swatch-card">
-                <div
-                  className="qz-st-swatch-chip"
-                  style={{ backgroundColor: swatch.value }}
-                  aria-hidden="true"
-                />
-                <div className="qz-st-swatch-info">
-                  <span className="qz-st-grotesk-latin text-[11px] font-medium text-black">
-                    {swatch.name}
-                  </span>
-                  <span className="qz-num text-[11px] text-[#595855]">{swatch.value}</span>
-                  <span className="text-[11px] text-[#595855]">{swatch.roleAr}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ═══════════════════════════════════════════════════════════════
-          ٦. تذييل المعرض (Chalk Footer #ebebeb)
-         ═══════════════════════════════════════════════════════════════ */}
-      <footer className="qz-st-footer" data-structured-surface="chalk">
-        <div className="qz-st-footer-inner">
-          <div className="qz-st-footer-top">
-            <div className="qz-st-monogram-wrap">
-              <span className="qz-st-monogram" aria-hidden="true">
-                ق
-              </span>
-              <div>
-                <p className="font-[family-name:var(--st-font-display)] text-base font-medium text-black">
-                  أرشيف الحكايات — منصة قاسمز
-                </p>
-                <p className="text-xs text-[#595855]">
-                  ذاكرة الصورة والزمن في قاعة عرض كلاسيكية مسطّحة
-                </p>
-              </div>
-            </div>
-
-            <nav className="qz-st-footer-links" aria-label="أقسام منصة قاسمز">
-              <Link to="/" className="qz-st-ghost-link" onClick={() => playGlassTap()}>
-                الرئيسية
-              </Link>
-              <Link to="/verdict/movies" className="qz-st-ghost-link" onClick={() => playGlassTap()}>
-                الفِردِكت
-              </Link>
-              <Link to="/articles" className="qz-st-ghost-link" onClick={() => playGlassTap()}>
-                المقالات
-              </Link>
-              <Link to="/ideas" className="qz-st-ghost-link" onClick={() => playGlassTap()}>
-                قاع الأفكار
-              </Link>
-              <Link to="/masaha/ahmed" className="qz-st-ghost-link" onClick={() => playGlassTap()}>
-                عن أحمد
-              </Link>
-              <Link to="/masaha/books" className="qz-st-pill-btn" onClick={() => playGlassTap()}>
-                <span>مكتبة الكتب</span>
-                <ArrowUpLeft className="size-3.5" aria-hidden="true" />
-              </Link>
-            </nav>
-          </div>
-
-          <div className="qz-st-footer-bottom">
-            <span>طُبع وعُرض وفق دليل Structured · Renaissance Gallery on Putty Paper</span>
-            <span className="qz-num">© {new Date().getFullYear()} قاسمز — جميع الحقوق محفوظة</span>
-          </div>
-        </div>
-      </footer>
+      <AnimatePresence>{reader !== null && <Reader key="reader" index={reader} onClose={close} onMove={move} />}</AnimatePresence>
     </div>
   )
 }
