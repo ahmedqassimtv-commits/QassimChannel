@@ -1079,7 +1079,7 @@ export default function Navbar() {
           glowOpacity.set(0)
         }}
         aria-label="التنقل الرئيسي"
-        className={`qassimz-apple-nav-shell qz-liquid-nav group/nav relative z-20 mx-auto flex items-center justify-between gap-2 overflow-hidden rounded-full px-2.5 py-1.5 ${
+        className={`isolate qassimz-apple-nav-shell qz-liquid-nav group/nav relative z-20 mx-auto flex items-center justify-between gap-2 overflow-hidden rounded-full px-2.5 py-1.5 ${
           searchExpanded
             ? 'w-full max-w-2xl'
             : isCompact
@@ -1089,10 +1089,10 @@ export default function Navbar() {
       >
         <GlassLayer
           material="clear"
-          tint={0.28}
-          blur={14}
+          tint={0.06}
+          blur={2}
           swell={false}
-          optics={{ tintColor: theme === 'green' ? '#123b36' : theme === 'red' ? '#48241d' : '#303654', refraction: 0.35, dispersion: 0, shadow: 0, borderAlpha: 0.2, borderWidth: 0.6 }}
+          optics={{ tintColor: theme === 'green' ? '#123b36' : theme === 'red' ? '#48241d' : '#303654',  refraction: 0.25, bendDepth: 1.35, bendCurve: 9.75, dispersion: 0, magnify: 0, rim: 0, fresnel: 0, inner: 0, reflection: 0, caustic: 0, mirror: 0, light: 0, cursorLight: false, shadow: 0, borderColor: '#ffffff', borderAlpha: 0.25, borderWidth: 0.6, frostMix: 1, frostEdge: 1, saturation: 1 }}
         />
 
         {/* الطبقة 3: ضوء داخلي خافت يتبع الماوس في المنتصف فقط بعيدًا عن الأطراف */}
