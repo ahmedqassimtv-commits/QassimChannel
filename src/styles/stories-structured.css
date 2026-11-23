@@ -173,6 +173,7 @@
   position: relative;
   z-index: 1;
   overflow: hidden;
+  direction: ltr; /* عشان التوسيط بـ left/translate يشتغل صح في RTL */
 }
 .qz-sx-pbox {
   position: relative;
