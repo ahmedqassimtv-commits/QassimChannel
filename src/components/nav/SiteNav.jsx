@@ -251,6 +251,10 @@ export default function SiteNav() {
   const theme = useTheme()
 
   const [storiesDark, setStoriesDark] = useState(false)
+  const [storiesTop, setStoriesTop] = useState(true)
+  const [storiesHidden, setStoriesHidden] = useState(false)
+  // الأقسام اللي ليها هوية ثابتة مش محتاجة سويتش الثيمات
+  const fixedTheme = navTheme !== 'glass'
   const [themePulse, setThemePulse] = useState(false)
   const [themeToast, setThemeToast] = useState(null)
   const toastTimerRef = useRef(0)
@@ -269,11 +273,22 @@ export default function SiteNav() {
   useEffect(() => {
     if (navTheme !== 'stories') {
       setStoriesDark(false)
+      setStoriesTop(true)
+      setStoriesHidden(false)
       return undefined
     }
     let rafId = 0
+    let lastY = window.scrollY
     const checkSurface = () => {
       rafId = 0
+      const y = window.scrollY
+      const dy = y - lastY
+      if (Math.abs(dy) > 6) {
+        // زي Structured: الهيدر بيختفي وانت نازل، ويرجع أول ما تطلع لفوق
+        setStoriesHidden(dy > 0 && y > window.innerHeight * 0.6)
+        lastY = y
+      }
+      setStoriesTop(y < 24)
       const probeY = 44
       const sections = document.querySelectorAll('[data-structured-surface]')
       let isDark = false
@@ -551,6 +566,8 @@ export default function SiteNav() {
         data-nav-theme={navTheme}
         data-nav-tone={navTone}
         data-compact={compact ? 'true' : undefined}
+        data-at-top={navTheme === 'stories' && storiesTop ? 'true' : undefined}
+        data-autohide={navTheme === 'stories' && storiesHidden && !open && !mobileOpen && !searchExpanded ? 'true' : undefined}
         data-searching={searchExpanded ? 'true' : undefined}
         dir="rtl"
       >
@@ -738,6 +755,8 @@ export default function SiteNav() {
                 )}
               </div>
 
+              {!fixedTheme && (
+                <>
               {/* سويتش الثيم مدمج داخل نفس كبسولة النافبار مع نبضة حركة وإشعار الثيم */}
               <div
                 ref={switchRef}
@@ -771,6 +790,9 @@ export default function SiteNav() {
                   )}
                 </AnimatePresence>
               </div>
+
+                </>
+              )}
 
               <span className="qz-island-sep qz-island-sep-mob" aria-hidden="true" />
 

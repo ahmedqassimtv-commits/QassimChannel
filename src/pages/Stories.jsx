@@ -29,33 +29,43 @@ import ClothRibbon from '../components/stories/ClothRibbon.jsx'
    اللوحات أصلية (متولّدة) بأسلوب زيتي كلاسيكي — مش منسوخة من المرجع. */
 
 const IMG = (name) => assetUrl(`/images/stories/structured/${name}`)
-const PAINTING = { src: IMG('nile-journey-1600.webp'), srcSet: `${IMG('nile-journey-900.webp')} 900w, ${IMG('nile-journey-1600.webp')} 1600w` }
-const FOLIAGE = { src: IMG('nile-foliage-1600.webp'), srcSet: `${IMG('nile-foliage-900.webp')} 900w, ${IMG('nile-foliage-1600.webp')} 1600w` }
+// اللوحة بدقة 4K (3840px) + نسخ أصغر للشاشات الأقل
+const PAINTING = {
+  src: IMG('nile-painting-2400.webp'),
+  srcSet: `${IMG('nile-painting-1280.webp')} 1280w, ${IMG('nile-painting-2400.webp')} 2400w, ${IMG('nile-painting-3840.webp')} 3840w`,
+}
+const TREE_L = { src: IMG('tree-left-800.webp'), srcSet: `${IMG('tree-left-420.webp')} 420w, ${IMG('tree-left-800.webp')} 800w` }
+const TREE_R = { src: IMG('tree-right-800.webp'), srcSet: `${IMG('tree-right-420.webp')} 420w, ${IMG('tree-right-800.webp')} 800w` }
 
 const EASE = [0.22, 1, 0.36, 1]
+// [x%, y%, delay] — نقط لمعان على سطح المية
+const GLINTS = [
+  [12, 47.5, 0], [24, 50, 1.2], [37, 48.6, 2.1], [55, 46.8, 0.6], [57, 52.5, 1.8], [70, 49.4, 2.7],
+  [83, 51, 0.9], [46, 55.5, 2.4], [30, 56.4, 1.5], [64, 57, 0.3], [18, 61.4, 2], [40, 62.5, 0.8],
+]
 const years = stories.map((s) => Number(s.year)).filter(Boolean)
 const SPAN = years.length ? `${Math.min(...years)}–${Math.max(...years)}` : ''
 
-// حروف «أرشيف» بأشكالها الموصولة (بالتطويل) عشان كل سطر يفضل شكله صح
-const GLYPHS = ['أر', 'شـ', 'ـيـ', 'ـف']
+// كلمات كاملة (العربي مايتقسمش حروف) — كل كلمة بتنكشف من اليمين للشمال
+const GLYPH_WORDS = ['أرشيف', 'حكايات', 'المدن']
 
 const VIGNETTES = [
   {
     title: 'ذاكرة المكان',
     img: IMG('vignette-ibis.webp'),
-    alt: 'لوحة زيتية لطائر أبو منجل يمشي في المرج',
+    alt: 'تفصيلة من اللوحة: طائر أبو منجل بين البردي وزهور اللوتس',
     more: 'المدن بتتغير، لكن الصورة بتحفظ إيقاعها: شارع قبل الزحمة، رصيف ميناء، ومقهى ماكانش لسه عرف السرعة.',
   },
   {
     title: 'مخطوطة الزمن',
     img: IMG('vignette-amphora.webp'),
-    alt: 'لوحة زيتية لجرّة فخار مصرية منقوشة على العشب',
+    alt: 'تفصيلة من اللوحة: تمثال فرعوني بغطاء النمس على ضفة النيل',
     more: 'كل حكاية هنا صورة ونص ميداني معاها، يتقروا مع بعض بتأنٍّ، زي البطاقات اللي جنب اللوحات في المتاحف.',
   },
   {
     title: 'حكايات حيّة',
     img: IMG('vignette-butterflies.webp'),
-    alt: 'لوحة زيتية لفراشتين على زهور برية',
+    alt: 'تفصيلة من اللوحة: معبد كشك حجري بين النخيل على النيل',
     more: 'لحظة واحدة بتلقطها العدسة، وبعد عقود بتبقى شهادة حيّة — من ضباب الشتا لأشرعة الفلوكة في النيل.',
   },
 ]
@@ -77,23 +87,45 @@ function scrollTo(el) {
 }
 
 /* ══ ١ + ٢: الافتتاحية ورحلة اللوحة ══════════════════════════════════ */
+
+/* فراشة بجناحين بيرفرفوا (كل جناح صورة لوحده وبيلف في 3D) */
+function Butterfly({ style, delay = 0, path = 'a' }) {
+  return (
+    <div className="qz-sx-bfly" style={style} aria-hidden="true">
+      <div className={`qz-sx-bfly-path is-${path}`} style={{ animationDelay: `${delay}s` }}>
+        <div className="qz-sx-bfly-body">
+          <img className="qz-sx-bfly-w is-l" src={IMG('bfly-l.webp')} alt="" data-no-tint="true" />
+          <img className="qz-sx-bfly-w is-r" src={IMG('bfly-r.webp')} alt="" data-no-tint="true" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function HeroAndJourney() {
   const reduce = useReducedMotion()
   const heroRef = useRef(null)
   const journeyRef = useRef(null)
   const cardRef = useRef(null)
+  const paintRef = useRef(null)
   const [step, setStep] = useState(0)
 
-  // الكلمة بتنزل أبطأ من الصفحة (parallax) فاللوحة بتطلع وراها والشجر يغطيها
+  // الكلمة بتنزل أبطأ من الصفحة، فاللوحة (اللي فوقها) بتطلع وتغطيها وتختفي
   const { scrollYProgress: heroP } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
-  const wordY = useTransform(heroP, [0, 1], reduce ? ['0vh', '0vh'] : ['0vh', '42vh'])
-  const clusterY = useTransform(heroP, [0, 1], reduce ? ['0vh', '0vh'] : ['0vh', '12vh'])
+  const wordY = useTransform(heroP, [0, 1], reduce ? ['0vh', '0vh'] : ['0vh', '34vh'])
+
+  // الشجر طبقة أمامية: طالع من تحت قدّام الكلمة، وبيطلع أسرع من اللوحة ويكبر
+  const { scrollYProgress: treeP } = useScroll({ target: journeyRef, offset: ['start end', 'start start'] })
+  const treeY = useTransform(treeP, [0, 1], reduce ? ['0vh', '0vh'] : ['0vh', '-105vh'])
+  const treeScale = useTransform(treeP, [0, 1], reduce ? [1, 1] : [1, 1.35])
+  const treeLX = useTransform(treeP, [0, 1], reduce ? ['-26%', '-26%'] : ['-26%', '-12%'])
+  const treeRX = useTransform(treeP, [0, 1], reduce ? ['26%', '26%'] : ['26%', '12%'])
 
   // الكارت بيتفتح من خط رفيع أول ما يظهر، ونصه بيتبدل مع التقدّم في اللوحة
   const cardIn = useInView(cardRef, { once: true, margin: '-20% 0px -20% 0px' })
   const { scrollYProgress: journeyP } = useScroll({ target: journeyRef, offset: ['start start', 'end end'] })
   useMotionValueEvent(journeyP, 'change', (v) => {
-    const next = Math.min(stories.length - 1, Math.max(0, Math.floor(((v - 0.12) / 0.8) * stories.length)))
+    const next = Math.min(stories.length - 1, Math.max(0, Math.floor(((v - 0.1) / 0.8) * stories.length)))
     setStep((prev) => (prev === next ? prev : next))
   })
   const story = stories[step]
@@ -101,7 +133,7 @@ function HeroAndJourney() {
   return (
     <>
       <section ref={heroRef} className="qz-sx-hero" data-structured-surface="putty" aria-label="افتتاحية أرشيف الحكايات">
-        <motion.div className="qz-sx-hero-cluster" style={{ y: clusterY }}>
+        <div className="qz-sx-hero-cluster">
           <motion.h1
             className="qz-sx-hero-title"
             initial={reduce ? false : { opacity: 0, y: 14 }}
@@ -127,23 +159,61 @@ function HeroAndJourney() {
               <ArrowDown className="size-3" aria-hidden="true" />
             </HexButton>
           </motion.div>
-        </motion.div>
+        </div>
         <motion.div className="qz-sx-wordmark" style={{ y: wordY }} aria-hidden="true">
           الحكايات
         </motion.div>
       </section>
 
-      <section ref={journeyRef} className="qz-sx-journey" data-structured-surface="putty" aria-label="رحلة اللوحة عبر الحكايات">
-        <img
-          className="qz-sx-painting"
-          src={PAINTING.src}
-          srcSet={PAINTING.srcSet}
-          sizes="100vw"
-          alt="لوحة زيتية طويلة: أهرامات بين السحاب، ووادي النيل بمعابده، وتمثال وطائر أبو منجل، وبحيرة باللوتس"
-          fetchPriority="high"
-          data-no-tint="true"
-        />
-        <img className="qz-sx-foliage" src={FOLIAGE.src} srcSet={FOLIAGE.srcSet} sizes="100vw" alt="" aria-hidden="true" data-no-tint="true" />
+      <section ref={journeyRef} className="qz-sx-journey" data-structured-surface="ink" aria-label="رحلة اللوحة عبر الحكايات">
+        {/* الشجر الأمامي — برّه إطار اللوحة عشان يطلع فوق الكلمة */}
+        <div className="qz-sx-trees" aria-hidden="true">
+          <motion.img
+            className="qz-sx-tree is-l"
+            src={TREE_L.src}
+            srcSet={TREE_L.srcSet}
+            sizes="(max-width: 760px) 56vw, 46vw"
+            alt=""
+            data-no-tint="true"
+            style={{ y: treeY, x: treeLX, scale: treeScale }}
+          />
+          <motion.img
+            className="qz-sx-tree is-r"
+            src={TREE_R.src}
+            srcSet={TREE_R.srcSet}
+            sizes="(max-width: 760px) 56vw, 46vw"
+            alt=""
+            data-no-tint="true"
+            style={{ y: treeY, x: treeRX, scale: treeScale }}
+          />
+        </div>
+
+        <div className="qz-sx-frame">
+          <div className="qz-sx-pbox">
+            <img
+              ref={paintRef}
+              className="qz-sx-painting"
+              src={PAINTING.src}
+              srcSet={PAINTING.srcSet}
+              sizes="(max-width: 760px) 120svh, 100vw"
+              alt="لوحة زيتية طويلة: أهرامات الجيزة تحت السحاب، والنيل بفلوكته ونخيله ومعابده، وتمثال فرعوني جالس بين البردي واللوتس وأبو منجل"
+              fetchPriority="high"
+              data-no-tint="true"
+            />
+            {/* لمعة الشمس على النيل */}
+            <div className="qz-sx-glints" aria-hidden="true">
+              {GLINTS.map(([x, y, d], i) => (
+                <i key={i} style={{ left: `${x}%`, top: `${y}%`, animationDelay: `${d}s` }} />
+              ))}
+            </div>
+            <div className="qz-sx-sprite-lane is-ibis" aria-hidden="true">
+              <img className="qz-sx-ibis" src={IMG('ibis.webp')} alt="" data-no-tint="true" />
+            </div>
+            <Butterfly style={{ left: '64%', top: '79%' }} path="a" />
+            <Butterfly style={{ left: '86%', top: '88%' }} path="b" delay={-3.5} />
+            <Butterfly style={{ left: '22%', top: '71%' }} path="c" delay={-6} />
+          </div>
+        </div>
 
         <div className="qz-sx-card-track">
           <div className="qz-sx-card-sticky">
@@ -220,12 +290,14 @@ function GeoFrame() {
   )
 }
 
-function GlyphRow({ glyph, progress, from, to }) {
+function GlyphRow({ word, progress, from, to }) {
   const reduce = useReducedMotion()
-  const y = useTransform(progress, [from, to], reduce ? ['0%', '0%'] : ['105%', '0%'])
+  const y = useTransform(progress, [from, to], reduce ? ['0%', '0%'] : ['60%', '0%'])
+  // الكشف بيمشي مع اتجاه القراءة (من اليمين)، والكلمة نفسها فاضلة موصولة
+  const clip = useTransform(progress, [from, to], reduce ? ['inset(0 0 0 0%)', 'inset(0 0 0 0%)'] : ['inset(-10% 0% -10% 100%)', 'inset(-10% 0% -10% 0%)'])
   return (
     <div className="qz-sx-glyph-row">
-      <motion.span style={{ y }}>{glyph}</motion.span>
+      <motion.span style={{ y, clipPath: clip }}>{word}</motion.span>
     </div>
   )
 }
@@ -255,11 +327,11 @@ function InkRooms() {
       <section ref={towerRef} className="qz-sx-tower" aria-label="أرشيف">
         <GeoFrame />
         <div className="qz-sx-glyphs" aria-hidden="true">
-          {GLYPHS.map((g, i) => (
-            <GlyphRow key={g} glyph={g} progress={scrollYProgress} from={0.08 + i * 0.07} to={0.2 + i * 0.07} />
+          {GLYPH_WORDS.map((w, i) => (
+            <GlyphRow key={w} word={w} progress={scrollYProgress} from={0.1 + i * 0.09} to={0.24 + i * 0.09} />
           ))}
         </div>
-        <span className="sr-only">أرشيف</span>
+        <span className="sr-only">أرشيف حكايات المدن</span>
         <ClothRibbon progressRef={clothProgress} className="qz-sx-cloth" />
 
         <div className="qz-sx-cells">
@@ -352,14 +424,28 @@ function Explained() {
   )
 }
 
+const FLAP_NODES = [
+  [26.5, 31.7],
+  [73.5, 31.7],
+  [50, 58.3],
+  [4, 31.7],
+  [96, 31.7],
+  [39.3, 46.7],
+  [60.7, 46.7],
+]
+
 function EnvelopeFlap() {
   return (
-    <svg className="qz-sx-envelope-flap" viewBox="0 0 300 120" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M0 2 L150 70 L300 2" />
-      <path d="M0 38 H300" />
-      <path d="M0 22 L12 38 L0 54 M300 22 L288 38 L300 54" />
-      <path d="M118 56 L150 70 L182 56" />
-    </svg>
+    <div className="qz-sx-envelope-flap" aria-hidden="true">
+      <svg viewBox="0 0 300 120" preserveAspectRatio="none">
+        <path d="M0 2 L150 70 L300 2" />
+        <path d="M0 38 H300" />
+        <path d="M0 22 L12 38 L0 54 M300 22 L288 38 L300 54" />
+      </svg>
+      {FLAP_NODES.map(([x, y]) => (
+        <i key={`${x}-${y}`} style={{ left: `${x}%`, top: `${y}%` }} />
+      ))}
+    </div>
   )
 }
 

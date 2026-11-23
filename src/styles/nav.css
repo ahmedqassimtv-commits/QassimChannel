@@ -1476,3 +1476,115 @@ html.qz-vt-theme::view-transition-new(root) {
     animation: none !important;
   }
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   الحكايات — هيدر Structured: روابط نصّية بس (Ghost Text Link) من غير
+   أيقونات ولا سويتش ثيم، شفاف تماماً فوق الافتتاحية، وبيستخبى وانت نازل
+   ويرجع أول ما تطلع — فوق اللوحة والغرف السودا بيبقى كبسولة سودا رفيعة.
+   ══════════════════════════════════════════════════════════════════════ */
+.qz-island[data-nav-theme='stories'] {
+  transition:
+    top 0.42s var(--qz-ease),
+    max-width 0.45s var(--qz-ease),
+    transform 0.55s var(--qz-ease),
+    opacity 0.35s ease;
+}
+.qz-island[data-nav-theme='stories'][data-autohide='true'] {
+  transform: translateY(calc(-100% - 22px));
+  opacity: 0;
+  pointer-events: none;
+}
+.qz-island[data-nav-theme='stories'] .qz-nicon {
+  display: none;
+}
+.qz-island[data-nav-theme='stories'][data-nav-tone] .qz-island-link {
+  height: 36px;
+  padding-inline: 11px;
+  border-radius: 2px;
+  font-family: 'Thmanyah Sans', system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+}
+.qz-island[data-nav-theme='stories'][data-nav-tone] .qz-island-active,
+.qz-island[data-nav-theme='stories'][data-nav-tone] .qz-island-hover {
+  background: transparent;
+  box-shadow: none;
+}
+.qz-island[data-nav-theme='stories'][data-nav-tone] .qz-island-dot {
+  bottom: 2px;
+  width: 5px;
+  height: 5px;
+  margin-left: -2.5px;
+  border-radius: 0;
+  rotate: 45deg;
+  box-shadow: none;
+}
+.qz-island[data-nav-theme='stories'][data-nav-tone='light'] .qz-island-link,
+.qz-island[data-nav-theme='stories'][data-nav-tone='light'] .qz-island-link[data-active='true'],
+.qz-island[data-nav-theme='stories'][data-nav-tone='light'] .qz-island-link[aria-expanded='true'] {
+  color: #000000;
+}
+.qz-island[data-nav-theme='stories'][data-nav-tone='light'] .qz-island-link:not([data-active='true']) {
+  color: #595855;
+}
+.qz-island[data-nav-theme='stories'][data-nav-tone='light'] .qz-island-dot {
+  background: #000000;
+}
+.qz-island[data-nav-theme='stories'][data-nav-tone='dark'] .qz-island-link,
+.qz-island[data-nav-theme='stories'][data-nav-tone='dark'] .qz-island-link[data-active='true'],
+.qz-island[data-nav-theme='stories'][data-nav-tone='dark'] .qz-island-link[aria-expanded='true'] {
+  color: #ffffff;
+}
+.qz-island[data-nav-theme='stories'][data-nav-tone='dark'] .qz-island-link:not([data-active='true']) {
+  color: rgb(231 229 228 / 0.66);
+}
+.qz-island[data-nav-theme='stories'][data-nav-tone='dark'] .qz-island-dot {
+  background: #ffffff;
+}
+@media (hover: hover) {
+  .qz-island[data-nav-theme='stories'][data-nav-tone] .qz-island-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 6px;
+    text-decoration-thickness: 1px;
+  }
+}
+.qz-island[data-nav-theme='stories'][data-nav-tone] .qz-island-glass {
+  border-radius: 9px;
+  box-shadow: none;
+}
+.qz-island[data-nav-theme='stories'][data-nav-tone='dark'] .qz-island-glass {
+  border: 1px solid rgb(223 220 213 / 0.22);
+  background: rgb(0 0 0 / 0.86);
+}
+.qz-island[data-nav-theme='stories'][data-nav-tone] .qz-inline-search,
+.qz-island[data-nav-theme='stories'][data-nav-tone] .qz-island-mob-btn {
+  border-radius: 2px;
+  background: transparent;
+  box-shadow: none;
+}
+.qz-island[data-nav-theme='stories'][data-nav-tone='light'] .qz-inline-search,
+.qz-island[data-nav-theme='stories'][data-nav-tone='light'] .qz-island-mob-btn {
+  border-color: rgb(0 0 0 / 0.3);
+}
+.qz-island[data-nav-theme='stories'][data-nav-tone='dark'] .qz-inline-search,
+.qz-island[data-nav-theme='stories'][data-nav-tone='dark'] .qz-island-mob-btn {
+  border-color: rgb(255 255 255 / 0.25);
+  color: #ffffff;
+}
+.qz-island[data-nav-theme='stories'][data-nav-tone] .qz-kbd {
+  display: none;
+}
+/* فوق الافتتاحية: مفيش كبسولة خالص — شعار ونص بس على ورق الـ Putty */
+.qz-island[data-nav-theme='stories'][data-at-top='true'][data-nav-tone] .qz-island-glass {
+  border-color: transparent;
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.qz-island[data-nav-theme='stories'][data-at-top='true'][data-nav-tone] .qz-island-sep {
+  opacity: 0;
+}
+.qz-island[data-nav-theme='stories'][data-nav-tone='light'] .qz-island-glass {
+  border: 1px solid rgb(0 0 0 / 0.16);
+  background: rgb(229 228 224 / 0.92);
+}
