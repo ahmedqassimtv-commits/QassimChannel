@@ -42,6 +42,7 @@ export function getTheme() {
 
 let activeThemeTransition
 let themeCleanupTimer
+let themeVeil
 
 export function setTheme(next) {
   if (!THEMES.includes(next) || next === theme) return
@@ -57,14 +58,28 @@ export function setTheme(next) {
     }
     listeners.forEach((fn) => fn(theme))
   }
+  const previousPalette = getComputedStyle(root).getPropertyValue('--qz-bg-tint').trim()
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   activeThemeTransition?.skipTransition()
+  themeVeil?.remove()
+  themeVeil = null
   if (!reducedMotion && typeof document.startViewTransition === 'function') {
     root.classList.remove('qz-theme-switching')
     activeThemeTransition = document.startViewTransition(apply)
     activeThemeTransition.finished.catch(() => {})
   } else {
-    if (!reducedMotion) root.classList.add('qz-theme-switching')
+    if (!reducedMotion) {
+      root.classList.add('qz-theme-switching')
+      // A fading old-palette veil also animates gradients on browsers without View Transitions.
+      themeVeil = document.createElement('div')
+      themeVeil.className = 'qz-theme-veil'
+      themeVeil.setAttribute('aria-hidden', 'true')
+      themeVeil.style.background = previousPalette || META_COLORS[theme]
+      document.body.append(themeVeil)
+      const veil = themeVeil
+      veil.animate([{ opacity: 0.85 }, { opacity: 0 }], { duration: 700, easing: 'ease-out' })
+        .finished.then(() => { veil.remove(); if (themeVeil === veil) themeVeil = null }).catch(() => {})
+    }
     apply()
     window.clearTimeout(themeCleanupTimer)
     themeCleanupTimer = window.setTimeout(() => root.classList.remove('qz-theme-switching'), 650)
