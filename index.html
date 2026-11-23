@@ -30,8 +30,8 @@
 
     <!-- تطبيق الثيم المحفوظ قبل تحميل React (مفيش وميض) -->
     <script>
-      // الثيمات: night (ليلي — الافتراضي، خلفية macOS الداكنة) و green و red و blue (لبني فاتح)
-      var THEME_COLORS = { night: '#070A1F', green: '#051F20', red: '#1A0A07', blue: '#EBE2CC' }
+      // الثيمات: night (ليلي — الافتراضي، خلفية macOS الداكنة) و green و red
+      var THEME_COLORS = { night: '#070A1F', green: '#051F20', red: '#1A0A07' }
       document.documentElement.dataset.theme = 'night'
       try {
         // نقلة التصميم الجديد: كل الزوار بيبدأوا مرة واحدة على الليلي
@@ -40,13 +40,12 @@
           localStorage.setItem('qassimz:theme-v2', '1')
         }
         var t = localStorage.getItem('qassimz:theme')
-        if (t === 'night' || t === 'green' || t === 'red' || t === 'blue') {
+        if (t === 'night' || t === 'green' || t === 'red') {
           document.documentElement.dataset.theme = t
         }
         var themeNow = document.documentElement.dataset.theme
         document.querySelector('meta[name="theme-color"]').setAttribute('content', THEME_COLORS[themeNow])
-        // الثيم اللبني فاتح، والباقي داكن
-        document.querySelector('meta[name="color-scheme"]').setAttribute('content', themeNow === 'blue' ? 'light' : 'dark')
+        document.querySelector('meta[name="color-scheme"]').setAttribute('content', 'dark')
       } catch (e) {}
     </script>
 
