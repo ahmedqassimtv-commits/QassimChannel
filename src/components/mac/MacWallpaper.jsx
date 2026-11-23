@@ -17,37 +17,40 @@ float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
 float n(vec2 p){vec2 i=floor(p),f=fract(p);vec2 u=f*f*(3.-2.*f);
   return mix(mix(h(i),h(i+vec2(1.,0.)),u.x),mix(h(i+vec2(0.,1.)),h(i+1.),u.x),u.y);}
 float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<4;i++){v+=a*n(p);p*=2.03;a*=.5;}return v;}
-float crest(float x,float t,float k){
-  return .11*sin(x*(1.05+.3*k)+t*(.9+.25*k)+k*2.1)+.05*sin(x*(2.4-.4*k)-t*1.3+k*4.7)+.025*sin(x*5.1+t*1.9+k);
+/* طبقة حرير: بتغطي اللي تحت خط القمة، بلمعة ساتان وحافة منورة رفيعة */
+vec3 layer(vec3 col,vec2 q,float y,float tone,float t,float k){
+  float d=y-q.y;
+  float aa=1.6/uRes.y;
+  float cover=smoothstep(-aa,aa,d);
+  float satin=.5+.5*sin((q.x*1.7-q.y*2.6)*(2.2+k*.6)+t*1.2+k*2.)*(.55+.45*fbm(q*1.6+k+t*.2));
+  vec3 lo=mix(cInk,cDeep,.75);
+  vec3 hi=mix(cMoss,cGlow,.18+.08*k);
+  float lift=exp(-d*(2.6+k*.8));
+  vec3 face=mix(lo,mix(cForest,hi,lift),.35+.65*lift)*(.78+.3*satin*lift);
+  vec3 shade=col*mix(.35,1.,smoothstep(0.,.18,-d));
+  col=mix(shade,face,cover);
+  col+=mix(cGlow,vec3(1.),.35)*exp(-abs(d)*uRes.y*.09)*(.5+.25*sin(q.x*3.1+t*1.7+k))*tone;
+  return col;
 }
 void main(){
   vec2 uv=gl_FragCoord.xy/uRes;float asp=uRes.x/uRes.y;
-  vec2 p=vec2(uv.x*asp,uv.y);
-  float t=uTime*.16;
-  vec2 q=p+.06*vec2(fbm(p*1.3+t*.4),fbm(p*1.3-t*.35+4.2))+uMouse*vec2(.035,.02);
-  vec3 col=mix(cInk,cDeep,smoothstep(-.1,1.1,uv.y));
-  col=mix(col,cForest,.35*smoothstep(.3,1.,uv.y)*smoothstep(.0,.9,1.-uv.x));
-  /* طبقات الحرير من الخلف للقدام: كل طبقة بتغطي اللي تحت خطها */
-  for(int i=0;i<4;i++){
-    float k=float(i);
-    float base=.86-k*.2+.07*sin(k*1.7);
-    float y=base+crest(q.x+k*.6,t,k)-(q.x-asp*.5)*(.16-.1*k);
-    float d=y-q.y;
-    float aa=2.2/uRes.y;
-    float cover=smoothstep(-aa,aa,d);
-    float depth=1.-k*.18;
-    vec3 c1=mix(cForest,cMoss,.25+.22*k);
-    vec3 c0=mix(cInk,cDeep,.6);
-    float fold=.5+.5*sin(q.x*(3.+k)-t*1.6+k*3.)*(.5+.5*fbm(q*2.+k));
-    vec3 face=mix(c0,c1,exp(-d*(3.2+k))*.95)*(0.72+.28*fold);
-    face+=cGlow*.16*exp(-d*14.)*depth;
-    vec3 shadowed=col*mix(.45,1.,smoothstep(0.,.14,-d));
-    col=mix(shadowed,face,cover);
-    col+=cGlow*exp(-abs(d)*uRes.y*.012)*(.18+.14*sin(q.x*2.2+t*2.+k))*depth;
-  }
-  float v=smoothstep(1.25,.25,length((uv-vec2(.5,.48))*vec2(1.,1.15)));
-  col*=mix(mix(.62,.92,uLight),1.04,v);
-  col+=(h(gl_FragCoord.xy+fract(uTime))-.5)*.018;
+  vec2 p=vec2(uv.x*asp,uv.y);float X=uv.x;
+  float t=uTime*.14;
+  vec2 q=p+.05*vec2(fbm(p*1.2+t*.35),fbm(p*1.2-t*.3+4.2))+uMouse*vec2(.03,.018);
+  float qx=q.x/asp;
+  vec3 col=mix(cDeep,cInk,smoothstep(.0,1.,uv.y));
+  /* ضباب بنفسجي فوق على الشمال */
+  col=mix(col,mix(cForest,cGlow,.25),.55*smoothstep(.9,.0,length((uv-vec2(.1,.75))*vec2(1.,1.4))));
+  float w=sin(qx*4.+t)*.025+sin(qx*9.-t*1.4)*.01;
+  /* ورا: موجة عالية على اليمين */
+  col=layer(col,q,.66+.24*smoothstep(.25,1.15,qx)+w+.03*sin(t*.7),.55,t,0.);
+  /* النص: الطية القطرية الكبيرة من تحت شمال لفوق يمين */
+  col=layer(col,q,.04+.78*smoothstep(-.15,1.25,qx)+.06*sin(qx*3.-t*.8)+w*1.4,1.,t,1.);
+  /* قدّام: تموجة واطية */
+  col=layer(col,q,.1+.16*smoothstep(.45,1.3,qx)+.04*sin(qx*5.+t*1.1)-.05*smoothstep(.5,0.,qx),.7,t,2.);
+  float v=smoothstep(1.35,.2,length((uv-vec2(.5,.5))*vec2(1.,1.2)));
+  col*=mix(mix(.6,.9,uLight),1.05,v);
+  col+=(h(gl_FragCoord.xy+fract(uTime))-.5)*.016;
   gl_FragColor=vec4(col,1.);
 }`
 

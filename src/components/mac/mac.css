@@ -142,7 +142,7 @@ html[data-theme='blue'] .mac-mb-sel { background: rgb(0 0 0 / 0.08); mix-blend-m
   border-radius: 50%;
   background: currentColor;
 }
-.mac-mb-live-dot {
+.mac-mb-item > .mac-mb-live-dot {
   position: absolute;
   top: 6px;
   inset-inline-start: 6px;
