@@ -40,20 +40,35 @@ export function getTheme() {
   return theme
 }
 
+let activeThemeTransition
+let themeCleanupTimer
+
 export function setTheme(next) {
   if (!THEMES.includes(next) || next === theme) return
-  theme = next
   const root = document.documentElement
-  root.classList.add('qz-theme-switching')
-  root.dataset.theme = next
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', META_COLORS[next])
-  try {
-    window.localStorage.setItem(STORAGE_KEY, next)
-  } catch {
-    /* وضع التصفح الخاص */
+  const apply = () => {
+    theme = next
+    root.dataset.theme = next
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', META_COLORS[next])
+    try {
+      window.localStorage.setItem(STORAGE_KEY, next)
+    } catch {
+      /* Private browsing can block storage. */
+    }
+    listeners.forEach((fn) => fn(theme))
   }
-  window.setTimeout(() => root.classList.remove('qz-theme-switching'), 650)
-  listeners.forEach((fn) => fn(theme))
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  activeThemeTransition?.skipTransition()
+  if (!reducedMotion && typeof document.startViewTransition === 'function') {
+    root.classList.remove('qz-theme-switching')
+    activeThemeTransition = document.startViewTransition(apply)
+    activeThemeTransition.finished.catch(() => {})
+  } else {
+    if (!reducedMotion) root.classList.add('qz-theme-switching')
+    apply()
+    window.clearTimeout(themeCleanupTimer)
+    themeCleanupTimer = window.setTimeout(() => root.classList.remove('qz-theme-switching'), 650)
+  }
 }
 
 export function toggleTheme() {
