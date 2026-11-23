@@ -14,6 +14,7 @@ import {
   X,
 } from 'lucide-react'
 import BrandLogo from '../brand/BrandLogo.jsx'
+import NavHost from '../ai/NavHost.jsx'
 import DaylightThemeSwitch from '../ui/DaylightThemeSwitch.jsx'
 import NavDropdown from './NavDropdown.jsx'
 import NavIcon from './NavIcon.jsx'
@@ -25,15 +26,30 @@ import { articles } from '../../data/articles.js'
 import { stories } from '../../data/stories.js'
 import { books } from '../../data/books.js'
 import { useCinema } from '../qz/CinemaPlayer.jsx'
-import { setThemeWithWipe, useTheme } from '../../utils/theme.js'
+import { setThemeWithWipe, THEME_META, useTheme } from '../../utils/theme.js'
 import { playGlassDropdown, playGlassKeystroke, playGlassMorph, playGlassTap } from '../../utils/glassSound.js'
 import { SPRING, SPRING_NAV } from '../motion/Motion.jsx'
 
-/* ══ النافبار العلوي الموحّد — iPadOS 26 Liquid Glass Dock ═════════════
-   - شريط بحث مدمج داخل كبسولة النافبار نفسها (يتوسع داخل الكبسولة مع قائمة
-     اقتراحات زجاجية منسدلة تحته بدون إخفاء أو تغطية باقي الموقع).
-   - زر تبديل الثيم (DaylightThemeSwitch) مدمج داخل نفس المسار الزجاجي بارتفاع متناسق.
-   - بدون حركة طلوع/نزول النص (RollText) وبدون أي شريط تمرير قبيح. */
+/* ══ النافبار العلوي المتكيّف مع كل قسم ═══════════════════════════════
+   يتحوّل شكل ومادة وألوان وحواف النافبار تلقائياً عند الدخول لكل قسم
+   ليتلاءم مع هوية الصفحة (معرض الحكايات، جريدة المقالات، دفتر قلع الأفكار،
+   بكرة الفِردِكت، عن أحمد، والجزيرة الزجاجية). */
+
+function getNavTheme(pathname) {
+  if (pathname.startsWith('/stories')) return 'stories'
+  if (pathname.startsWith('/articles')) return 'articles'
+  if (pathname.startsWith('/ideas') || pathname.startsWith('/masaha/ideas')) return 'ideas'
+  if (pathname.startsWith('/verdict') || pathname.startsWith('/review')) return 'verdict'
+  if (
+    pathname === '/masaha/ahmed' ||
+    pathname === '/ahmed' ||
+    pathname === '/about' ||
+    pathname === '/masaha/about'
+  ) {
+    return 'ahmed'
+  }
+  return 'glass'
+}
 
 const IS_MAC =
   typeof navigator !== 'undefined' &&
@@ -101,7 +117,7 @@ function buildSearchIndex() {
   ].map((item) => ({ ...item, key: normalizeAr(`${item.title} ${item.sub} ${item.extra ?? ''}`) }))
 }
 
-function MobileGlassMenu({ active, surface, onClose }) {
+function MobileGlassMenu({ active, navTheme = 'glass', navTone = 'dark', onClose }) {
   const reduce = useReducedMotion()
   const [expanded, setExpanded] = useState(null)
 
@@ -111,7 +127,8 @@ function MobileGlassMenu({ active, surface, onClose }) {
       aria-modal="false"
       aria-label="قائمة التنقل"
       className="qz-mob-menu"
-      data-surface={surface}
+      data-nav-theme={navTheme}
+      data-nav-tone={navTone}
       dir="rtl"
       initial={reduce ? { opacity: 0 } : { opacity: 0, y: -10, scale: 0.96, filter: 'blur(8px)' }}
       animate={reduce ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
@@ -229,8 +246,81 @@ export default function SiteNav() {
   const cinema = useCinema()
   const reduce = useReducedMotion()
   const active = sectionKey(pathname)
+  const navTheme = getNavTheme(pathname)
   const compact = useCompact()
   const theme = useTheme()
+
+  const [storiesDark, setStoriesDark] = useState(false)
+  const [themePulse, setThemePulse] = useState(false)
+  const [themeToast, setThemeToast] = useState(null)
+  const toastTimerRef = useRef(0)
+  const pulseTimerRef = useRef(0)
+
+  const navTone =
+    navTheme === 'articles' || navTheme === 'ideas'
+      ? 'light'
+      : navTheme === 'stories'
+        ? storiesDark
+          ? 'dark'
+          : 'light'
+        : 'dark'
+
+  // استشعار سطح القاعة الحالية خلف النافبار داخل قسم الحكايات (Putty فاتح ⇄ Ink داكن)
+  useEffect(() => {
+    if (navTheme !== 'stories') {
+      setStoriesDark(false)
+      return undefined
+    }
+    let rafId = 0
+    const checkSurface = () => {
+      rafId = 0
+      const probeY = 44
+      const sections = document.querySelectorAll('[data-structured-surface]')
+      let isDark = false
+      for (const el of sections) {
+        const rect = el.getBoundingClientRect()
+        if (rect.top <= probeY && rect.bottom >= probeY) {
+          isDark = el.getAttribute('data-structured-surface') === 'ink'
+          break
+        }
+      }
+      setStoriesDark((prev) => (prev === isDark ? prev : isDark))
+    }
+    const onScroll = () => {
+      if (!rafId) rafId = window.requestAnimationFrame(checkSurface)
+    }
+    checkSurface()
+    const initTimer = window.setTimeout(checkSurface, 120)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll, { passive: true })
+    return () => {
+      window.clearTimeout(initTimer)
+      if (rafId) window.cancelAnimationFrame(rafId)
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+    }
+  }, [navTheme, pathname])
+
+  useEffect(() => {
+    return () => {
+      window.clearTimeout(toastTimerRef.current)
+      window.clearTimeout(pulseTimerRef.current)
+    }
+  }, [])
+
+  const handleCycleTheme = useCallback((nextRaw) => {
+    const next = nextRaw === 'blue' ? 'gold' : nextRaw
+    setThemeWithWipe(next, switchRef.current)
+    setThemePulse(true)
+    window.clearTimeout(pulseTimerRef.current)
+    pulseTimerRef.current = window.setTimeout(() => setThemePulse(false), 620)
+    const meta = THEME_META[next]
+    if (meta) {
+      setThemeToast({ key: `${next}-${Date.now()}`, label: meta.label, accent: meta.accent })
+      window.clearTimeout(toastTimerRef.current)
+      toastTimerRef.current = window.setTimeout(() => setThemeToast(null), 1650)
+    }
+  }, [])
 
   const headerRef = useRef(null)
   const switchRef = useRef(null)
@@ -453,28 +543,46 @@ export default function SiteNav() {
   }
 
   const openItem = NAV.find((n) => n.key === open)
-  const navSurface = active === '/ideas' ? 'superr' : undefined
 
   return (
     <div ref={headerRef}>
       <header
         className="qz-island"
+        data-nav-theme={navTheme}
+        data-nav-tone={navTone}
         data-compact={compact ? 'true' : undefined}
         data-searching={searchExpanded ? 'true' : undefined}
-        data-surface={navSurface}
         dir="rtl"
       >
         <div className="qz-island-glass">
           <div ref={rowRef} className="qz-island-row">
-            {/* الشعار */}
-            <Link
-              to="/"
-              className="qz-island-brand"
-              aria-label="قاسمز — الرئيسية"
-              onClick={() => playGlassTap()}
-            >
-              <BrandLogo variant="glass" title="قاسمز" className="qz-island-logo" />
-            </Link>
+            {/* الشعار + فقاعة قاسم الافتراضي (AI) */}
+            <div className="flex flex-none items-center gap-1.5">
+              <Link
+                to="/"
+                className="qz-island-brand"
+                aria-label="قاسمز — الرئيسية"
+                onClick={() => playGlassTap()}
+              >
+                <BrandLogo
+                  variant={navTone === 'light' ? 'solid' : 'glass'}
+                  title="قاسمز"
+                  className="qz-island-logo"
+                />
+              </Link>
+              <NavHost
+                navTheme={navTheme}
+                navTone={navTone}
+                compact={compact}
+                searchExpanded={searchExpanded}
+                onOpenChange={(isOpen) => {
+                  if (isOpen) {
+                    setOpen(null)
+                    setMobileOpen(false)
+                  }
+                }}
+              />
+            </div>
 
             <span className="qz-island-sep qz-island-sep-desk" aria-hidden="true" />
 
@@ -630,15 +738,38 @@ export default function SiteNav() {
                 )}
               </div>
 
-              {/* سويتش الثيم مدمج داخل نفس كبسولة النافبار الزجاجية */}
-              <div ref={switchRef} className="qz-island-switch-slot">
+              {/* سويتش الثيم مدمج داخل نفس كبسولة النافبار مع نبضة حركة وإشعار الثيم */}
+              <div
+                ref={switchRef}
+                className="qz-island-switch-slot"
+                data-pulsing={themePulse ? 'true' : undefined}
+              >
                 <DaylightThemeSwitch
                   theme={theme === 'gold' ? 'blue' : theme}
-                  onCycleTheme={(next) =>
-                    setThemeWithWipe(next === 'blue' ? 'gold' : next, switchRef.current)
-                  }
+                  onCycleTheme={handleCycleTheme}
                   className="qz-theme-switch"
                 />
+                <AnimatePresence>
+                  {themeToast && (
+                    <motion.div
+                      key={themeToast.key}
+                      role="status"
+                      aria-live="polite"
+                      className="qz-theme-toast"
+                      initial={reduce ? { opacity: 0 } : { opacity: 0, y: -6, scale: 0.9 }}
+                      animate={reduce ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+                      exit={reduce ? { opacity: 0 } : { opacity: 0, y: -4, scale: 0.94 }}
+                      transition={SPRING}
+                    >
+                      <span
+                        className="qz-theme-toast-dot"
+                        style={{ backgroundColor: themeToast.accent }}
+                        aria-hidden="true"
+                      />
+                      <span>{themeToast.label}</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
               <span className="qz-island-sep qz-island-sep-mob" aria-hidden="true" />
@@ -741,7 +872,8 @@ export default function SiteNav() {
             ref={menuRef}
             item={openItem}
             anchor={anchor}
-            surface={navSurface}
+            navTheme={navTheme}
+            navTone={navTone}
             onEnter={() => openMenu(openItem.key, true)}
             onLeave={closeMenu}
             onKeyDown={onMenuKeyDown}
@@ -757,7 +889,8 @@ export default function SiteNav() {
         {mobileOpen && (
           <MobileGlassMenu
             active={active}
-            surface={navSurface}
+            navTheme={navTheme}
+            navTone={navTone}
             onClose={() => setMobileOpen(false)}
           />
         )}

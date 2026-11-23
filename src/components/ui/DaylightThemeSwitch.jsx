@@ -504,14 +504,14 @@ const THEME_CONFIGS = {
   blue: {
     pos: 0,
     clock: CLOCK_DAY,
-    label: 'الثيم الرملي الدافئ',
-    bg: '#EBE2CC',
-    surface: '#8A8271',
-    fg: '#1F1D18',
-    muted: '#B7B09E',
-    accent: '#D99B38',
-    shellDay: '#CFC6B1',
-    shellNight: '#B7B09E',
+    label: 'الثيم الذهبي الفاخر',
+    bg: '#F5E6C0',
+    surface: '#8A6D3B',
+    fg: '#1A1408',
+    muted: '#C9A54E',
+    accent: '#E8C96A',
+    shellDay: '#3D2E14',
+    shellNight: '#2A1F0E',
   },
 }
 
@@ -1955,7 +1955,7 @@ export default function DaylightThemeSwitch({ theme = 'green', onCycleTheme, cla
         type="button"
         className="hit absolute inset-[5%_4%] cursor-grab rounded-full border-0 bg-transparent p-0 active:cursor-grabbing focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
         aria-label={THEME_CONFIGS[theme]?.label || 'تبديل الثيم'}
-        title="اسحب أو اضغط للتبديل (الزمردي • الجمري • الرملي)"
+        title="اسحب أو اضغط للتبديل (الزمردي • الجمري • الذهبي)"
       />
       <span className="vh sr-only" role="status" aria-live="polite" data-status />
       <span className="probe hidden" aria-hidden="true" />

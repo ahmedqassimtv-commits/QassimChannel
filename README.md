@@ -2,11 +2,11 @@
   <img src="public/images/qassimz-logo.svg" alt="قَاسِمز" width="140" />
 </p>
 
-<h1 align="center">قَاسِمز — Qasimz</h1>
+<h1 align="center">قَاسِمز — Qassimz</h1>
 
 <p align="center" dir="rtl">
-  <strong>منصة محتوى عربية — فيديوهات، مراجعات، حكايات، كتب، ومقالات.</strong><br />
-  واجهة RTL بالكامل، نافبار زجاجي بصري (LiquidGlass) بكبسولة ماء سائلة (Waterline)، ثلاثة ثيمات داكنة، وحركات بنوابض فيزيائية.
+  <strong>منصة محتوى عربية — فيديوهات، مراجعات، حكايات، مقالات مصوّرة، قاع الأفكار، وكتب.</strong><br />
+  واجهة RTL بالكامل، نافبار متكيّف يتغيّر شكله تلقائياً مع كل قسم، قاسم الافتراضي ثلاثي الأبعاد (AI)، وثلاثة ثيمات بانتقال دائري موجي متحرك.
 </p>
 
 <p align="center">
@@ -25,13 +25,6 @@
   <a href="https://github.com/ahmedqassimtv-commits/QassimChannel/actions/workflows/deploy-pages.yml"><img src=".github/badges/deploy.svg" alt="Deploy passing" height="20" /></a>
 </p>
 
-> [!NOTE]
-> **أرشيف** — هذه لقطة من **16 نوفمبر 2026** للموقع القديم المبني بـ React + Vite.
-> الموقع الحالي أُعيد بناؤه من الصفر بـ **Astro + GSAP + Lenis + Three.js** في
-> [qassimz-platform](https://github.com/ahmedqassimtv-commits/qassimz-platform).
-> النسخة هنا كاملة — بكل الخطوط والصور والصوت — وتعمل على
-> [GitHub Pages](https://ahmedqassimtv-commits.github.io/QassimChannel/).
-
 ---
 
 ## 📖 المحتويات
@@ -41,12 +34,12 @@
 - [✨ المميزات](#-المميزات)
 - [🛠️ التقنيات](#️-التقنيات)
 - [🗺️ الصفحات والمسارات](#️-الصفحات-والمسارات)
-- [🎨 الثيمات](#-الثيمات)
+- [🎨 الثيمات والانتقال الحركي](#-الثيمات-والانتقال-الحركي)
+- [🤖 قاسم الافتراضي (AI)](#-قاسم-الافتراضي-ai)
 - [🏗️ بنية المشروع](#️-بنية-المشروع)
 - [🚀 التشغيل](#-التشغيل)
 - [📦 الأوامر المتاحة](#-الأوامر-المتاحة)
 - [🌐 النشر](#-النشر)
-- [🎨 الأصول والهوية البصرية](#-الأصول-والهوية-البصرية)
 - [🤝 المساهمة](#-المساهمة)
 - [📄 الرخصة](#-الرخصة)
 
@@ -60,18 +53,16 @@
 
 | الميزة | الوصف |
 |---|---|
-| 🧊 نافبار LiquidGlass البصري | سطح زجاجي بحواف `Lissé Squircle` وانكسار ضوئي `<feDisplacementMap>` وتشتت لوني (`Chromatic RGB Dispersion`) وإضاءة حافة (`Specular Rim`) مع تحسين `3-Slice Capsule Baking` |
-| 💧 كبسولة الماء السائلة (Waterline) | شيدر WebGL بفيزياء جسمين مقترنين — تتمدد القطرة نحو القسم المختار، وتنشطر إلى قطيرات تابعة في القفزات الطويلة ثم تندمج بموجة ارتطام، مع رفع Meniscus تحت المؤشر ومشاهد حركية للأيقونات |
-| 🎨 ثلاثة ثيمات متناغمة | أخضر زمردي، أحمر جمري، وذهبي ملكي — محفوظة في `localStorage` وتُطبق قبل أول رسم مع تلون سلس لقطرة الماء السائلة |
-| 🎬 الفِردِكت | مراجعات سينمائية ومسلسلات مع مبدّل أقسام مائي (Waterline) وقائمة مشاهدة محفوظة محليًا |
-| 🧭 قسم مساحة (`MASAHA`) | قائمة منسدلة تجمع البث الحيّ (`أون إير`)، ومكتبة `الكتب والقصص`، وصفحة `عنّي` التفاعلية |
-| 📺 فيديوهات | بطاقات فيديو مع مشغل YouTube خفيف عبر `react-lite-youtube-embed` |
-| 🔍 بحث مضمّن سريع | حقل بحث قابل للتمدد داخل النافبار (`⌘K` / `Ctrl+K`) مع مؤشر تمييز مطاطي واقتراحات فورية |
-| 🔊 محرك صوت | مؤثرات صوتية بـ Howler + Web Audio API مع نغمات زجاجية تفاعلية وتحكم بمستوى الصوت |
-| 📱 RTL كامل | عربي بالكامل، اتجاه من اليمين لليسار، وخطوط عربية مخصصة مع وضع مصغّر تلقائي عند التمرير |
-| 🎢 حركات نوابض | انتقالات فيزيائية بنوابض (Springs) عبر Framer Motion وفيزياء نوابض تحليلية |
-| 🦥 تحميل كسول | تحميل الصفحات بشكل كسول مع جلب مسبق للمسارات (`prefetchRoute`) وتقسيم ذكي للحزم |
-| 📜 تمرير سلس | تمرير ناعم فيزيائي عبر Lenis مع احترام `prefers-reduced-motion` و`prefers-reduced-transparency` |
+| 🧭 نافبار متكيّف مع كل قسم | يتحوّل مظهره، مادته، حوافه، ألوانه، وقوائمه المنسدلة تلقائياً عند الدخول لكل قسم (معرض **Structured** في الحكايات مع انعكاس تلقائي فوق الغرفة الداكنة، جريدة **Miranda** في المقالات، دفتر **Superr** في قاع الأفكار، شريط سينمائي في الفِردِكت، وزجاج سائل في الرئيسية وعن أحمد) |
+| 🤖 قاسم الافتراضي ثلاثي الأبعاد (AI) | مضيف افتراضي مدمج داخل النافبار بنموذج 3D (`Avaturn GLB`) وحركة نوابض مضبوطة (تتبّع للمؤشر، تنفّس، إيماءات يدين، تلويح، وإضاءة حافة تتبع الثيم) مع بديل أنمي سلس ومحرك ردود محلي/سحابي |
+| 🏛️ معرض الحكايات (`Structured`) | إعادة تصميم كاملة لقسم الحكايات بنظام **Renaissance Gallery on Putty Paper** (`src/design-systems/structured/`) مع كلمة عرض ضخمة، لوحات زيتية كلاسيكية، بطاقة مقصوصة الزوايا، غرفة Ink Room داكنة بقصّات دائرية ومؤشرات سداسية، وغرفة قراءة Bone |
+| 🌊 تبديل ثيم بحركة موجية | انتقال دائري (`View Transitions API` + حلقة موجية مضيئة + بديل متحرك لباقي المتصفحات + إشعار الثيم النشط) بين الثيمات الثلاثة: الزمردي، الجمري، والذهبي |
+| 🎬 الفِردِكت (`Cinema Reel`) | بكرة مراجعات سينمائية ومسلسلات تفاعلية بكامل الشاشة مع فيزياء التقاط نابضية |
+| 📰 المقالات المصوّرة (`Miranda`) | تصميم جريدة ثقافية عريضة بحرف استهلالي وفلاتر أبواب وعارض قراءة كامل لملفات Markdown |
+| 📓 قاع الأفكار (`Superr`) | دفتر مسودات وأفكار تفاعلي بملمس ورق واستيكرات وإمكانية إضافة شرارات أفكار جديدة |
+| 🧭 قسم مساحة (`MASAHA`) | يجمع البث الحيّ (`أون إير`)، ومكتبة `الكتب والقصص` ثلاثية الأبعاد، وتجربة `عن أحمد` التفاعلية (WebGL + Rive + GSAP) |
+| 🔍 بحث مدمج داخل النافبار | حقل بحث يتمدد بسلاسة داخل شريط التنقل (`⌘K` / `Ctrl+K` أو `/`) مع اقتراحات فورية متسامحة مع التشكيل والهمزات |
+| 📱 RTL كامل وتنسيق حركة موحّد | عائلات خط ثمانية الثلاث (`Display` / `Text` / `Sans`)، تمرير Lenis ناعم، نوابض Framer Motion متناسقة، واحترام كامل لـ `prefers-reduced-motion` |
 
 </div>
 
@@ -84,16 +75,13 @@
 | الطبقة | التقنية | الغرض |
 |---|---|---|
 | ⚛️ واجهة | React 19 | مكتبة واجهة المستخدم |
-| ⚡ بناء | Vite 8 (Rolldown) | أداة البناء السريعة |
-| 🎨 تنسيق | Tailwind CSS 4 | أنماط المرافق (Utility-first CSS) |
-| 🧩 مكونات | shadcn/ui + CVA | مكونات واجهة مرنة وقابلة للتخصيص |
-| 🎬 حركة | Framer Motion 14 | رسوم متحركة وانتقالات فيزيائية |
+| ⚡ بناء | Vite 8 (Rolldown) | أداة البناء السريعة وتقسيم الحزم |
+| 🎨 تنسيق | Tailwind CSS 4 + CSS Custom Properties | أنماط المرافق وأنظمة تصميم مخصّصة لكل قسم |
+| 🎬 حركة | Framer Motion 14 + GSAP + Lenis | انتقالات نوابض موحّدة وتمرير سلس فيزيائي |
+| 🧊 ثلاثي الأبعاد | Three.js + GLTFLoader + WebGL2 | نموذج قاسم الافتراضي 3D، المشهد الجوي، وتجربة عن أحمد |
 | 🗺️ توجيه | React Router 7 | توجيه تطبيق الصفحة الواحدة (SPA) |
-| 💎 زجاج بصري & WebGL | LiquidGlass + Waterline GLSL + liquid-gl | انكسار ضوئي بمرشحات SVG وشيدر كبسولة الماء السائلة عبر WebGL |
-| 🔊 صوت | Howler + Web Audio | مؤثرات صوتية ومشغل البث |
-| 📜 تمرير | Lenis | تمرير سلس فيزيائي |
-| 📝 محتوى | react-markdown + remark-gfm | عرض مقالات Markdown |
-| 🖼️ معرض | yet-another-react-lightbox | صندوق الضوء للصور |
+| 🔊 صوت | Howler + Web Audio + Web Speech | مؤثرات زجاجية، أجواء أون إير، ونطق قاسم الافتراضي |
+| 📝 محتوى | react-markdown + remark-gfm | عرض المقالات بصيغة Markdown |
 
 </div>
 
@@ -105,37 +93,50 @@
 
 | المسار | الصفحة | المكوّن |
 |---|---|---|
-| `/` | الرئيسية | `Home` |
+| `/` | الرئيسية (Apple Midnight + Origin Portrait) | `Home` |
 | `/verdict/movies` | الفِردِكت — حُكم السينما | `Reviews` |
 | `/verdict/series` | الفِردِكت — حُكم المسلسلات | `Reviews` |
 | `/reviews` ← `/verdict/movies` | إعادة توجيه تلقائية | — |
-| `/stories` | أرشيف الحكايات | `Stories` |
+| `/stories` | معرض الحكايات (`Structured Renaissance Gallery`) | `Stories` |
 | `/videos` | الفيديوهات | `Videos` |
 | `/videos/shorts` | المقاطع القصيرة | `Videos` |
-| `/articles` | المقالات | `Articles` |
-| `/articles/:slug` | عرض مقال | `ArticleView` |
+| `/articles` | المقالات المصوّرة (`Miranda Broadsheet`) | `Articles` |
+| `/articles/:slug` | عرض مقال كامل | `ArticleView` |
+| `/ideas` | قاع الأفكار (`Superr Tactile Notebook`) | `IdeasCastle` |
 | `/masaha/on-air` | مساحة — أون إير (البث الحيّ) | `OnAir` |
 | `/masaha/books` | مساحة — الكتب والقصص | `Books` |
-| `/masaha/about` | مساحة — عنّي | `About` |
+| `/masaha/ahmed` | مساحة — عن أحمد (تجربة WebGL + Rive التفاعلية) | `AboutAhmed` |
 | `/on-air` ← `/masaha/on-air` | إعادة توجيه تلقائية | — |
-| `/about` ← `/masaha/about` | إعادة توجيه تلقائية | — |
+| `/about` و `/masaha/about` ← `/masaha/ahmed` | إعادة توجيه تلقائية | — |
 | `*` | إعادة توجيه للرئيسية | — |
 
 </div>
 
 ---
 
-## 🎨 الثيمات
+## 🎨 الثيمات والانتقال الحركي
 
 <div dir="rtl">
 
-| الثيم | الوصف | المفتاح | النمط |
-|---|---|---|---|
-| 🟢 الأخضر | الزمردي — الثيم الأصلي | `green` | داكن |
-| 🔴 الأحمر | الجمري — تدرّج أحمر إلى كهرماني | `red` | داكن |
-| 🟡 الذهبي | الذهبي الملكي — داكن بلمسات كهرمانية فاخرة | `gold` | داكن |
+| الثيم | الوصف | المفتاح |
+|---|---|---|
+| 🟢 الأخضر | الزمردي — الثيم الأصلي | `green` |
+| 🔴 الأحمر | الجمري — تدرّج أحمر إلى كهرماني | `red` |
+| 🟡 الذهبي | الذهبي الفاخر — داكن بلمسات ذهبية دافئة | `gold` |
 
-يُحفظ الاختيار في `localStorage` (المفتاح `qassimz:theme`) ويُطبق من سكربت مضمّن في `index.html` **قبل تحميل React** — بلا وميض (FOUC-free).
+عند التبديل عبر سويتش الثيم في النافبار، تنطلق حركة دائرية موجية (`View Transitions API` + حلقة ضوئية متمددة بلون الثيم الجديد + نبضة تفاعلية وإشعار فوري)، مع حفظ الاختيار في `localStorage` (`qassimz:theme`) وتطبيقه قبل أول رسم بدون وميض.
+
+</div>
+
+---
+
+## 🤖 قاسم الافتراضي (AI)
+
+<div dir="rtl">
+
+- مدمج مباشرة بجانب الشعار في النافبار عبر [`NavHost.jsx`](src/components/ai/NavHost.jsx) ويتكيّف لوحه تلقائياً مع تصميم الصفحة الحالية.
+- يعرض نموذج **Avaturn 3D** (`public/avatar/qassim-3d.glb`) عبر [`Avatar3D.jsx`](src/components/ai/Avatar3D.jsx) مع بديل أنمي متزامن الشفاه ([`AnimeAvatar.jsx`](src/components/ai/AnimeAvatar.jsx)).
+- يعمل فوراً بوضع **محلي ذكي** يجيب من بيانات المنصة الحقيقية مع روابط مباشرة، ويمكن ربطه بخادم ذكاء اصطناعي خارجي عبر متغير البيئة الاختياري `VITE_QZ_AI_ENDPOINT`.
 
 </div>
 
@@ -145,49 +146,52 @@
 
 ```
 QassimChannel/
-├── .github/                    # GitHub Actions + الشارات وقوالب المساهمة
-│   ├── badges/                 # شارات SVG محلية سريعة التحميل
-│   ├── workflows/
-│   │   └── deploy-pages.yml    # نشر تلقائي على GitHub Pages
-│   ├── ISSUE_TEMPLATE/         # قوالب المشكلات (عربي)
-│   └── PULL_REQUEST_TEMPLATE.md
+├── .github/
+│   ├── badges/                     # شارات SVG محلية
+│   └── workflows/
+│       ├── deploy-pages.yml        # نشر تلقائي على GitHub Pages من main
+│       └── preview-build.yml       # بناء تجريبي للفروع
 │
-├── public/                     # أصول ثابتة (لا تُعالج بالبناء)
-│   ├── fonts/                  # خطوط عربية (OTF + WOFF2)
-│   │   ├── thmanyahsans/       #   ثمانية Sans — 5 أوزان
-│   │   ├── thmanyahserifdisplay/   ثمانية Serif Display — 5 أوزان
-│   │   ├── thmanyahseriftext/  #   ثمانية Serif Text — 5 أوزان
-│   │   ├── A Farhood/          #   خط A Farhood الزخرفي
-│   │   └── liftaswash/         #   خط Liftaswash اليدوي
-│   ├── fractal/optimized/      # 15 صورة فراكتالية (WebP)
-│   ├── images/                 # الشعار + خريطة العدسة
-│   └── sounds/                 # صوت البث (ON AIR)
+├── public/
+│   ├── about-ahmed/                # أصول تجربة «عن أحمد» (WebGL + Rive + GSAP)
+│   ├── admin/                      # لوحة إدارة المحتوى
+│   ├── avatar/                     # نموذج قاسم 3D (qassim-3d.glb) ورسوم الأنمي
+│   ├── fonts/                      # عائلات خط ثمانية الثلاث (Display / Text / Sans)
+│   ├── fractal/optimized/          # الخلفيات الفراكتالية
+│   ├── images/                     # الشعار، بورتريه أحمد، ولوحات معرض الحكايات الزيتية
+│   ├── sounds/                     # موسيقى أون إير
+│   └── vendor/                     # Three.js + GLTFLoader المحلي
 │
 ├── src/
 │   ├── components/
-│   │   ├── brand/              # الشعار والهوية
-│   │   ├── cards/              # بطاقات المراجعات والفيديوهات
-│   │   ├── glass/              # LiquidGlass.tsx + WaterlineCapsule.tsx + طبقات الزجاج
-│   │   ├── layout/             # النافبار الزجاجي السائل، التذييل، البحث
-│   │   └── ui/                 # مفاتيح الثيم، الأيقونات المتحركة، أدوات التفاعل
-│   ├── content/articles/       # المقالات بصيغة Markdown
-│   ├── context/                # حالة الصوت العامة (SoundContext)
-│   ├── data/                   # البيانات: مراجعات، فيديوهات، مقالات
-│   ├── hooks/                  # خطافات الزجاج والعدسة
-│   ├── lib/                    # النوابض، محرك الصوت، أدوات مساعدة
-│   ├── pages/                  # صفحات التطبيق (9 صفحات شاملة الكتب وعنّي)
-│   ├── utils/                  # محرك الزجاج السائل، الثيمات، المؤثرات الصوتية
-│   ├── App.jsx                 # المكوّن الرئيسي + التوجيه
-│   ├── main.jsx                # نقطة الدخول
-│   └── index.css               # كل الأنماط والثيمات الثلاثة ومشاهد أيقونات Waterline
+│   │   ├── ai/                     # قاسم الافتراضي (Avatar3D, AnimeAvatar, AiHost, NavHost, brain, speech)
+│   │   ├── brand/                  # شعار قاسمز
+│   │   ├── cards/                  # بطاقات المراجعات والفيديوهات
+│   │   ├── glass/                  # بطاقات وفلاتر الزجاج
+│   │   ├── home/                   # شرائح السحب والمقارنة في الرئيسية
+│   │   ├── layout/                 # الفوتر الموحّد
+│   │   ├── motion/                 # نظام الحركة والنوابض الموحّدة
+│   │   ├── nav/                    # النافبار المتكيّف (SiteNav, NavDropdown, navConfig)
+│   │   ├── onair/                  # ورقة أون إير التفاعلية
+│   │   ├── qz/                     # مشغّل السينما ومكوّنات الواجهة
+│   │   ├── scene/                  # المشهد الجوي WebGL2
+│   │   ├── ui/                     # سويتش الثيم WebGL، زر العودة للأعلى، التلميحات
+│   │   └── verdict/                # بكرة الفِردِكت السينمائية
+│   ├── content/articles/           # المقالات بصيغة Markdown
+│   ├── data/                       # بيانات الفيديوهات، المراجعات، المقالات، الحكايات، الكتب
+│   ├── design-systems/structured/  # ملفات نظام تصميم Structured الكاملة (DESIGN.md, variables.css, theme.css, tokens.json)
+│   ├── lib/                        # Lenis وثوابت الحركة والنوابض
+│   ├── pages/                      # صفحات التطبيق (Home, Reviews, Stories, Videos, Articles, ArticleView, IdeasCastle, OnAir, Books, AboutAhmed)
+│   ├── styles/                     # أنماط الأقسام (nav, base, home, stories-structured, articles-miranda, ideas, cinema, reading, books, about, footer, a11y)
+│   ├── utils/                      # الثيمات والانتقال الموجي، الأصوات، ومسارات الأصول
+│   ├── App.jsx                     # المكوّن الرئيسي والتوجيه
+│   ├── main.jsx                    # نقطة الدخول
+│   └── index.css                   # ملف التنسيق الرئيسي
 │
-├── .editorconfig               # إعدادات المحرر الموحدة
-├── .prettierrc.json            # إعدادات Prettier
-├── components.json             # إعدادات shadcn/ui
-├── index.html                  # HTML الرئيسي (سكربت الثيم + SEO)
-├── package.json                # الاعتمادات والأوامر
-├── tsconfig.json               # إعدادات TypeScript (paths)
-└── vite.config.js              # إعدادات Vite + تقسيم الحزم
+├── index.html
+├── package.json
+├── tsconfig.json
+└── vite.config.js
 ```
 
 ---
@@ -215,7 +219,6 @@ npm install
 
 # تشغيل بيئة التطوير
 npm run dev
-# ← يفتح على http://localhost:5173
 ```
 
 ---
@@ -241,7 +244,7 @@ npm run dev
 
 <div dir="rtl">
 
-المشروع يُنشر تلقائيًا على **GitHub Pages** عند الدفع إلى فرع `main`:
+يُنشر المشروع تلقائيًا على **GitHub Pages** عند الدفع إلى فرع `main`:
 
 </div>
 
@@ -253,51 +256,6 @@ main → GitHub Actions → npm ci → vite build → GitHub Pages
 
 **رابط النشر:** [ahmedqassimtv-commits.github.io/QassimChannel](https://ahmedqassimtv-commits.github.io/QassimChannel/)
 
-<details>
-<summary>📋 تفاصيل خط النشر (CI/CD Pipeline)</summary>
-
-1. **المحفز:** Push إلى `main` أو تشغيل يدوي
-2. **البناء:** `npm ci` ثم `npm run build -- --base=/QassimChannel/`
-3. **SPA Fallback:** نسخ `index.html` إلى `404.html` لدعم React Router
-4. **النشر:** GitHub Actions إلى GitHub Pages
-5. **Concurrency:** مجموعة `pages` مع منع الإلغاء لضمان نشر مستقر
-
-</details>
-
-</div>
-
----
-
-## 🎨 الأصول والهوية البصرية
-
-<div dir="rtl">
-
-الموقع عربي بالكامل، وهويته مبنية على ثلاثة عناصر: **خط عربي مخصوص**، **فن فراكتالي**، و**زجاج سائل**.
-
-| الأصل | الحجم | دوره في الموقع |
-|---|---|---|
-| **خطوط ثمانية** (Sans + Serif Display + Serif Text) | 5.7 MB | خطوط النصوص والعناوين — 5 أوزان لكل عائلة |
-| **A Farhood** | ⊂ أعلاه | خط زخرفي للعناوين المميزة |
-| **Liftaswash** | ⊂ أعلاه | خط يدوي للمسات البصرية |
-| **فن فراكتالي** (15 صورة WebP) | 4.9 MB | الخلفيات الزجاجية التي تعطي الموقع عمقه |
-| **خريطة العدسة** | 20 KB | الصورة التي تحرك انكسار الضوء في عدسة النافبار |
-| **شعار قَاسِمز** (SVG) | < 1 KB | الهوية — يعمل على أي مقاس |
-| **صوت ON AIR** (MP3) | 3.6 MB | موسيقى هادئة تعمل مع البث |
-
-</div>
-
----
-
-## 📦 المحتوى
-
-<div dir="rtl">
-
-محتوى حقيقي من ملفات `src/data/` — بلا محتوى مختلق:
-
-- **🎬 مراجعات (3):** Arrival، Dune: Part Two، Blue Eye Samurai
-- **📺 فيديوهات (4):** «حكاية مدينة لا تنام»، «كيف نحكي بالصورة؟»، «ضوء آخر النهار»، «من خلف الكواليس»
-- **📝 مقالات وحكايات:** من ملفات البيانات بصيغة Markdown، مع عارض مقالات كامل
-
 </div>
 
 ---
@@ -307,14 +265,6 @@ main → GitHub Actions → npm ci → vite build → GitHub Pages
 <div dir="rtl">
 
 نرحب بالمساهمات! اقرأ [CONTRIBUTING.md](./CONTRIBUTING.md) للتفاصيل.
-
-ملخص سريع:
-
-1. اعمل Fork للمستودع
-2. أنشئ فرعًا جديدًا: `git checkout -b feature/اسم-الميزة`
-3. نفّذ تعديلاتك مع التزامات واضحة
-4. تأكد من عمل البناء: `npm run build`
-5. افتح Pull Request
 
 </div>
 
