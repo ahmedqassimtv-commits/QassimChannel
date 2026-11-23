@@ -8,7 +8,7 @@ const MARGIN = 14
 const WORLD_HZ = 30
 const WORLD_SLACK = 0.004
 const PILL_RATIO = 1.85
-const CLOCK_DAY = 12.2
+const CLOCK_START = 16.2 // أول المفتاح عصرية (مفيش ثيم نهاري فاتح)
 const CLOCK_SUNSET = 18.0
 const CLOCK_NIGHT = 21.5
 const CLOCK_SLEEP = 23.4
@@ -472,15 +472,27 @@ void main() {
   outColor = vec4(clamp(color, 0.0, 1.0), alpha);
 }`
 
-// التوافق التام مع الهوية البصرية للموقع:
-// green -> الثيم الزمردي الداكن (ليل زمردي + نجوم + نافذة مضيئة)
-// red   -> الثيم الجمري (غروب أحمر وعنبر دافئ)
-// blue  -> الثيم الرملي الدافئ (#EBE2CC • #DED6C1 • #B7B09E • نهار مشرق)
+// التوافق التام مع الهوية البصرية للموقع (من غير ثيم فاتح):
+// red   -> الثيم الجمري (عصرية ذهبية وعنبر دافئ)
+// green -> الثيم الزمردي (غروب زمردي)
+// night -> الثيم الليلي (ليل نيلي + نجوم + نافذة مضيئة)
 const THEME_CONFIGS = {
-  green: {
+  night: {
     pos: 1,
     clock: CLOCK_NIGHT,
-    label: 'الثيم الزمردي الأصلي',
+    label: 'الثيم الليلي',
+    bg: '#E6E9FF',
+    surface: '#3340B8',
+    fg: '#070A1F',
+    muted: '#9AA6F2',
+    accent: '#8496FF',
+    shellDay: '#1A2370',
+    shellNight: '#0D1440',
+  },
+  green: {
+    pos: 0.5,
+    clock: CLOCK_SUNSET,
+    label: 'الثيم الزمردي',
     bg: '#DAF1DE',
     surface: '#235347',
     fg: '#051F20',
@@ -490,8 +502,8 @@ const THEME_CONFIGS = {
     shellNight: '#0B2B26',
   },
   red: {
-    pos: 0.5,
-    clock: CLOCK_SUNSET,
+    pos: 0,
+    clock: CLOCK_START,
     label: 'الثيم الجمري',
     bg: '#FFE7C2',
     surface: '#8A2A12',
@@ -501,29 +513,17 @@ const THEME_CONFIGS = {
     shellDay: '#3B160C',
     shellNight: '#261009',
   },
-  blue: {
-    pos: 0,
-    clock: CLOCK_DAY,
-    label: 'الثيم الرملي الدافئ',
-    bg: '#EBE2CC',
-    surface: '#8A8271',
-    fg: '#1F1D18',
-    muted: '#B7B09E',
-    accent: '#D99B38',
-    shellDay: '#CFC6B1',
-    shellNight: '#B7B09E',
-  },
 }
 
-const THEME_ORDER = ['green', 'red', 'blue']
+const THEME_ORDER = ['red', 'green', 'night']
 
 function nearestThemeForPos(pos) {
-  if (pos >= 0.75) return 'green'
-  if (pos >= 0.25) return 'red'
-  return 'blue'
+  if (pos >= 0.75) return 'night'
+  if (pos >= 0.25) return 'green'
+  return 'red'
 }
 
-export default function DaylightThemeSwitch({ theme = 'green', onCycleTheme, className = '' }) {
+export default function DaylightThemeSwitch({ theme = 'night', onCycleTheme, className = '' }) {
   const rootRef = useRef(null)
   const controllerRef = useRef(null)
   const themeRef = useRef(theme)
@@ -534,7 +534,7 @@ export default function DaylightThemeSwitch({ theme = 'green', onCycleTheme, cla
   useEffect(() => {
     const root = rootRef.current
     if (!root) return
-    const cfg = THEME_CONFIGS[theme] || THEME_CONFIGS.green
+    const cfg = THEME_CONFIGS[theme] || THEME_CONFIGS.night
     root.style.setProperty('--_bg', cfg.bg)
     root.style.setProperty('--_surface', cfg.surface)
     root.style.setProperty('--_fg', cfg.fg)
@@ -1615,9 +1615,9 @@ export default function DaylightThemeSwitch({ theme = 'green', onCycleTheme, cla
     let suppressClick = 0
 
     const clockOf = () => {
-      if (branch === 'am') return mix(36, amStart, x)
+      if (branch === 'am') return mix(24 + CLOCK_START, amStart, x)
       if (x >= 0.98 && !moving && !drag) return nightClock
-      return CLOCK_DAY + (CLOCK_NIGHT - CLOCK_DAY) * x
+      return CLOCK_START + (CLOCK_NIGHT - CLOCK_START) * x
     }
 
     const beginTravel = () => {
@@ -1867,7 +1867,7 @@ export default function DaylightThemeSwitch({ theme = 'green', onCycleTheme, cla
         target = cfg.pos
         velocity = clamp(speed, -3, 3)
         moving = true
-        playGlassToggle(nextTheme !== 'blue')
+        playGlassToggle(nextTheme === 'night')
         onCycleRef.current?.(nextTheme)
       }
       wake()

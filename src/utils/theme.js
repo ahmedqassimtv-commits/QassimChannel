@@ -5,16 +5,14 @@ import { useSyncExternalStore } from 'react'
  * - 'night' → الليلي: خلفية macOS الداكنة (نيلي ⇠ بنفسجي) — الافتراضي
  * - 'green' → الأخضر الزمردي (الأصلي)
  * - 'red'   → الجمري: تدريج أحمر ⇠ أصفر
- * - 'blue'  → اللبني: الثيم الفاتح (خلفية فاتحة ونص داكن)
  */
 
-export const THEMES = ['night', 'green', 'red', 'blue']
+export const THEMES = ['night', 'green', 'red']
 const STORAGE_KEY = 'qassimz:theme'
 const META_COLORS = {
   night: '#070A1F',
   green: '#051F20',
   red: '#1A0A07',
-  blue: '#EBE2CC',
 }
 
 const listeners = new Set()

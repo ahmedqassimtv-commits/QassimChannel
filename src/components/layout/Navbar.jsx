@@ -24,7 +24,6 @@ import {
   Video,
   BookOpen,
   Radio,
-  UserRound,
   Film,
   Tv,
   ChevronDown,
@@ -169,7 +168,6 @@ const SEARCH_INDEX = [
   { title: 'الفيديوهات', sub: 'حلقات وثائقية ولقطات قصيرة', to: '/videos', icon: Video },
   { title: 'المقالات', sub: 'قراءات ومقالات متأنية', to: '/articles', icon: BookOpen },
   { title: 'أون إير — ON AIR', sub: 'منشورات وحضور قاسم الحيّ', to: '/on-air', icon: Radio },
-  { title: 'عن أحمد', sub: 'الملف التعريفي', to: '/about', icon: UserRound },
 ]
 
 const NAV_ITEMS = [
@@ -177,7 +175,6 @@ const NAV_ITEMS = [
   { to: '/videos', label: 'الفيديوهات', icon: Video },
   { to: '/articles', label: 'المقالات', icon: BookOpen },
   { to: '/on-air', label: 'أون إير', badge: 'ON AIR', icon: Radio },
-  { to: '/about', label: 'عن أحمد', icon: UserRound },
 ]
 
 function resolveRouteKey(pathname) {
@@ -187,7 +184,6 @@ function resolveRouteKey(pathname) {
   if (pathname.startsWith('/videos')) return '/videos'
   if (pathname.startsWith('/articles')) return '/articles'
   if (pathname.startsWith('/on-air')) return '/on-air'
-  if (pathname.startsWith('/about')) return '/about'
   return '/'
 }
 
@@ -1062,7 +1058,7 @@ export default function Navbar() {
   }
 
   const isVerdictActive = activeKey === 'verdict'
-  const isLightTheme = theme === 'blue' // اللبني هو الثيم الفاتح الوحيد
+  const isLightTheme = false // مفيش ثيم فاتح
 
   return (
     <header
@@ -1082,11 +1078,7 @@ export default function Navbar() {
           glowOpacity.set(0)
         }}
         aria-label="التنقل الرئيسي"
-        className={`qassimz-apple-nav-shell qz-glass-rim group/nav relative z-20 mx-auto flex items-center justify-between gap-2 overflow-hidden rounded-full border-y border-x-0 px-2.5 py-1.5 transition-[background-color,border-color] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-          isLightTheme
-            ? 'border-[#1F1D18]/14 bg-[#EBE2CC]/74'
-            : 'border-white/14 bg-[color:var(--qz-ink)]/34'
-        } ${
+        className={`qassimz-apple-nav-shell qz-liquid-nav group/nav relative z-20 mx-auto flex items-center justify-between gap-2 overflow-hidden rounded-full px-2.5 py-1.5 ${
           searchExpanded
             ? 'w-full max-w-2xl'
             : isCompact

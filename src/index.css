@@ -1,8 +1,8 @@
-@import "tailwindcss";
-@import "yet-another-react-lightbox/styles.css";
-@import "yet-another-react-lightbox/plugins/captions.css";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import 'tailwindcss';
+@import 'yet-another-react-lightbox/styles.css';
+@import 'yet-another-react-lightbox/plugins/captions.css';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
 
 @custom-variant dark (&:is(.dark *));
 @plugin "@tailwindcss/typography";
@@ -148,7 +148,10 @@
   font-weight: 400;
   font-style: normal;
   font-display: swap;
-  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+  font-feature-settings:
+    'kern' 1,
+    'liga' 1,
+    'calt' 1;
 }
 
 /* ==========================================================================
@@ -203,19 +206,28 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, .font-display {
+h1,
+h2,
+h3,
+h4,
+.font-display {
   font-family: var(--font-display);
-  font-feature-settings: "ss01" 1;
+  font-feature-settings: 'ss01' 1;
 }
 
 .thmanyah-swash {
   font-family: var(--font-display);
-  font-feature-settings: "ss01" 1, "salt" 1;
+  font-feature-settings:
+    'ss01' 1,
+    'salt' 1;
 }
 
-article, .font-text {
+article,
+.font-text {
   font-family: var(--font-text);
-  font-feature-settings: "ss01" 0, "salt" 0;
+  font-feature-settings:
+    'ss01' 0,
+    'salt' 0;
   line-height: 1.95;
 }
 
@@ -228,7 +240,10 @@ article, .font-text {
 .font-history,
 .font-afarhood {
   font-family: var(--font-afarhood) !important;
-  font-feature-settings: 'kern' 1, 'liga' 1, 'calt' 1;
+  font-feature-settings:
+    'kern' 1,
+    'liga' 1,
+    'calt' 1;
   letter-spacing: 0;
   line-height: 1.75;
   word-break: keep-all;
@@ -256,7 +271,8 @@ article, .font-text {
 }
 
 .liquid-glass-hover {
-  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+  transition:
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
     border-color 0.32s ease,
     box-shadow 0.32s ease;
 }
@@ -319,7 +335,9 @@ article, .font-text {
 
 /* لوجو قاسمز الزجاجي */
 .qz-glass-logo {
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
   animation: qz-logo-idle-sheen 9s ease-in-out 2.5s infinite;
 }
 .qz-glass-logo .qz-glass-sheen {
@@ -332,27 +350,52 @@ article, .font-text {
   animation: qz-logo-sheen 0.9s cubic-bezier(0.3, 0.7, 0.2, 1) forwards;
 }
 @keyframes qz-logo-sheen {
-  0% { translate: 0 0; opacity: 0; }
-  15% { opacity: 1; }
-  100% { translate: 2200px 0; opacity: 0.2; }
+  0% {
+    translate: 0 0;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    translate: 2200px 0;
+    opacity: 0.2;
+  }
 }
 @keyframes qz-logo-idle-sheen {
-  0%, 88%, 100% { opacity: 1; }
-  94% { opacity: 0.92; }
+  0%,
+  88%,
+  100% {
+    opacity: 1;
+  }
+  94% {
+    opacity: 0.92;
+  }
 }
 
 /* ==========================================================================
    8. الثيمات (متغيرات الألوان)
    ========================================================================== */
 :root {
-  --qz-ink: #051F20;    --qz-ink-rgb: 5 31 32;
-  --qz-deep: #0B2B26;   --qz-deep-rgb: 11 43 38;
-  --qz-forest: #163832; --qz-forest-rgb: 22 56 50;
-  --qz-moss: #235347;   --qz-moss-rgb: 35 83 71;
-  --qz-sage: #8EB69B;   --qz-sage-rgb: 142 182 155;
-  --qz-mint: #DAF1DE;   --qz-mint-rgb: 218 241 222;
-  --qz-x1: #1E4D42; --qz-x2: #1B463B; --qz-x3: #123B33; --qz-x4: #0F352E;
-  --qz-x5: #0D2F29; --qz-x6: #07120C; --qz-x7: #EEF8F0;
+  --qz-ink: #051f20;
+  --qz-ink-rgb: 5 31 32;
+  --qz-deep: #0b2b26;
+  --qz-deep-rgb: 11 43 38;
+  --qz-forest: #163832;
+  --qz-forest-rgb: 22 56 50;
+  --qz-moss: #235347;
+  --qz-moss-rgb: 35 83 71;
+  --qz-sage: #8eb69b;
+  --qz-sage-rgb: 142 182 155;
+  --qz-mint: #daf1de;
+  --qz-mint-rgb: 218 241 222;
+  --qz-x1: #1e4d42;
+  --qz-x2: #1b463b;
+  --qz-x3: #123b33;
+  --qz-x4: #0f352e;
+  --qz-x5: #0d2f29;
+  --qz-x6: #07120c;
+  --qz-x7: #eef8f0;
   --qz-glow-rgb: 142 240 210;
   --qz-bg-filter: none;
   --qz-grad: linear-gradient(120deg, var(--qz-mint), var(--qz-sage));
@@ -360,90 +403,70 @@ article, .font-text {
 
 /* الليلي — ألوان خلفية macOS Tahoe الداكنة (نيلي ⇠ بنفسجي) */
 html[data-theme='night'] {
-  --qz-ink: #070A1F;    --qz-ink-rgb: 7 10 31;
-  --qz-deep: #0D1440;   --qz-deep-rgb: 13 20 64;
-  --qz-forest: #1A2370; --qz-forest-rgb: 26 35 112;
-  --qz-moss: #3340B8;   --qz-moss-rgb: 51 64 184;
-  --qz-sage: #9AA6F2;   --qz-sage-rgb: 154 166 242;
-  --qz-mint: #E6E9FF;   --qz-mint-rgb: 230 233 255;
-  --qz-x1: #2A3394; --qz-x2: #232B80; --qz-x3: #1A2166; --qz-x4: #141A52;
-  --qz-x5: #0F1542; --qz-x6: #04060F; --qz-x7: #F2F3FF;
+  --qz-ink: #070a1f;
+  --qz-ink-rgb: 7 10 31;
+  --qz-deep: #0d1440;
+  --qz-deep-rgb: 13 20 64;
+  --qz-forest: #1a2370;
+  --qz-forest-rgb: 26 35 112;
+  --qz-moss: #3340b8;
+  --qz-moss-rgb: 51 64 184;
+  --qz-sage: #9aa6f2;
+  --qz-sage-rgb: 154 166 242;
+  --qz-mint: #e6e9ff;
+  --qz-mint-rgb: 230 233 255;
+  --qz-x1: #2a3394;
+  --qz-x2: #232b80;
+  --qz-x3: #1a2166;
+  --qz-x4: #141a52;
+  --qz-x5: #0f1542;
+  --qz-x6: #04060f;
+  --qz-x7: #f2f3ff;
   --qz-glow-rgb: 132 150 255;
-  --qz-grad: linear-gradient(120deg, #E6E9FF 0%, #B9C1FF 45%, #9AA6F2 75%, #B48CF2 100%);
-  --qz-bg-tint: linear-gradient(160deg, #070A1F 0%, #0D1440 40%, #1A2370 75%, #3340B8 100%);
-  --color-emerald-100: #E6E9FF;
-  --color-emerald-200: #C6CDFF;
-  --color-emerald-300: #9EAAFF;
-  --color-emerald-400: #7180F5;
+  --qz-grad: linear-gradient(120deg, #e6e9ff 0%, #b9c1ff 45%, #9aa6f2 75%, #b48cf2 100%);
+  --qz-bg-tint: linear-gradient(160deg, #070a1f 0%, #0d1440 40%, #1a2370 75%, #3340b8 100%);
+  --color-emerald-100: #e6e9ff;
+  --color-emerald-200: #c6cdff;
+  --color-emerald-300: #9eaaff;
+  --color-emerald-400: #7180f5;
   color-scheme: dark;
 }
 
 html[data-theme='red'] {
-  --qz-ink: #1A0A07;    --qz-ink-rgb: 26 10 7;
-  --qz-deep: #261009;   --qz-deep-rgb: 38 16 9;
-  --qz-forest: #3B160C; --qz-forest-rgb: 59 22 12;
-  --qz-moss: #8A2A12;   --qz-moss-rgb: 138 42 18;
-  --qz-sage: #F2A65A;   --qz-sage-rgb: 242 166 90;
-  --qz-mint: #FFE7C2;   --qz-mint-rgb: 255 231 194;
-  --qz-x1: #9A3412; --qz-x2: #7C2D12; --qz-x3: #5C1D0C; --qz-x4: #4A170A;
-  --qz-x5: #3A1208; --qz-x6: #120604; --qz-x7: #FFF4E3;
+  --qz-ink: #1a0a07;
+  --qz-ink-rgb: 26 10 7;
+  --qz-deep: #261009;
+  --qz-deep-rgb: 38 16 9;
+  --qz-forest: #3b160c;
+  --qz-forest-rgb: 59 22 12;
+  --qz-moss: #8a2a12;
+  --qz-moss-rgb: 138 42 18;
+  --qz-sage: #f2a65a;
+  --qz-sage-rgb: 242 166 90;
+  --qz-mint: #ffe7c2;
+  --qz-mint-rgb: 255 231 194;
+  --qz-x1: #9a3412;
+  --qz-x2: #7c2d12;
+  --qz-x3: #5c1d0c;
+  --qz-x4: #4a170a;
+  --qz-x5: #3a1208;
+  --qz-x6: #120604;
+  --qz-x7: #fff4e3;
   --qz-glow-rgb: 255 160 70;
-  --qz-grad: linear-gradient(120deg, #E5372B 0%, #F2672B 35%, #F59E2B 65%, #FFD54A 100%);
-  --qz-bg-tint: linear-gradient(150deg, #1A0A07 0%, #6E1A0C 32%, #B9300F 58%, #E0731C 80%, #F2C14A 100%);
-  --color-emerald-100: #FFE9C7;
-  --color-emerald-200: #FFD39A;
-  --color-emerald-300: #FDB45C;
-  --color-emerald-400: #F2672B;
+  --qz-grad: linear-gradient(120deg, #e5372b 0%, #f2672b 35%, #f59e2b 65%, #ffd54a 100%);
+  --qz-bg-tint: linear-gradient(
+    150deg,
+    #1a0a07 0%,
+    #6e1a0c 32%,
+    #b9300f 58%,
+    #e0731c 80%,
+    #f2c14a 100%
+  );
+  --color-emerald-100: #ffe9c7;
+  --color-emerald-200: #ffd39a;
+  --color-emerald-300: #fdb45c;
+  --color-emerald-400: #f2672b;
   color-scheme: dark;
-}
-
-html[data-theme='blue'] {
-  --qz-ink: #EBE2CC;    --qz-ink-rgb: 235 226 204;
-  --qz-deep: #DED6C1;   --qz-deep-rgb: 222 214 193;
-  --qz-forest: #CFC6B1; --qz-forest-rgb: 207 198 177;
-  --qz-moss: #B7B09E;   --qz-moss-rgb: 183 176 158;
-  --qz-sage: #5E584B;   --qz-sage-rgb: 94 88 75;
-  --qz-mint: #1F1D18;   --qz-mint-rgb: 31 29 24;
-  --qz-x1: #CFC6B1; --qz-x2: #B7B09E; --qz-x3: #DED6C1; --qz-x4: #E5DEC9;
-  --qz-x5: #EBE2CC; --qz-x6: #F5EFE0; --qz-x7: #1A1814;
-  --qz-glow-rgb: 94 88 75;
-  --qz-grad: linear-gradient(120deg, #1F1D18 0%, #3D382E 45%, #5E584B 80%, #7A7364 100%);
-  --qz-bg-tint: linear-gradient(160deg, #EBE2CC 0%, #DED6C1 38%, #CFC6B1 72%, #B7B09E 100%);
-  --color-emerald-100: #1F1D18;
-  --color-emerald-200: #2E2B24;
-  --color-emerald-300: #4A453A;
-  --color-emerald-400: #6E6758;
-  color-scheme: light;
-}
-
-html[data-theme='blue'] .text-white,
-html[data-theme='blue'] .text-white\/95,
-html[data-theme='blue'] .text-white\/90 {
-  color: #1F1D18 !important;
-  text-shadow: none !important;
-}
-
-html[data-theme='blue'] .text-white\/80,
-html[data-theme='blue'] .text-white\/75,
-html[data-theme='blue'] .text-white\/70,
-html[data-theme='blue'] .text-white\/60,
-html[data-theme='blue'] .text-white\/50 {
-  color: #3D382E !important;
-  text-shadow: none !important;
-}
-
-html[data-theme='blue'] .border-white\/25,
-html[data-theme='blue'] .border-white\/24,
-html[data-theme='blue'] .border-white\/22,
-html[data-theme='blue'] .border-white\/20,
-html[data-theme='blue'] .border-white\/18,
-html[data-theme='blue'] .border-white\/16 {
-  border-color: rgba(31, 29, 24, 0.16) !important;
-}
-
-html[data-theme='blue'] .bg-white\/10,
-html[data-theme='blue'] .bg-white\/8 {
-  background-color: rgba(31, 29, 24, 0.05) !important;
 }
 
 html[data-theme='red'] img:not(.grayscale):not([data-no-tint]),
@@ -454,10 +477,7 @@ html[data-theme='red'] iframe {
 
 html[data-theme='red'] h1,
 html[data-theme='red'] .font-cinema,
-html[data-theme='red'] h2.font-history,
-html[data-theme='blue'] h1,
-html[data-theme='blue'] .font-cinema,
-html[data-theme='blue'] h2.font-history {
+html[data-theme='red'] h2.font-history {
   background-image: var(--qz-grad);
   -webkit-background-clip: text;
   background-clip: text;
@@ -474,7 +494,11 @@ html[data-theme='blue'] h2.font-history {
 html.qz-theme-switching *,
 html.qz-theme-switching *::before,
 html.qz-theme-switching *::after {
-  transition: background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease, fill 0.5s ease,
+  transition:
+    background-color 0.5s ease,
+    border-color 0.5s ease,
+    color 0.5s ease,
+    fill 0.5s ease,
     box-shadow 0.5s ease !important;
 }
 
@@ -482,11 +506,7 @@ html.qz-theme-switching *::after {
    9. Liquid Glass — نظام المؤشر الموحد واقتراحات البحث في الـ Navbar
    ========================================================================== */
 .qz-glass-knob {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.26) 0%,
-    rgba(255, 255, 255, 0.12) 100%
-  );
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.12) 100%);
   -webkit-backdrop-filter: blur(12px) saturate(150%);
   backdrop-filter: blur(12px) saturate(150%);
   box-shadow:
@@ -514,39 +534,12 @@ html.qz-theme-switching *::after {
   will-change: transform, width;
 }
 
-html[data-theme='blue'] .qz-nav-pill {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.74) 0%,
-    rgba(235, 226, 204, 0.86) 100%
-  );
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    inset 0 0 0 1px rgba(31, 29, 24, 0.16),
-    0 4px 12px rgba(31, 29, 24, 0.09);
-}
-
 /* مؤشر Highlight المطاطي لنتائج البحث (Spring Dropdown) */
 .qz-search-highlight {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.14) 0%,
-    rgba(255, 255, 255, 0.06) 100%
-  );
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.06) 100%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.22),
     inset 0 0 0 1px rgba(255, 255, 255, 0.16);
-}
-
-html[data-theme='blue'] .qz-search-highlight {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.72) 0%,
-    rgba(235, 226, 204, 0.84) 100%
-  );
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    inset 0 0 0 1px rgba(31, 29, 24, 0.14);
 }
 
 /* شريط التبويبات في الصفحات الداخلية */
@@ -582,19 +575,6 @@ html[data-theme='blue'] .qz-search-highlight {
     0 4px 12px rgba(0, 0, 0, 0.22) !important;
 }
 
-html[data-theme='blue'] .qz-seg-bubble,
-html[data-theme='blue'] [data-liquid-active='true'] > .qz-seg-bubble {
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.78) 0%,
-    rgba(235, 226, 204, 0.9) 100%
-  ) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    inset 0 0 0 1px rgba(31, 29, 24, 0.18),
-    0 4px 12px rgba(31, 29, 24, 0.12) !important;
-}
-
 .qz-menu-bubble {
   border-radius: 1rem;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
@@ -610,20 +590,23 @@ html[data-theme='blue'] [data-liquid-active='true'] > .qz-seg-bubble {
 
 .qz-vol-track {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.07));
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.35), inset 0 0 0 0.5px rgba(255, 255, 255, 0.14);
+  box-shadow:
+    inset 0 1px 1px rgba(0, 0, 0, 0.35),
+    inset 0 0 0 0.5px rgba(255, 255, 255, 0.14);
 }
 .qz-vol-fill {
   background: linear-gradient(90deg, var(--qz-mint), #ffffff);
   box-shadow: 0 0 10px rgb(var(--qz-mint-rgb) / 0.45);
 }
-html[data-theme='red'] .qz-vol-fill,
-html[data-theme='blue'] .qz-vol-fill {
+html[data-theme='red'] .qz-vol-fill {
   background: var(--qz-grad);
   box-shadow: 0 0 12px rgb(var(--qz-glow-rgb) / 0.5);
 }
 .qz-vol-thumb-solid {
   background: linear-gradient(180deg, #ffffff, #e9eff2);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35), 0 0 0 0.5px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.35),
+    0 0 0 0.5px rgba(0, 0, 0, 0.08);
 }
 
 /* ==========================================================================
@@ -640,26 +623,11 @@ html[data-theme='blue'] .qz-vol-fill {
   ) !important;
 }
 
-html[data-theme='blue'] .qz-glass-layer {
-  background: linear-gradient(
-    180deg,
-    rgba(245, 239, 224, 0.72) 0%,
-    rgba(235, 226, 204, 0.82) 100%
-  ) !important;
-}
-
 .qz-glass-rim {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
     inset 0 -1px 0 rgba(255, 255, 255, 0.05),
     0 14px 36px rgba(0, 0, 0, 0.28);
-}
-
-html[data-theme='blue'] .qz-glass-rim {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.85),
-    inset 0 -1px 0 rgba(31, 29, 24, 0.08),
-    0 12px 30px rgba(31, 29, 24, 0.12);
 }
 
 .qz-seg.qz-seg-glass {
@@ -675,7 +643,9 @@ html[data-theme='blue'] .qz-glass-rim {
     inset 0 0 0 1px rgba(255, 255, 255, 0.14),
     inset 0 -2px 4px rgba(0, 0, 0, 0.25),
     0 3px 8px rgba(0, 0, 0, 0.2);
-  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  transition:
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
 }
 .qz-icon-tile.is-active,
 .group\/link:hover .qz-icon-tile,
@@ -688,7 +658,8 @@ html[data-theme='blue'] .qz-glass-rim {
     0 3px 8px rgba(0, 0, 0, 0.22);
 }
 .qz-glass-icon {
-  filter: drop-shadow(0 0 2.5px rgb(var(--qz-glow-rgb) / 0.55)) drop-shadow(0 1px 0.5px rgba(0, 0, 0, 0.35));
+  filter: drop-shadow(0 0 2.5px rgb(var(--qz-glow-rgb) / 0.55))
+    drop-shadow(0 1px 0.5px rgba(0, 0, 0, 0.35));
 }
 
 .qz-gallery-lens {
@@ -703,15 +674,27 @@ html[data-theme='blue'] .qz-glass-rim {
 }
 
 @keyframes qz-col-up {
-  from { transform: translateY(0); }
-  to { transform: translateY(-50%); }
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-50%);
+  }
 }
 @keyframes qz-col-down {
-  from { transform: translateY(-50%); }
-  to { transform: translateY(0); }
+  from {
+    transform: translateY(-50%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
-.qz-col-up { animation: qz-col-up var(--qz-col-dur, 48s) linear infinite; }
-.qz-col-down { animation: qz-col-down var(--qz-col-dur, 48s) linear infinite; }
+.qz-col-up {
+  animation: qz-col-up var(--qz-col-dur, 48s) linear infinite;
+}
+.qz-col-down {
+  animation: qz-col-down var(--qz-col-dur, 48s) linear infinite;
+}
 
 @theme inline {
   --font-heading: var(--font-sans);
@@ -776,8 +759,8 @@ html[data-theme='blue'] .qz-glass-rim {
     --muted-foreground: var(--qz-sage);
     --accent: var(--qz-moss);
     --accent-foreground: var(--qz-mint);
-    --border: rgb(var(--qz-sage-rgb) / .22);
-    --input: rgb(var(--qz-sage-rgb) / .22);
+    --border: rgb(var(--qz-sage-rgb) / 0.22);
+    --input: rgb(var(--qz-sage-rgb) / 0.22);
     --ring: var(--qz-sage);
   }
   body {
@@ -794,7 +777,8 @@ html[data-theme='blue'] .qz-glass-rim {
   html {
     scroll-behavior: auto;
   }
-  .qz-col-up, .qz-col-down {
+  .qz-col-up,
+  .qz-col-down {
     animation: none;
   }
   *,
@@ -820,11 +804,11 @@ html[data-theme='blue'] .qz-glass-rim {
   user-select: none;
 }
 
-.lqg-canvas[data-over="true"] {
+.lqg-canvas[data-over='true'] {
   cursor: grab;
 }
 
-.lqg-canvas[data-over="true"]:active {
+.lqg-canvas[data-over='true']:active {
   cursor: grabbing;
 }
 /* ==========================================================================
@@ -912,7 +896,9 @@ html[data-theme='blue'] .qz-glass-rim {
   opacity: 0.72;
   cursor: pointer;
   white-space: nowrap;
-  transition: opacity 0.2s ease, color 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    color 0.2s ease;
 }
 .qz-plan-switch button[aria-pressed='true'] {
   opacity: 1;
@@ -1115,12 +1101,7 @@ html[data-theme='blue'] .qz-glass-rim {
     inset 0 -1px 0 rgba(255, 255, 255, 0.08),
     0 12px 32px rgba(0, 0, 0, 0.22);
 }
-html[data-theme='blue'] .qassimz-apple-nav-shell {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.9),
-    inset 0 -1px 0 rgba(31, 29, 24, 0.08),
-    0 12px 28px rgba(31, 29, 24, 0.14);
-}
+
 /* استجابة فورية على pointer-down: تصغير 0.97 خلال 100ms لروابط الناڤبار */
 .qassimz-apple-nav-shell a[data-qz-navitem] {
   transition: transform 100ms ease-out;
@@ -1135,15 +1116,11 @@ html[data-theme='blue'] .qassimz-apple-nav-shell {
     backdrop-filter: none;
     background-color: rgb(var(--qz-ink-rgb) / 0.94) !important;
   }
-  html[data-theme='blue'] .qassimz-apple-nav-shell {
-    background-color: #ebe2cc !important;
-  }
   .qassimz-apple-nav-shell .qz-glass-layer {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
 }
-
 
 /* ══ زجاج النافبار السائل ══════════════════════════════════════════════
    1) انكسار حقيقي للي ورا الكبسولة (SVG #qz-refract) على متصفحات Chromium
@@ -1151,7 +1128,8 @@ html[data-theme='blue'] .qassimz-apple-nav-shell {
    3) لمعة ناعمة من فوق في النص بس (مفيش لمعة على الأطراف)
    (طبقة زجاج واحدة بس — من غير طبقات جوّه بعض) */
 html.qz-chromium .qz-glass-layer {
-  -webkit-backdrop-filter: url(#qz-refract) blur(14px) saturate(185%) contrast(1.05) brightness(1.04) !important;
+  -webkit-backdrop-filter: url(#qz-refract) blur(14px) saturate(185%) contrast(1.05)
+    brightness(1.04) !important;
   backdrop-filter: url(#qz-refract) blur(14px) saturate(185%) contrast(1.05) brightness(1.04) !important;
 }
 .qz-glass-layer::before {
@@ -1166,5 +1144,30 @@ html.qz-chromium .qz-glass-layer {
   html.qz-chromium .qz-glass-layer {
     -webkit-backdrop-filter: none !important;
     backdrop-filter: none !important;
+  }
+}
+
+/* ══ الزجاج السائل للنافبار (نفس مادة الـDock في تصميم macOS 26) ═════════
+   سطح واحد: أبيض 10% + بلور 26 + تشبّع 180%، حافة نص بكسل منورة،
+   لمعة علوية رفيعة، وظل ناعم تحت. طبقة الانكسار (.qz-glass-layer)
+   ولمعة WebGL فوقها بيكمّلوا نفس السطح — مفيش طبقة تانية. */
+.qassimz-apple-nav-shell.qz-liquid-nav {
+  border: 0;
+  background-color: rgb(255 255 255 / 0.1);
+  -webkit-backdrop-filter: blur(26px) saturate(180%);
+  backdrop-filter: blur(26px) saturate(180%);
+  box-shadow:
+    inset 0 0 0 0.5px rgb(255 255 255 / 0.3),
+    inset 0 1px 0 rgb(255 255 255 / 0.32),
+    inset 0 -1px 0 rgb(255 255 255 / 0.06),
+    0 18px 50px rgb(0 0 0 / 0.35);
+}
+html.qz-chromium .qz-liquid-nav .qz-glass-layer {
+  -webkit-backdrop-filter: url(#qz-refract) saturate(120%) !important;
+  backdrop-filter: url(#qz-refract) saturate(120%) !important;
+}
+@media (prefers-reduced-transparency: reduce) {
+  .qassimz-apple-nav-shell.qz-liquid-nav {
+    background-color: rgb(var(--qz-ink-rgb) / 0.94);
   }
 }

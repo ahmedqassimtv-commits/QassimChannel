@@ -49,7 +49,7 @@ export function localReply(intent) {
     case 'about':
       return {
         text: 'أنا أحمد قاسم، صانع محتوى بيحب الصورة والحكاية. هنا هتلاقي وثائقيات، أحكام على الأفلام والمسلسلات، ومقالات عن التفاصيل اللي بتفرق.',
-        link: { to: '/masaha/about', label: 'صفحة عنّي' },
+        link: { to: '/on-air', label: 'تابعني على أون إير' },
       }
     case 'video': {
       const v = longVideos[0]
@@ -128,7 +128,6 @@ export function catalog() {
       .map((a) => ({ title: a.title, excerpt: a.excerpt, to: `/articles/${a.slug}` })),
     stories: stories.map((s) => ({ title: s.title, year: s.year, to: '/stories' })),
     pages: [
-      { label: 'عنّي', to: '/masaha/about' },
       { label: 'أون إير', to: '/masaha/on-air' },
       { label: 'الكتب', to: '/masaha/books' },
     ],

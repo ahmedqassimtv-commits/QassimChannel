@@ -1,10 +1,10 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useRef } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import Lenis from 'lenis'
-import MacWallpaper from './components/mac/MacWallpaper.jsx'
-import MenuBar from './components/mac/MenuBar.jsx'
-import Dock from './components/mac/Dock.jsx'
+import GlassBackground from './components/glass/GlassBackground.jsx'
+import Navbar from './components/layout/Navbar.jsx'
 import Footer from './components/layout/Footer.jsx'
+import BackToTop from './components/ui/BackToTop.jsx'
 import LiquidGlassFilters from './components/glass/LiquidGlassFilters.jsx'
 import { playGlassTap } from './utils/glassSound.js'
 
@@ -16,7 +16,6 @@ const Stories = lazy(() => import('./pages/Stories.jsx'))
 const Articles = lazy(() => import('./pages/Articles.jsx'))
 const ArticleView = lazy(() => import('./pages/ArticleView.jsx'))
 const OnAir = lazy(() => import('./pages/OnAir.jsx'))
-const About = lazy(() => import('./pages/About.jsx'))
 
 function ScrollToTop({ lenisRef }) {
   const { pathname, hash, state } = useLocation()
@@ -73,9 +72,9 @@ function AppRoutes() {
         <Route path="/articles" element={<Articles />} />
         <Route path="/articles/:slug" element={<ArticleView />} />
         <Route path="/on-air" element={<OnAir />} />
-        <Route path="/about" element={<About />} />
+        <Route path="/about" element={<Navigate to="/" replace />} />
         <Route path="/masaha/on-air" element={<Navigate to="/on-air" replace />} />
-        <Route path="/masaha/about" element={<Navigate to="/about" replace />} />
+        <Route path="/masaha/about" element={<Navigate to="/" replace />} />
         <Route path="/masaha/*" element={<Navigate to="/" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
@@ -126,13 +125,13 @@ export default function App() {
       <ScrollToTop lenisRef={lenisRef} />
       <div className="relative min-h-screen overflow-x-clip bg-[color:var(--qz-ink)] text-[color:var(--qz-mint)]">
         <LiquidGlassFilters />
-        <MacWallpaper />
-        <MenuBar />
-        <main className="relative z-10 mx-auto min-h-[75vh] w-full max-w-7xl px-5 pb-28 pt-24 sm:px-8 sm:pt-28">
+        <GlassBackground />
+        <Navbar />
+        <main className="relative z-10 mx-auto min-h-[75vh] w-full max-w-7xl px-5 pb-20 pt-32 sm:px-8">
           <AppRoutes />
         </main>
         <Footer />
-        <Dock />
+        <BackToTop lenisRef={lenisRef} />
       </div>
     </BrowserRouter>
   )
