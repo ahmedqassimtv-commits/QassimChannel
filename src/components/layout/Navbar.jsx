@@ -1067,9 +1067,8 @@ export default function Navbar() {
     >
       {/* كبسولة الزجاج السائل الرئيسية — خالية تمامًا من اللمعان الجانبي ووميض التقاط الصور */}
       <motion.nav
-        ref={glassNavRef}
-        data-glass-host=""
-        layout
+        data-glass-skip=""
+        layout="position"
         transition={NAV_LAYOUT_SPRING}
         style={{ borderRadius: 9999 }}
         onMouseMove={handleNavMouseMove}
@@ -1079,7 +1078,7 @@ export default function Navbar() {
           glowOpacity.set(0)
         }}
         aria-label="التنقل الرئيسي"
-        className={`isolate qassimz-apple-nav-shell qz-liquid-nav group/nav relative z-20 mx-auto flex items-center justify-between gap-2 overflow-hidden rounded-full px-2.5 py-1.5 ${
+        className={`isolate group/nav relative z-20 mx-auto flex items-center justify-between gap-2 overflow-hidden rounded-full px-2.5 py-1.5 ${
           searchExpanded
             ? 'w-full max-w-2xl'
             : isCompact
@@ -1087,13 +1086,31 @@ export default function Navbar() {
               : 'w-full max-w-[78rem]'
         }`}
       >
-        <GlassLayer
-          material="clear"
-          tint={0.06}
-          blur={2}
-          swell={false}
-          optics={{ tintColor: theme === 'green' ? '#123b36' : theme === 'red' ? '#48241d' : '#303654',  refraction: 0.25, bendDepth: 1.35, bendCurve: 9.75, dispersion: 0, magnify: 0, rim: 0, fresnel: 0, inner: 0, reflection: 0, caustic: 0, mirror: 0, light: 0, cursorLight: false, shadow: 0, borderColor: '#ffffff', borderAlpha: 0.25, borderWidth: 0.6, frostMix: 1, frostEdge: 1, saturation: 1 }}
-        />
+        {/* Keep the lens on a real pill, never on Framer's scale-corrected radius. */}
+        <div
+          ref={glassNavRef}
+          data-glass-host=""
+          aria-hidden="true"
+          className="qassimz-apple-nav-shell qz-liquid-nav pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-full"
+          style={{ borderRadius: 9999 }}
+        >
+          <GlassLayer
+            material="clear"
+            live
+            tint={0.09}
+            blur={2}
+            swell={false}
+            optics={{
+              tintColor: theme === 'green' ? '#123b36' : theme === 'red' ? '#48241d' : '#303654',
+              refraction: 0.65, bendDepth: 0.8, bendCurve: 6,
+              dispersion: 0.06, magnify: 0, rim: 0.12, fresnel: 0.18,
+              inner: 0.06, reflection: 0.12, caustic: 0, mirror: 0,
+              light: 0.4, cursorLight: false, shadow: 0,
+              borderColor: '#ffffff', borderAlpha: 0.25, borderWidth: 0.6,
+              frostMix: 1, frostEdge: 1, saturation: 1.1,
+            }}
+          />
+        </div>
 
         {/* الطبقة 3: ضوء داخلي خافت يتبع الماوس في المنتصف فقط بعيدًا عن الأطراف */}
         <div
