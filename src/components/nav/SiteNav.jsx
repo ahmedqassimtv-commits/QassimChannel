@@ -254,7 +254,7 @@ export default function SiteNav() {
   const [storiesTop, setStoriesTop] = useState(true)
   const [storiesHidden, setStoriesHidden] = useState(false)
   // سويتش الثيمات متاح في الجزيرة الزجاجية ومُدمج بطابع الورق والحبر في قاع الأفكار
-  const showThemeSwitch = navTheme === 'glass' || navTheme === 'ideas'
+  const showThemeSwitch = navTheme === 'glass' || navTheme === 'ideas' || navTheme === 'ahmed'
   const [themePulse, setThemePulse] = useState(false)
   const [themeToast, setThemeToast] = useState(null)
   const toastTimerRef = useRef(0)

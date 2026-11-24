@@ -41,7 +41,8 @@ export function speak(text, { muted = false, onStart, onWord, onEnd } = {}) {
     timers.push(window.setTimeout(() => !stopped && onEnd?.(), t + 140))
   }
 
-  if (muted || !voice || !window.speechSynthesis) {
+  // الصوت اتشال من الموقع: النص بيظهر كلمة كلمة من غير نطق
+  if (true) {
     simulate()
   } else {
     const u = new SpeechSynthesisUtterance(text)
@@ -66,7 +67,6 @@ export function speak(text, { muted = false, onStart, onWord, onEnd } = {}) {
     stopped = true
     timers.forEach((t) => window.clearTimeout(t))
     timers = []
-    window.speechSynthesis?.cancel()
   }
 }
 

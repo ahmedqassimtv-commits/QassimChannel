@@ -1479,17 +1479,101 @@ html.qz-vt-theme::view-transition-new(root) {
   background: rgb(6 7 10 / 0.92);
 }
 
-/* ── ٥. قسم عن أحمد (Interactive WebGL HUD) ── */
+/* ── ٥. قسم عن أحمد — هيدر رياضي بروح صفحة «عن أحمد» (Lando Off-Brand) ──
+   كبسولة حبر صلبة بحافة رفيعة، رابط نشط مليان بلون الأكسنت، أيقونات
+   متشالة، وكل الألوان ماشية مع ثيمات الصفحة الثلاثة (أخضر/أحمر/ذهبي). */
+html {
+  --qz-ah-ink: #031415;
+  --qz-ah-accent: #8ef0d2;
+  --qz-ah-accent-rgb: 142 240 210;
+  --qz-ah-text: #daf1de;
+}
+html[data-theme='red'] {
+  --qz-ah-ink: #120604;
+  --qz-ah-accent: #ffa046;
+  --qz-ah-accent-rgb: 255 160 70;
+  --qz-ah-text: #ffe7c2;
+}
+html[data-theme='gold'] {
+  --qz-ah-ink: #0f0b04;
+  --qz-ah-accent: #e8c96a;
+  --qz-ah-accent-rgb: 232 201 106;
+  --qz-ah-text: #f5ead0;
+}
 .qz-island[data-nav-theme='ahmed'] .qz-island-glass {
-  border-radius: 999px;
-  border: 1px solid rgb(var(--qz-glow-rgb) / 0.3);
-  background:
-    linear-gradient(180deg, rgb(var(--qz-glow-rgb) / 0.08) 0%, rgb(0 0 0 / 0.18) 100%),
-    rgb(var(--qz-ink-rgb) / 0.72);
+  border-radius: 14px;
+  border: 1px solid rgb(var(--qz-ah-accent-rgb) / 0.28);
+  background: color-mix(in srgb, var(--qz-ah-ink) 90%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
   box-shadow:
-    0 20px 48px -14px rgb(0 0 0 / 0.62),
-    0 0 24px -8px rgb(var(--qz-glow-rgb) / 0.22),
-    inset 0 1px 0 rgb(var(--qz-glow-rgb) / 0.24);
+    0 18px 40px -16px rgb(0 0 0 / 0.7),
+    inset 0 1px 0 rgb(var(--qz-ah-accent-rgb) / 0.14);
+}
+.qz-island[data-nav-theme='ahmed'] .qz-nicon {
+  display: none;
+}
+.qz-island[data-nav-theme='ahmed'] .qz-island-link {
+  height: 38px;
+  padding-inline: 13px;
+  border-radius: 9px;
+  color: rgb(var(--qz-ah-accent-rgb) / 0.62);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+.qz-island[data-nav-theme='ahmed'] .qz-island-link[data-active='true'],
+.qz-island[data-nav-theme='ahmed'] .qz-island-link[aria-expanded='true'] {
+  color: var(--qz-ah-ink);
+}
+@media (hover: hover) {
+  .qz-island[data-nav-theme='ahmed'] .qz-island-link:not([data-active='true']):hover {
+    color: var(--qz-ah-text);
+  }
+}
+.qz-island[data-nav-theme='ahmed'] .qz-island-active {
+  inset: 2px;
+  border-radius: 8px;
+  background: var(--qz-ah-accent);
+  box-shadow: 0 0 22px -6px rgb(var(--qz-ah-accent-rgb) / 0.7);
+}
+.qz-island[data-nav-theme='ahmed'] .qz-island-hover {
+  border-radius: 8px;
+  background: rgb(var(--qz-ah-accent-rgb) / 0.1);
+  box-shadow: none;
+}
+.qz-island[data-nav-theme='ahmed'] .qz-island-dot {
+  display: none;
+}
+.qz-island[data-nav-theme='ahmed'] .qz-island-sep {
+  background: rgb(var(--qz-ah-accent-rgb) / 0.22);
+}
+.qz-island[data-nav-theme='ahmed'] .qz-inline-search,
+.qz-island[data-nav-theme='ahmed'] .qz-island-mob-btn {
+  border-radius: 9px;
+  border: 1px solid rgb(var(--qz-ah-accent-rgb) / 0.3);
+  background: rgb(var(--qz-ah-accent-rgb) / 0.06);
+  color: var(--qz-ah-text);
+  box-shadow: none;
+}
+/* سويتش الثيم جوه إطار رفيع بنفس الأكسنت، زي عدّادات الصفحة */
+.qz-island[data-nav-theme='ahmed'] .qz-island-switch-slot {
+  padding: 2px;
+  border-radius: 999px;
+  box-shadow:
+    0 0 0 1px rgb(var(--qz-ah-accent-rgb) / 0.45),
+    0 0 18px -6px rgb(var(--qz-ah-accent-rgb) / 0.6);
+}
+.qz-island[data-nav-theme='ahmed'] .qz-theme-toast {
+  border-radius: 9px;
+  border: 1px solid rgb(var(--qz-ah-accent-rgb) / 0.4);
+  background: var(--qz-ah-ink);
+  color: var(--qz-ah-text);
+}
+.qz-island-menu[data-nav-theme='ahmed'] .qz-island-menu-glass,
+.qz-mob-menu[data-nav-theme='ahmed'] .qz-island-menu-glass {
+  border-radius: 14px;
+  border: 1px solid rgb(var(--qz-ah-accent-rgb) / 0.26);
+  background: color-mix(in srgb, var(--qz-ah-ink) 95%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {

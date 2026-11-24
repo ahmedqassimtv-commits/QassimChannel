@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, useReducedMotion } from 'framer-motion'
-import { ArrowUpLeft, Send, Volume2, VolumeX, X } from 'lucide-react'
+import { ArrowUpLeft, Send, X } from 'lucide-react'
 import Avatar3D from './Avatar3D.jsx'
 import { speak } from './speech.js'
 import { AI_ENDPOINT, ask, GREETING, localReply, SUGGESTIONS } from './brain.js'
@@ -174,14 +174,6 @@ export default function AiHost({
           <i aria-hidden="true" /> قاسم الافتراضي · AI
         </span>
         <div className="qz-host-tools">
-          <button
-            type="button"
-            onClick={toggleMute}
-            aria-label={muted ? 'شغّل الصوت' : 'اكتم الصوت'}
-            aria-pressed={muted}
-          >
-            {muted ? <VolumeX aria-hidden="true" /> : <Volume2 aria-hidden="true" />}
-          </button>
           <button type="button" onClick={onClose} aria-label="إغلاق قاسم الافتراضي">
             <X aria-hidden="true" />
           </button>
