@@ -123,24 +123,26 @@
   position: absolute;
   z-index: 0;
   left: 50%;
-  bottom: calc(5svh + 0.205 * 31vw);
+  bottom: calc(5svh + 0.205 * 26vw);
   translate: -50% 0;
   width: max-content;
   font-family: var(--sx-serif);
   font-weight: 500;
-  font-size: 31vw;
+  font-size: 26vw;
   line-height: 0.84;
   letter-spacing: -0.009em;
   color: var(--sx-ink);
   white-space: nowrap;
   pointer-events: none;
   user-select: none;
-  will-change: transform;
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  backface-visibility: hidden;
 }
 
 /* ══ ٢. رحلة اللوحة ═══════════════════════════════════════════════════ */
 .qz-sx-journey {
-  --tw: clamp(280px, 40vw, 720px);
+  --tw: 42vw;
   position: relative;
   z-index: 2;
   background: #9fb8b4;
@@ -148,8 +150,8 @@
 .qz-sx-trees {
   position: absolute;
   z-index: 4;
-  inset: calc(-22svh - var(--tw) * 0.15) 0 auto 0;
-  height: calc(var(--tw) * 1.8);
+  inset: calc(-30svh) 0 auto 0;
+  height: calc(var(--tw) * 2.4);
   overflow: visible;
   overflow-x: clip;
   pointer-events: none;
@@ -163,11 +165,11 @@
 }
 .qz-sx-tree.is-l {
   left: 0;
-  transform-origin: 0% 8%;
+  transform-origin: 0% 40%;
 }
 .qz-sx-tree.is-r {
   right: 0;
-  transform-origin: 100% 8%;
+  transform-origin: 100% 40%;
 }
 .qz-sx-frame {
   position: relative;
@@ -854,4 +856,29 @@
   .qz-sx-glints {
     display: none;
   }
+}
+
+/* نويز سينمائي متحرك فوق صفحة الحكايات */
+.qz-sx-grain {
+  position: fixed;
+  inset: -50%;
+  z-index: 60;
+  pointer-events: none;
+  background-image: var(--sx-grain);
+  background-size: 220px 220px;
+  opacity: 0.075;
+  mix-blend-mode: overlay;
+  animation: sx-grain 0.9s steps(6) infinite;
+}
+@keyframes sx-grain {
+  0% { transform: translate(0, 0); }
+  17% { transform: translate(-7%, 4%); }
+  33% { transform: translate(5%, -6%); }
+  50% { transform: translate(-3%, 8%); }
+  67% { transform: translate(8%, 2%); }
+  83% { transform: translate(-6%, -5%); }
+  100% { transform: translate(0, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .qz-sx-grain { animation: none; }
 }

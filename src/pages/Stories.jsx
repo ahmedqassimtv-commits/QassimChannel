@@ -34,8 +34,8 @@ const PAINTING = {
   src: IMG('nile-painting-2400.webp'),
   srcSet: `${IMG('nile-painting-1280.webp')} 1280w, ${IMG('nile-painting-2400.webp')} 2400w, ${IMG('nile-painting-3840.webp')} 3840w`,
 }
-const TREE_L = { src: IMG('tree-left-800.webp'), srcSet: `${IMG('tree-left-420.webp')} 420w, ${IMG('tree-left-800.webp')} 800w` }
-const TREE_R = { src: IMG('tree-right-800.webp'), srcSet: `${IMG('tree-right-420.webp')} 420w, ${IMG('tree-right-800.webp')} 800w` }
+const TREE_L = { src: IMG('tree-left-1600.webp'), srcSet: `${IMG('tree-left-800.webp')} 800w, ${IMG('tree-left-1600.webp')} 1600w` }
+const TREE_R = { src: IMG('tree-right-1600.webp'), srcSet: `${IMG('tree-right-800.webp')} 800w, ${IMG('tree-right-1600.webp')} 1600w` }
 
 const EASE = [0.22, 1, 0.36, 1]
 // [x%, y%, delay] — نقط لمعان على سطح المية
@@ -117,9 +117,9 @@ function HeroAndJourney() {
   // الشجر طبقة أمامية: طالع من تحت قدّام الكلمة، وبيطلع أسرع من اللوحة ويكبر
   const { scrollYProgress: treeP } = useScroll({ target: journeyRef, offset: ['start end', 'start start'] })
   const treeY = useTransform(treeP, [0, 1], reduce ? ['0vh', '0vh'] : ['0vh', '-105vh'])
-  const treeScale = useTransform(treeP, [0, 1], reduce ? [1, 1] : [1, 1.35])
-  const treeLX = useTransform(treeP, [0, 1], reduce ? ['-26%', '-26%'] : ['-26%', '-12%'])
-  const treeRX = useTransform(treeP, [0, 1], reduce ? ['26%', '26%'] : ['26%', '12%'])
+  const treeScale = useTransform(treeP, [0, 1], reduce ? [1, 1] : [1, 1.25])
+  const treeLX = useTransform(treeP, [0, 1], reduce ? ['0%', '0%'] : ['0%', '0%'])
+  const treeRX = useTransform(treeP, [0, 1], reduce ? ['0%', '0%'] : ['0%', '0%'])
 
   // الكارت بيتفتح من خط رفيع أول ما يظهر، ونصه بيتبدل مع التقدّم في اللوحة
   const cardIn = useInView(cardRef, { once: true, margin: '-20% 0px -20% 0px' })
@@ -172,7 +172,7 @@ function HeroAndJourney() {
             className="qz-sx-tree is-l"
             src={TREE_L.src}
             srcSet={TREE_L.srcSet}
-            sizes="(max-width: 760px) 56vw, 46vw"
+            sizes="(max-width: 760px) 60vw, 50vw"
             alt=""
             data-no-tint="true"
             style={{ y: treeY, x: treeLX, scale: treeScale }}
@@ -181,7 +181,7 @@ function HeroAndJourney() {
             className="qz-sx-tree is-r"
             src={TREE_R.src}
             srcSet={TREE_R.srcSet}
-            sizes="(max-width: 760px) 56vw, 46vw"
+            sizes="(max-width: 760px) 60vw, 50vw"
             alt=""
             data-no-tint="true"
             style={{ y: treeY, x: treeRX, scale: treeScale }}
@@ -195,7 +195,7 @@ function HeroAndJourney() {
               className="qz-sx-painting"
               src={PAINTING.src}
               srcSet={PAINTING.srcSet}
-              sizes="(max-width: 760px) 120svh, 100vw"
+              sizes="(max-width: 760px) 240svh, 160vw"
               alt="لوحة زيتية طويلة: أهرامات الجيزة تحت السحاب، والنيل بفلوكته ونخيله ومعابده، وتمثال فرعوني جالس بين البردي واللوتس وأبو منجل"
               fetchPriority="high"
               data-no-tint="true"
@@ -564,6 +564,7 @@ export default function Stories() {
 
   return (
     <div className="qz-sx" dir="rtl">
+      <div className="qz-sx-grain" style={{ '--sx-grain': `url(${IMG('grain.png')})` }} aria-hidden="true" />
       <HeroAndJourney />
       <InkRooms />
       <div className="qz-sx-ink" data-structured-surface="ink">
