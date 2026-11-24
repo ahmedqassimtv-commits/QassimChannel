@@ -138,7 +138,7 @@ function Stage() {
         </motion.p>
 
         <motion.div className="qz-oz-hand" style={{ y: handY, rotate: handR }} aria-hidden="true">
-          <img src={IMG('hand-reel-1600.webp')} srcSet={set('hand-reel', 700, 1600)} sizes="(max-width: 760px) 70vw, 46vh" alt="" data-no-tint="true" />
+          <img src={IMG('cork-hand-1600.webp')} srcSet={set('cork-hand', 700, 1600)} sizes="(max-width: 760px) 70vw, 46vh" alt="" data-no-tint="true" />
         </motion.div>
 
         <div className="qz-oz-reel-anchor" aria-hidden="true">
@@ -148,8 +148,8 @@ function Stage() {
           >
             <motion.img
               className="qz-oz-reel-img"
-              src={IMG('reel-front-2048.webp')}
-              srcSet={set('reel-front', 900, 2048)}
+              src={IMG('cork-front-2048.webp')}
+              srcSet={set('cork-front', 900, 2048)}
               sizes="(max-width: 760px) 86vw, 62vh"
               alt=""
               data-no-tint="true"
@@ -157,8 +157,8 @@ function Stage() {
             />
             <motion.img
               className="qz-oz-reel-img"
-              src={IMG('reel-tilt-2048.webp')}
-              srcSet={set('reel-tilt', 900, 2048)}
+              src={IMG('cork-tilt-2048.webp')}
+              srcSet={set('cork-tilt', 900, 2048)}
               sizes="(max-width: 760px) 86vw, 62vh"
               alt=""
               data-no-tint="true"
