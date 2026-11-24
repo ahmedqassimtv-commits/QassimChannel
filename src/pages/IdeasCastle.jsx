@@ -1079,28 +1079,48 @@ export default function IdeasCastle() {
                         transition: { delay: 0, duration: 0.44, ease: [0.4, 0, 0.2, 1] },
                       }}
                     >
-                      {/* الوجه الأمامي: الغلاف الفعلي للدفتر أثناء الانقلاب */}
+                      {/* الوجه الأمامي: نفس غلاف الدفتر بالضبط بدون أي اختلاف عند الفتح أو الإغلاق */}
                       <div
                         className="qz-book3d-face qz-book3d-front"
                         style={bookCover}
                         aria-hidden="true"
                       >
-                        <div className="flex items-center justify-between">
-                          <span className="inline-block rounded-[20px] border border-[#2b2723] bg-[#faf7f2] px-3 py-0.5 font-[family-name:var(--font-geist)] text-[13px] font-medium text-[#2b2723]">
-                            {selectedBook.category}
-                          </span>
-                          <span className="qz-superr-stamp">
-                            <BrandLogo variant="solid" className="h-3.5 w-auto" />
-                          </span>
+                        <div>
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="inline-block rounded-[20px] border border-[#2b2723] bg-[#faf7f2] px-3 py-0.5 font-[family-name:var(--font-geist)] text-[13px] font-medium text-[#2b2723]">
+                              {selectedBook.category}
+                            </span>
+                            <span className="qz-superr-stamp">
+                              <BrandLogo variant="solid" className="h-3.5 w-auto" />
+                            </span>
+                          </div>
+
+                          <h3 className="mt-5 font-[family-name:var(--font-gelica)] text-[25px] font-semibold leading-[1.52]">
+                            {selectedBook.title}
+                          </h3>
+
+                          {selectedBook.suggestedBy && (
+                            <p className="mt-2 inline-block rounded-full border border-current/35 px-3 py-0.5 font-[family-name:var(--font-geist)] text-[12px] font-semibold">
+                              فكرة المتابع: {selectedBook.suggestedBy}
+                            </p>
+                          )}
+
+                          <p className="mt-3 font-[family-name:var(--font-body-ar)] text-[15px] leading-[1.82] opacity-90">
+                            {selectedBook.summary}
+                          </p>
                         </div>
-                        <h3 className="font-[family-name:var(--font-gelica)] text-[26px] font-semibold leading-[1.5]">
-                          {selectedBook.title}
-                        </h3>
-                        <NameLabelSticker
-                          name={selectedBook.studentName}
-                          classLabel={selectedBook.classLabel}
-                          rollNo={selectedBook.rollNo}
-                        />
+
+                        <div className="mt-6 space-y-3">
+                          <NameLabelSticker
+                            name={selectedBook.studentName}
+                            classLabel={selectedBook.classLabel}
+                            rollNo={selectedBook.rollNo}
+                          />
+                          <div className="flex items-center justify-between font-[family-name:var(--font-geist)] text-[13px] font-medium opacity-90">
+                            <span>{selectedBook.pages}</span>
+                            <span className="underline underline-offset-4">افتح الدفتر ←</span>
+                          </div>
+                        </div>
                       </div>
 
                       {/* الوجه الخلفي: الصفحة اليمنى المفتوحة 01 */}
