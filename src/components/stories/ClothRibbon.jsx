@@ -24,22 +24,20 @@ varying vec2 vUV;
 vec3 ribbon(vec2 uv) {
   float u = uv.x;
   float v = uv.y - 0.5;
-  // قماشة عريضة مطفية بتعدّي من تحت-شمال لفوق-يمين مع التمرير
-  float s = u * 3.2 - 1.6;
-  float k = uProgress * 2.6 - 1.3;
-  vec3 c = vec3(s * 0.95 + k * 0.9, s * 0.34 + k * 1.2 - 0.05, 0.0);
-  // موجة بتجري على طول القماشة (نفَس الهوا)
-  c.y += 0.11 * sin(s * 2.3 - uTime * 0.9 + uProgress * 3.0);
-  c.z += 0.16 * sin(s * 3.1 - uTime * 1.1 + 0.6);
-  // لفّة خفيفة بس — القماشة فاضلة عريضة وباينة
-  float twist = 0.95 * sin(u * 3.0 - uTime * 0.45 + uProgress * 1.8) + 0.35;
-  float width = 0.26 * (0.85 + 0.18 * sin(u * 3.7 + 0.8));
-  vec3 across = normalize(vec3(-0.22, 1.0, 0.0));
-  vec3 side = across * cos(twist) + vec3(0.0, 0.0, 1.0) * sin(twist);
+  // الخط الأساسي: قوس قطري بيعدّي الشاشة، والتمرير بيزحلقه
+  float s = u * 2.6 - 1.3 + (uProgress * 2.9 - 1.45);
+  vec3 c = vec3(s * 1.15, s * 0.34 - 0.05 + 0.08 * sin(s * 2.4 + uTime * 0.35), 0.0);
+  c.y += 0.12 * sin(s * 3.1 + uTime * 0.5);
+  // لفّة حوالين الخط + تموّج طولي
+  float twist = 1.9 * sin(u * 3.4 + uTime * 0.28 + uProgress * 2.2) + uProgress * 1.6;
+  float width = 0.3 * (0.8 + 0.3 * sin(u * 5.0 + 1.3));
+  vec3 across = vec3(0.3, -0.95, 0.0);
+  vec3 side = normalize(across) * cos(twist) + vec3(0.0, 0.0, 1.0) * sin(twist);
   vec3 p = c + side * v * width * 2.0;
-  // ثنيات طويلة ناعمة بتمشي بالعرض
-  p.z += 0.06 * sin(v * 5.5 + u * 9.0 - uTime * 1.3);
-  p.y += 0.025 * sin(u * 14.0 - uTime * 1.6) * (0.4 + v);
+  // ثنيات القماش
+  p.z += 0.07 * sin(v * 8.0 + u * 13.0 + uTime * 0.9) * (0.5 + 0.5 * sin(u * 6.0));
+  p.z += 0.035 * sin(v * 17.0 - u * 9.0 + uTime * 0.7);
+  p.y += 0.02 * sin(v * 7.0 - u * 18.0 + uTime * 0.6);
   return p;
 }
 
@@ -68,11 +66,12 @@ void main() {
   vec3 L = normalize(vec3(-0.35, 0.55, 0.75));
   vec3 V = vec3(0.0, 0.0, 1.0);
   vec3 H = normalize(L + V);
-  vec3 base = vec3(0.86, 0.6, 0.39);
-  float wrap = (dot(N, L) + 0.6) / 1.6;
-  float spec = pow(max(dot(N, H), 0.0), 14.0) * 0.07;
-  float sheen = pow(1.0 - abs(dot(N, V)), 3.0) * 0.1;
-  vec3 col = base * (0.46 + 0.7 * max(wrap, 0.0)) + vec3(1.0, 0.9, 0.78) * (spec + sheen);
+  vec3 base = vec3(0.86, 0.6, 0.4);
+  float diff = max(dot(N, L), 0.0);
+  float wrap = (dot(N, L) + 0.45) / 1.45;
+  float spec = pow(max(dot(N, H), 0.0), 38.0) * 0.28;
+  float sheen = pow(1.0 - abs(dot(N, V)), 2.2) * 0.22;
+  vec3 col = base * (0.4 + 0.62 * max(wrap, 0.0) + 0.25 * diff) + vec3(1.0, 0.92, 0.84) * (spec + sheen);
   // ظل ناعم على الحواف الطولية
   float edge = smoothstep(0.0, 0.06, vUV.y) * smoothstep(1.0, 0.94, vUV.y);
   col *= mix(0.78, 1.0, edge);
