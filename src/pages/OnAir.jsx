@@ -4,6 +4,7 @@ import { Play } from 'lucide-react'
 import { CinemaThumb, useCinema } from '../components/qz/CinemaPlayer.jsx'
 import { fmtDate } from '../components/qz/Kit.jsx'
 import { assetUrl } from '../utils/assets.js'
+import CorkReel3D from '../components/onair/CorkReel3D.jsx'
 import { videos } from '../data/videos.js'
 import { YOUTUBE_CONFIG } from '../data/youtubeConfig.js'
 
@@ -38,8 +39,6 @@ function Stage() {
   const rotX = useTransform(p, [0.26, 0.36, 0.46, 0.56, 0.62], [0, 58, 70, 28, 0])
   const rotY = useTransform(p, [0.26, 0.36, 0.46, 0.56, 0.62], [0, -24, 36, -12, 0])
   const rotZ = useTransform(p, [0, 1], [0, 220])
-  const lift = useTransform(p, [0.26, 0.4, 0.62], [1, 1.35, 1])
-  const reelFilter = useTransform(lift, (v) => `brightness(${v}) drop-shadow(0 30px 40px rgb(0 0 0 / 0.55))`)
 
   const revealO = useTransform(p, [0.26, 0.34, 0.58, 0.66], [0, 1, 1, 0])
   const revealX = useTransform(p, [0.26, 0.34], ['3vw', '0vw'])
@@ -66,15 +65,18 @@ function Stage() {
         {/* المكتب */}
         <motion.img
           className="qz-oz-desk"
-          src={IMG('desk-2400.webp')}
-          srcSet={set('desk', 1280, 2400)}
+          src={IMG('desk-2560.webp')}
+          srcSet={set('desk', 1536, 2560)}
           sizes="100vw"
           alt=""
           data-no-tint="true"
           fetchPriority="high"
           style={{ opacity: reduce ? 1 : deskO }}
         />
-        <motion.div className="qz-oz-glow" style={{ opacity: glowO }} aria-hidden="true" />
+        <motion.div className="qz-oz-neon" style={{ opacity: glowO }} aria-hidden="true">
+          <span className="qz-oz-neon-haze" />
+          <span className="qz-oz-neon-line" />
+        </motion.div>
 
         {/* ١. الافتتاحية */}
         <motion.div className="qz-oz-hero" style={{ opacity: heroO, y: heroY }}>
@@ -139,22 +141,8 @@ function Stage() {
         </motion.div>
 
         <div className="qz-oz-reel-anchor" aria-hidden="true">
-          <motion.div
-            className="qz-oz-reel"
-            style={
-              reduce
-                ? undefined
-                : { scale: reelScale, y: reelY, rotateX: rotX, rotateY: rotY, filter: reelFilter }
-            }
-          >
-            <motion.img
-              src={IMG('reel-1200.webp')}
-              srcSet={set('reel', 640, 1200)}
-              sizes="40vh"
-              alt=""
-              data-no-tint="true"
-              style={reduce ? undefined : { rotate: rotZ }}
-            />
+          <motion.div className="qz-oz-reel" style={reduce ? undefined : { scale: reelScale, y: reelY }}>
+            <CorkReel3D textureUrl={IMG('cork.jpg')} rotX={rotX} rotY={rotY} rotZ={rotZ} className="qz-oz-reel-gl" />
           </motion.div>
         </div>
 
