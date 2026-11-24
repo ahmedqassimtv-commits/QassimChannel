@@ -187,14 +187,14 @@
   left: 50%;
   translate: -50% 0;
   width: max(100%, 112svh);
-  aspect-ratio: 1536 / 2174; /* اللوحة من بعد سطر التاج */
+  aspect-ratio: 1536 / 2474;
 }
 .qz-sx-pinner {
   position: absolute;
   left: 0;
   right: 0;
-  top: -13.799%;
-  height: 113.799%;
+  top: 0;
+  height: 100%;
 }
 .qz-sx-crownwrap {
   position: absolute;
@@ -206,15 +206,25 @@
   overflow-x: clip;
   pointer-events: none;
 }
-.qz-sx-crown {
+.qz-sx-crownbox {
   position: relative;
-  display: block;
   left: 50%;
+  translate: -50% 0;
   width: max(100%, 112svh);
-  max-width: none;
+  aspect-ratio: 5 / 1; /* التاج نازل جوه اللوحة بـ 20% من عرضها، على الجذوع */
+}
+.qz-sx-crown {
+  position: absolute;
+  bottom: 0;
+  width: 31%;
   height: auto;
-  aspect-ratio: 1536 / 360;
-  translate: -50% -83.333%;
+  max-width: none;
+}
+.qz-sx-crown.is-l {
+  left: 0;
+}
+.qz-sx-crown.is-r {
+  right: 0;
 }
 .qz-sx-painting {
   position: absolute;
