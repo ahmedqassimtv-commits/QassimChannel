@@ -477,12 +477,13 @@
   overscroll-behavior: contain;
 }
 
-/* مسرح الكتاب ثلاثي الأبعاد (صفحتان + غلاف مفصلي حقيقي يفتح 180 درجة) */
+/* مسرح الكتاب ثلاثي الأبعاد (صفحتان + غلاف مفصلي حقيقي يفتح 180 درجة بلا تداخل في المنتصف) */
 .qz-book3d-stage {
   position: relative;
   width: min(980px, 94vw);
   height: min(640px, 80dvh);
   transform-style: preserve-3d;
+  will-change: transform;
 }
 
 /* النصف الأيسر الثابت (الغلاف الخلفي + الصفحة اليسرى 02) */
@@ -496,13 +497,14 @@
   border-radius: 18px 4px 4px 18px;
   border: 1.5px solid var(--color-charcoal);
   border-right: 0;
+  transform: translateZ(0px);
   box-shadow:
-    -18px 26px 52px -14px rgba(32, 24, 16, 0.34),
-    0 12px 28px -10px rgba(32, 24, 16, 0.22);
+    -18px 26px 52px -14px rgba(32, 24, 16, 0.32),
+    0 12px 28px -10px rgba(32, 24, 16, 0.2);
   display: flex;
 }
 
-/* الورقة المفصلية ثلاثية الأبعاد: الوجه الأمامي = غلاف الدفتر، والخلفي = الصفحة اليمنى 01 */
+/* الورقة المفصلية ثلاثية الأبعاد: مرتفعة 2px على محور Z لمنع أي قطع أو تداخل عند الكعب */
 .qz-book3d-leaf {
   position: absolute;
   top: 0;
@@ -511,6 +513,7 @@
   width: 50%;
   transform-origin: right center;
   transform-style: preserve-3d;
+  will-change: transform;
   z-index: 5;
 }
 
@@ -522,14 +525,15 @@
   display: flex;
 }
 
-/* الوجه الأمامي للورقة المفصلية (الغلاف الفعلي للدفتر قبل وبعد الفتح) */
+/* الوجه الأمامي للورقة المفصلية (الغلاف الفعلي للدفتر قبل الفتح وبعد الإغلاق) */
 .qz-book3d-front {
+  transform: translateZ(1px);
   border-radius: 18px 4px 4px 18px;
   border: 1.5px solid var(--color-charcoal);
   padding: 28px 26px;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: 0 24px 50px -14px rgba(32, 24, 16, 0.34);
+  box-shadow: 0 24px 50px -14px rgba(32, 24, 16, 0.32);
 }
 
 .qz-book3d-front::after {
@@ -543,14 +547,14 @@
 
 /* الوجه الخلفي للورقة المفصلية (يستقر كصفحة يمنى 01 عند دوران 180 درجة) */
 .qz-book3d-back {
-  transform: rotateY(180deg);
+  transform: rotateY(180deg) translateZ(1px);
   padding: 12px 12px 12px 0;
   border-radius: 4px 18px 18px 4px;
   border: 1.5px solid var(--color-charcoal);
   border-left: 0;
   box-shadow:
-    18px 26px 52px -14px rgba(32, 24, 16, 0.34),
-    0 12px 28px -10px rgba(32, 24, 16, 0.22);
+    18px 26px 52px -14px rgba(32, 24, 16, 0.32),
+    0 12px 28px -10px rgba(32, 24, 16, 0.2);
 }
 
 /* صفحة الورق الكريمي النظيفة بدون أي شريط تمرير مرئي */

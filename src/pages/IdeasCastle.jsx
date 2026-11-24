@@ -263,16 +263,16 @@ function ProductNotebookCard({ notebook, isLifted = false, onOpen }) {
         ...cover,
         transform: `rotate(${notebook.tilt || '-6deg'})`,
       }}
-      onClick={() => {
+      onClick={(e) => {
         playGlassTap()
-        onOpen(notebook)
+        onOpen(notebook, e.currentTarget.getBoundingClientRect())
       }}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
-          onOpen(notebook)
+          onOpen(notebook, e.currentTarget.getBoundingClientRect())
         }
       }}
       aria-label={`افتح دفتر ${notebook.title}`}
@@ -331,7 +331,31 @@ export default function IdeasCastle() {
   const notebooks = IDEAS_NOTEBOOKS
   const [activeCategory, setActiveCategory] = useState('كل الدفاتر')
   const [selectedBook, setSelectedBook] = useState(null)
+  const [liftedBookId, setLiftedBookId] = useState(null)
+  const [originFlight, setOriginFlight] = useState({ x: 0, y: 24, scale: 0.72, rotate: -6 })
   const [newIdeaOpen, setNewIdeaOpen] = useState(false)
+
+  const handleOpenBook = (book, rect) => {
+    if (rect && typeof window !== 'undefined') {
+      const stageW = Math.min(980, window.innerWidth * 0.94)
+      const scale = Math.min(1, Math.max(0.55, rect.width / (stageW * 0.5)))
+      const closedCenterX = window.innerWidth / 2 - stageW * 0.25 * scale
+      const closedCenterY = window.innerHeight / 2
+      const cardCenterX = rect.left + rect.width / 2
+      const cardCenterY = rect.top + rect.height / 2
+      const tiltNum = parseFloat(book.tilt || '-5') || 0
+      setOriginFlight({
+        x: Math.round(cardCenterX - closedCenterX),
+        y: Math.round(cardCenterY - closedCenterY),
+        scale: Number(scale.toFixed(3)),
+        rotate: tiltNum,
+      })
+    } else {
+      setOriginFlight({ x: 0, y: 24, scale: 0.72, rotate: -5 })
+    }
+    setLiftedBookId(book.id)
+    setSelectedBook(book)
+  }
   const [guideOpen, setGuideOpen] = useState(false)
   const [ideaTitle, setIdeaTitle] = useState('')
   const [ideaCat, setIdeaCat] = useState('بذور الحلقات')
@@ -703,7 +727,7 @@ export default function IdeasCastle() {
                   className="qz-superr-btn"
                   onClick={() => {
                     playGlassTap()
-                    setSelectedBook(heroBrown)
+                    handleOpenBook(heroBrown)
                   }}
                 >
                   <span>افتح الدفتر الرئيسي!</span>
@@ -744,8 +768,8 @@ export default function IdeasCastle() {
 
             <ProductNotebookCard
               notebook={heroBrown}
-              isLifted={selectedBook?.id === heroBrown.id}
-              onOpen={setSelectedBook}
+              isLifted={liftedBookId === heroBrown.id}
+              onOpen={handleOpenBook}
             />
           </div>
         </section>
@@ -763,8 +787,8 @@ export default function IdeasCastle() {
               </div>
               <ProductNotebookCard
                 notebook={blueBook}
-                isLifted={selectedBook?.id === blueBook.id}
-                onOpen={setSelectedBook}
+                isLifted={liftedBookId === blueBook.id}
+                onOpen={handleOpenBook}
               />
             </div>
 
@@ -795,8 +819,8 @@ export default function IdeasCastle() {
               </div>
               <ProductNotebookCard
                 notebook={pinkBook}
-                isLifted={selectedBook?.id === pinkBook.id}
-                onOpen={setSelectedBook}
+                isLifted={liftedBookId === pinkBook.id}
+                onOpen={handleOpenBook}
               />
             </div>
           </div>
@@ -892,8 +916,8 @@ export default function IdeasCastle() {
                 </div>
                 <ProductNotebookCard
                   notebook={nb}
-                  isLifted={selectedBook?.id === nb.id}
-                  onOpen={setSelectedBook}
+                  isLifted={liftedBookId === nb.id}
+                  onOpen={handleOpenBook}
                 />
               </div>
             ))}
@@ -945,33 +969,49 @@ export default function IdeasCastle() {
         </div>
       </footer>
 
-      {/* ── الكتاب المفتوح ثلاثي الأبعاد بدون تعتيم الصفحة وبدون شريط تمرير ── */}
+      {/* ── الكتاب المفتوح ثلاثي الأبعاد: يرتفع من مكانه ويفتح 180° ثم ينغلق ويرجع لمكانه ── */}
       {typeof document !== 'undefined' &&
         createPortal(
-          <AnimatePresence>
+          <AnimatePresence onExitComplete={() => setLiftedBookId(null)}>
             {selectedBook && (() => {
               const bookCover = getCoverPalette(selectedBook.coverStyle)
               return (
                 <motion.div
+                  key={selectedBook.id}
                   role="dialog"
                   aria-modal="false"
                   aria-label={selectedBook.title}
                   data-lenis-prevent
                   className="qz-superr-modal-backdrop"
-                  initial={{ opacity: 0 }}
+                  initial={{ opacity: 1 }}
                   animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
+                  exit={{ opacity: 1, transition: { duration: 0.88 } }}
                   onClick={() => setSelectedBook(null)}
                 >
                   <motion.div
                     data-lenis-prevent
                     className="qz-book3d-stage"
                     dir="rtl"
-                    initial={{ x: '25%', scale: 0.88, y: 20 }}
-                    animate={{ x: '0%', scale: 1, y: 0 }}
-                    exit={{ x: '25%', scale: 0.88, y: 16, opacity: 0 }}
-                    transition={{ duration: 0.68, ease: [0.22, 1, 0.36, 1] }}
+                    initial={{
+                      x: originFlight.x,
+                      y: originFlight.y,
+                      scale: originFlight.scale,
+                      rotate: originFlight.rotate,
+                    }}
+                    animate={{
+                      x: 0,
+                      y: 0,
+                      scale: 1,
+                      rotate: 0,
+                      transition: { duration: 0.56, ease: [0.22, 1, 0.36, 1] },
+                    }}
+                    exit={{
+                      x: originFlight.x,
+                      y: originFlight.y,
+                      scale: originFlight.scale,
+                      rotate: originFlight.rotate,
+                      transition: { delay: 0.38, duration: 0.48, ease: [0.4, 0, 0.2, 1] },
+                    }}
                     onClick={(e) => e.stopPropagation()}
                   >
                     {/* النصف الأيسر الثابت (الصفحة 02 — الملاحظات والهامش وزر الإغلاق) */}
@@ -1024,13 +1064,20 @@ export default function IdeasCastle() {
                       </div>
                     </div>
 
-                    {/* الورقة المفصلية 3D: تقلب الغلاف الأمامي 180 درجة نحو اليمين لتصبح الصفحة 01 */}
+                    {/* الورقة المفصلية 3D: تقلب الغلاف الأمامي 180 درجة نحو اليمين عند الفتح وتُغلقه أولاً عند الخروج */}
                     <motion.div
                       className="qz-book3d-leaf"
-                      initial={{ rotateY: 0 }}
-                      animate={{ rotateY: 180 }}
-                      exit={{ rotateY: 0 }}
-                      transition={{ duration: 0.78, ease: [0.22, 1, 0.36, 1] }}
+                      initial={{ rotateY: 0, z: 2 }}
+                      animate={{
+                        rotateY: 180,
+                        z: 2,
+                        transition: { delay: 0.14, duration: 0.66, ease: [0.22, 1, 0.36, 1] },
+                      }}
+                      exit={{
+                        rotateY: 0,
+                        z: 2,
+                        transition: { delay: 0, duration: 0.44, ease: [0.4, 0, 0.2, 1] },
+                      }}
                     >
                       {/* الوجه الأمامي: الغلاف الفعلي للدفتر أثناء الانقلاب */}
                       <div
