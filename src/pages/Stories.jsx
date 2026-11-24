@@ -30,18 +30,20 @@ import ClothRibbon from '../components/stories/ClothRibbon.jsx'
 
 const IMG = (name) => assetUrl(`/images/stories/structured/${name}`)
 // اللوحة بدقة 4K (3840px) + نسخ أصغر للشاشات الأقل
+const CROWN = {
+  src: IMG('nile-crown-2400.webp'),
+  srcSet: `${IMG('nile-crown-1280.webp')} 1280w, ${IMG('nile-crown-2400.webp')} 2400w, ${IMG('nile-crown-3840.webp')} 3840w`,
+}
 const PAINTING = {
   src: IMG('nile-painting-2400.webp'),
   srcSet: `${IMG('nile-painting-1280.webp')} 1280w, ${IMG('nile-painting-2400.webp')} 2400w, ${IMG('nile-painting-3840.webp')} 3840w`,
 }
-const TREE_L = { src: IMG('tree-left-1600.webp'), srcSet: `${IMG('tree-left-800.webp')} 800w, ${IMG('tree-left-1600.webp')} 1600w` }
-const TREE_R = { src: IMG('tree-right-1600.webp'), srcSet: `${IMG('tree-right-800.webp')} 800w, ${IMG('tree-right-1600.webp')} 1600w` }
 
 const EASE = [0.22, 1, 0.36, 1]
 // [x%, y%, delay] — نقط لمعان على سطح المية
 const GLINTS = [
-  [12, 47.5, 0], [24, 50, 1.2], [37, 48.6, 2.1], [55, 46.8, 0.6], [57, 52.5, 1.8], [70, 49.4, 2.7],
-  [83, 51, 0.9], [46, 55.5, 2.4], [30, 56.4, 1.5], [64, 57, 0.3], [18, 61.4, 2], [40, 62.5, 0.8],
+  [12, 45.8, 0], [24, 48.4, 1.2], [37, 46.9, 2.1], [55, 45.1, 0.6], [57, 51.0, 1.8], [70, 47.8, 2.7],
+  [83, 49.4, 0.9], [46, 54.1, 2.4], [30, 55.0, 1.5], [64, 55.6, 0.3], [18, 60.2, 2], [40, 61.3, 0.8],
 ]
 const years = stories.map((s) => Number(s.year)).filter(Boolean)
 const SPAN = years.length ? `${Math.min(...years)}–${Math.max(...years)}` : ''
@@ -114,13 +116,6 @@ function HeroAndJourney() {
   const { scrollYProgress: heroP } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
   const wordY = useTransform(heroP, [0, 1], reduce ? ['0vh', '0vh'] : ['0vh', '34vh'])
 
-  // الشجر طبقة أمامية: طالع من تحت قدّام الكلمة، وبيطلع أسرع من اللوحة ويكبر
-  const { scrollYProgress: treeP } = useScroll({ target: journeyRef, offset: ['start end', 'start start'] })
-  const treeY = useTransform(treeP, [0, 1], reduce ? ['0vh', '0vh'] : ['0vh', '-105vh'])
-  const treeScale = useTransform(treeP, [0, 1], reduce ? [1, 1] : [1, 1.35])
-  const treeLX = useTransform(treeP, [0, 1], reduce ? ['-26%', '-26%'] : ['-26%', '-12%'])
-  const treeRX = useTransform(treeP, [0, 1], reduce ? ['26%', '26%'] : ['26%', '12%'])
-
   // الكارت بيتفتح من خط رفيع أول ما يظهر، ونصه بيتبدل مع التقدّم في اللوحة
   const cardIn = useInView(cardRef, { once: true, margin: '-20% 0px -20% 0px' })
   const { scrollYProgress: journeyP } = useScroll({ target: journeyRef, offset: ['start start', 'end end'] })
@@ -166,37 +161,28 @@ function HeroAndJourney() {
       </section>
 
       <section ref={journeyRef} className="qz-sx-journey" data-structured-surface="ink" aria-label="رحلة اللوحة عبر الحكايات">
-        {/* الشجر الأمامي — برّه إطار اللوحة عشان يطلع فوق الكلمة */}
-        <div className="qz-sx-trees" aria-hidden="true">
-          <motion.img
-            className="qz-sx-tree is-l"
-            src={TREE_L.src}
-            srcSet={TREE_L.srcSet}
-            sizes="(max-width: 760px) 60vw, 50vw"
+        {/* تيجان الشجر: نفس بكسلات اللوحة، متقصوصة من السما — بتطلع فوق الكلمة */}
+        <div className="qz-sx-crownwrap" aria-hidden="true">
+          <img
+            className="qz-sx-crown"
+            src={CROWN.src}
+            srcSet={CROWN.srcSet}
+            sizes="(max-width: 760px) 240svh, 160vw"
             alt=""
             data-no-tint="true"
-            style={{ y: treeY, x: treeLX, scale: treeScale }}
-          />
-          <motion.img
-            className="qz-sx-tree is-r"
-            src={TREE_R.src}
-            srcSet={TREE_R.srcSet}
-            sizes="(max-width: 760px) 60vw, 50vw"
-            alt=""
-            data-no-tint="true"
-            style={{ y: treeY, x: treeRX, scale: treeScale }}
           />
         </div>
 
         <div className="qz-sx-frame">
           <div className="qz-sx-pbox">
+           <div className="qz-sx-pinner">
             <img
               ref={paintRef}
               className="qz-sx-painting"
               src={PAINTING.src}
               srcSet={PAINTING.srcSet}
               sizes="(max-width: 760px) 240svh, 160vw"
-              alt="لوحة زيتية طويلة: أهرامات الجيزة تحت السحاب، والنيل بفلوكته ونخيله ومعابده، وتمثال فرعوني جالس بين البردي واللوتس وأبو منجل"
+              alt="لوحة زيتية طويلة: شجرتين جميز عتيقتين بتحضنوا أهرامات الجيزة تحت السحاب، والنيل بفلوكته ونخيله ومعابده، وتمثال فرعوني جالس بين البردي واللوتس وأبو منجل"
               fetchPriority="high"
               data-no-tint="true"
             />
@@ -209,9 +195,10 @@ function HeroAndJourney() {
             <div className="qz-sx-sprite-lane is-ibis" aria-hidden="true">
               <img className="qz-sx-ibis" src={IMG('ibis.webp')} alt="" data-no-tint="true" />
             </div>
-            <Butterfly style={{ left: '64%', top: '79%' }} path="a" />
-            <Butterfly style={{ left: '86%', top: '88%' }} path="b" delay={-3.5} />
-            <Butterfly style={{ left: '22%', top: '71%' }} path="c" delay={-6} />
+            <Butterfly style={{ left: '64%', top: '78.3%' }} path="a" />
+            <Butterfly style={{ left: '86%', top: '87.6%' }} path="b" delay={-3.5} />
+            <Butterfly style={{ left: '22%', top: '70.1%' }} path="c" delay={-6} />
+           </div>
           </div>
         </div>
 
