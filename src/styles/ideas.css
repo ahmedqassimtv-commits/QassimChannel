@@ -451,15 +451,15 @@
   --font-geist: 'Thmanyah Sans', var(--font-sans-ui), ui-sans-serif, system-ui, sans-serif;
   --text-caption: 15px;
   --leading-caption: 1.72;
-  --text-body: 19px;
+  --text-body: 18px;
   --leading-body: 1.88;
   --text-subheading: 22px;
   --leading-subheading: 1.62;
-  --radius-cards: 16px;
+  --radius-cards: 14px;
   --radius-buttons: 20px;
   --radius-inputs: 8px;
-  --card-padding: 28px;
-  --shadow-lg: rgba(43, 39, 35, 0.16) 0px 18px 48px 0px;
+  --card-padding: 22px;
+  --shadow-lg: rgba(43, 39, 35, 0.24) 0px 28px 64px -12px;
   --shadow-subtle: rgba(43, 39, 35, 0.16) 0px 1px 3px 0px;
 
   color-scheme: only light;
@@ -468,57 +468,172 @@
   z-index: 120;
   display: grid;
   place-items: center;
-  padding: clamp(28px, 4.5vh, 52px) clamp(16px, 3vw, 32px);
-  background-color: rgba(43, 39, 35, 0.48);
-  -webkit-backdrop-filter: blur(5px);
-  backdrop-filter: blur(5px);
+  padding: clamp(24px, 4vh, 48px) clamp(14px, 3vw, 32px);
+  background-color: rgba(43, 39, 35, 0.56);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  perspective: 1800px;
   overscroll-behavior: contain;
 }
 
-.qz-superr-modal-sheet {
+/* غلاف الكتاب المفتوح بصفحتين + طبقات الورق الجانبية */
+.qz-superr-book-shell {
   position: relative;
-  width: min(820px, 100%);
-  max-height: min(82dvh, 780px);
+  width: min(1040px, 100%);
+  max-height: min(84dvh, 760px);
+  padding: 14px;
+  border-radius: 22px;
+  border: 1.5px solid var(--color-charcoal);
+  box-shadow:
+    0 24px 60px -14px rgba(24, 18, 12, 0.48),
+    inset 0 1px 0 rgba(250, 247, 242, 0.22);
+  transform-style: preserve-3d;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  background-color: var(--color-cream-paper);
-  border: 1.5px solid var(--color-charcoal);
-  border-radius: 20px;
-  box-shadow:
-    0 4px 0 0 var(--color-charcoal),
-    var(--shadow-lg);
-  color: var(--color-cocoa-ink);
 }
 
-.qz-superr-modal-scroll {
+/* خياطة الغلاف الخارجي للكتاب */
+.qz-superr-book-shell::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: 17px;
+  border: 1px dashed rgba(250, 247, 242, 0.26);
+  pointer-events: none;
+}
+
+/* غلاف أمامي يفتح بحركة 3D لحظة فتح الدفتر */
+.qz-superr-book-cover-flap {
+  position: absolute;
+  inset: 14px 14px 14px 50%;
+  border-radius: 4px 14px 14px 4px;
+  border: 1.5px solid var(--color-charcoal);
+  transform-origin: left center;
+  backface-visibility: hidden;
+  pointer-events: none;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 12px 0 32px rgba(0, 0, 0, 0.25);
+}
+
+.qz-superr-book-spread {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  flex: 1;
+  min-height: 0;
+  border-radius: 14px;
+  border: 1.25px solid var(--color-charcoal);
+  background-color: var(--color-cream-paper);
+  overflow: hidden;
+  /* حواف الورق المكدّسة يميناً ويساراً */
+  box-shadow:
+    inset 4px 0 0 #ece4d8,
+    inset -4px 0 0 #ece4d8,
+    inset 5px 0 0 rgba(43, 39, 35, 0.14),
+    inset -5px 0 0 rgba(43, 39, 35, 0.14);
+}
+
+/* كعب الكتاب (الطيّة الوسطى بالظل الواقعي) */
+.qz-superr-book-spine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 34px;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(43, 39, 35, 0.05) 26%,
+    rgba(43, 39, 35, 0.15) 48%,
+    rgba(43, 39, 35, 0.22) 50%,
+    rgba(43, 39, 35, 0.15) 52%,
+    rgba(43, 39, 35, 0.05) 74%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 3;
+}
+
+.qz-superr-book-page {
+  position: relative;
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  padding: clamp(22px, 3.5vw, 34px);
+  padding: clamp(22px, 3vw, 34px) clamp(22px, 3vw, 34px) 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+  background-color: var(--color-cream-paper);
+  /* سطور دفتر خفيفة وهادئة */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 35px,
+    rgba(107, 143, 174, 0.13) 36px
+  );
+  background-position: 0 18px;
+  color: var(--color-cocoa-ink);
   scrollbar-width: thin;
   scrollbar-color: #c86d3b #f2ece3;
 }
 
-/* شريط التمرير المخصّص بهوية الورق والحبر (بدلاً من الشريط الرمادي الافتراضي) */
-.qz-superr-modal-scroll::-webkit-scrollbar {
-  width: 11px;
+.qz-superr-book-page-left {
+  border-inline-start: 1px solid rgba(43, 39, 35, 0.08);
 }
 
-.qz-superr-modal-scroll::-webkit-scrollbar-track {
+/* خط الهامش الأحمر الهادئ في صفحة الملاحظات */
+.qz-superr-book-page-left::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  inset-inline-start: 22px;
+  width: 1px;
+  background: rgba(200, 109, 59, 0.25);
+  pointer-events: none;
+}
+
+/* شريط التمرير المخصّص بهوية الورق والحبر لكل صفحة */
+.qz-superr-book-page::-webkit-scrollbar {
+  width: 9px;
+}
+
+.qz-superr-book-page::-webkit-scrollbar-track {
   background-color: #f2ece3;
   border-radius: 999px;
   margin-block: 14px;
-  border: 1px solid rgba(43, 39, 35, 0.14);
 }
 
-.qz-superr-modal-scroll::-webkit-scrollbar-thumb {
+.qz-superr-book-page::-webkit-scrollbar-thumb {
   background-color: #c86d3b;
   border-radius: 999px;
   border: 2px solid #f2ece3;
-  box-shadow: inset 0 0 0 1px rgba(43, 39, 35, 0.45);
 }
 
-.qz-superr-modal-scroll::-webkit-scrollbar-thumb:hover {
+.qz-superr-book-page::-webkit-scrollbar-thumb:hover {
   background-color: #a6562b;
+}
+
+@media (max-width: 860px) {
+  .qz-superr-book-cover-flap,
+  .qz-superr-book-spine,
+  .qz-superr-book-page-left::before {
+    display: none;
+  }
+  .qz-superr-book-spread {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+  .qz-superr-book-page {
+    overflow-y: visible;
+  }
+  .qz-superr-book-page-left {
+    border-inline-start: 0;
+    border-top: 1.25px dashed rgba(43, 39, 35, 0.22);
+  }
 }

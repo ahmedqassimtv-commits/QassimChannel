@@ -341,12 +341,17 @@ export default function IdeasCastle() {
   const [sendStatus, setSendStatus] = useState('idle') // 'idle' | 'sending' | 'sent' | 'fallback'
   const [sendFeedback, setSendFeedback] = useState('')
 
-  // إيقاف تمرير Lenis الخلفي أثناء فتح نافذة الدفتر ليعمل السكرول داخلها بسلاسة تامة
+  // إيقاف تمرير Lenis الخلفي وإغلاق الدفتر بزر Escape عند الفتح
   useEffect(() => {
     const lenis = window.__qzLenis
     if (!selectedBook) return undefined
     lenis?.stop?.()
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') setSelectedBook(null)
+    }
+    window.addEventListener('keydown', onKeyDown)
     return () => {
+      window.removeEventListener('keydown', onKeyDown)
       lenis?.start?.()
     }
   }, [selectedBook])
@@ -923,97 +928,151 @@ export default function IdeasCastle() {
         </div>
       </footer>
 
-      {/* ── نافذة قراءة الدفتر المفتوح (Portal فوق الصفحة بالكامل بدون التصاق بالنافبار) ── */}
+      {/* ── نافذة الدفتر المفتوح مثل الكتاب (3D Book Opening + صفحتان يمين ويسار) ── */}
       {typeof document !== 'undefined' &&
         createPortal(
           <AnimatePresence>
-            {selectedBook && (
-              <motion.div
-                role="dialog"
-                aria-modal="true"
-                aria-label={selectedBook.title}
-                data-lenis-prevent
-                className="qz-superr-modal-backdrop"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setSelectedBook(null)}
-              >
+            {selectedBook && (() => {
+              const bookCover = getCoverPalette(selectedBook.coverStyle)
+              return (
                 <motion.div
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label={selectedBook.title}
                   data-lenis-prevent
-                  className="qz-superr-modal-sheet"
-                  dir="rtl"
-                  initial={{ opacity: 0, y: 18, scale: 0.97 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.98 }}
-                  onClick={(e) => e.stopPropagation()}
+                  className="qz-superr-modal-backdrop"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.24 }}
+                  onClick={() => setSelectedBook(null)}
                 >
-                  <div className="qz-superr-modal-scroll" data-lenis-prevent>
-                    <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#2b2723]/20 pb-5">
-                      <div>
-                        <span className="qz-superr-caption !text-[19px]">
-                          {selectedBook.handCaption} · رقم #{selectedBook.rollNo}
-                        </span>
-                        <h2 className="mt-2 font-[family-name:var(--font-gelica)] text-[32px] font-semibold leading-[1.5] text-[#33251a]">
-                          {selectedBook.title}
-                        </h2>
-                        {selectedBook.suggestedBy && (
-                          <p className="mt-2 inline-block rounded-full border border-[#2b2723]/40 bg-[#f2ece3] px-3 py-0.5 font-[family-name:var(--font-geist)] text-[13px] font-semibold text-[#33251a]">
-                            مقترحة من المتابع: {selectedBook.suggestedBy}
-                          </p>
-                        )}
-                      </div>
+                  <motion.div
+                    data-lenis-prevent
+                    className="qz-superr-book-shell"
+                    style={{ backgroundColor: bookCover.backgroundColor }}
+                    dir="rtl"
+                    initial={{ opacity: 0, scale: 0.86, rotateX: 12, y: 24 }}
+                    animate={{ opacity: 1, scale: 1, rotateX: 0, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9, rotateX: 8, y: 18 }}
+                    transition={{ type: 'spring', stiffness: 220, damping: 24 }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {/* غلاف الكتاب الأمامي الذي ينقلب بحركة 3D لحظة الفتح */}
+                    <motion.div
+                      className="qz-superr-book-cover-flap"
+                      style={{
+                        backgroundColor: bookCover.backgroundColor,
+                        backgroundImage: bookCover.backgroundImage,
+                        color: bookCover.color,
+                      }}
+                      initial={{ rotateY: 0, opacity: 1 }}
+                      animate={{ rotateY: -175, opacity: 0 }}
+                      transition={{ duration: 0.72, ease: [0.22, 1, 0.36, 1] }}
+                      aria-hidden="true"
+                    >
+                      <span className="qz-superr-stamp">
+                        <BrandLogo variant="solid" className="h-5 w-auto" />
+                      </span>
+                    </motion.div>
 
-                      <button
-                        type="button"
-                        className="qz-superr-btn"
-                        onClick={() => setSelectedBook(null)}
-                      >
-                        <span>إغلاق الدفتر</span>
-                      </button>
-                    </div>
+                    {/* الصفحتان المفتوحتان للدفتر */}
+                    <div className="qz-superr-book-spread" data-lenis-prevent>
+                      <div className="qz-superr-book-spine" aria-hidden="true" />
 
-                    <div className="mt-6 space-y-6">
-                      <p className="qz-superr-body">{selectedBook.summary}</p>
-
-                      <div className="qz-superr-card">
-                        <span className="qz-superr-caption !text-[19px]">اقتباس على الهامش</span>
-                        <blockquote className="mt-3 font-[family-name:var(--font-body-ar)] text-[22px] font-medium leading-[1.75] text-[#33251a]">
-                          {selectedBook.sketchQuote}
-                        </blockquote>
-                      </div>
-
-                      <div>
-                        <h3 className="font-[family-name:var(--font-gelica)] text-[22px] font-semibold leading-[1.55] text-[#33251a]">
-                          الملاحظات المسطّرة داخل الدفتر:
-                        </h3>
-                        <ul className="mt-4 space-y-3.5">
-                          {selectedBook.marginNotes.map((note, i) => (
-                            <li
-                              key={i}
-                              className="flex items-start gap-3 font-[family-name:var(--font-body-ar)] text-[17px] leading-[1.85] text-[#33251a]"
+                      {/* الصفحة اليمنى: العنوان + الملخص + اقتباس الهامش */}
+                      <div className="qz-superr-book-page" data-lenis-prevent>
+                        <div>
+                          <div className="flex items-center justify-between gap-3 border-b border-[#2b2723]/15 pb-3">
+                            <span className="qz-superr-caption !text-[16px]">
+                              {selectedBook.handCaption} · #{selectedBook.rollNo}
+                            </span>
+                            <span
+                              className="inline-flex items-center rounded-full border border-[#2b2723]/30 bg-[#f2ece3] px-2.5 py-1 text-[#2b2723]"
+                              aria-hidden="true"
                             >
-                              <span className="mt-1.5 inline-grid size-6 shrink-0 place-items-center rounded-full border border-[#2b2723] bg-[#f2ece3] font-[family-name:var(--font-geist)] text-[13px] font-semibold text-[#2b2723]">
-                                {i + 1}
-                              </span>
-                              <span>{note}</span>
-                            </li>
-                          ))}
-                        </ul>
+                              <BrandLogo variant="solid" className="h-3.5 w-auto" />
+                            </span>
+                          </div>
+
+                          <h2 className="mt-5 font-[family-name:var(--font-gelica)] text-[clamp(24px,2.8vw,32px)] font-semibold leading-[1.52] text-[#33251a]">
+                            {selectedBook.title}
+                          </h2>
+
+                          {selectedBook.suggestedBy && (
+                            <p className="mt-2 inline-block rounded-full border border-[#2b2723]/40 bg-[#f2ece3] px-3 py-0.5 font-[family-name:var(--font-geist)] text-[13px] font-semibold text-[#33251a]">
+                              فكرة المتابع: {selectedBook.suggestedBy}
+                            </p>
+                          )}
+
+                          <p className="qz-superr-body mt-5">{selectedBook.summary}</p>
+
+                          <div className="qz-superr-card mt-6">
+                            <span className="qz-superr-caption !text-[17px]">اقتباس على الهامش</span>
+                            <blockquote className="mt-2.5 font-[family-name:var(--font-body-ar)] text-[20px] font-medium leading-[1.78] text-[#33251a]">
+                              {selectedBook.sketchQuote}
+                            </blockquote>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between border-t border-[#2b2723]/12 pt-3 font-[family-name:var(--font-geist)] text-[12px] text-[#33251a]/65">
+                          <span>{selectedBook.category}</span>
+                          <span>صفحة ٠١</span>
+                        </div>
                       </div>
 
-                      <div className="pt-2">
-                        <NameLabelSticker
-                          name={selectedBook.studentName}
-                          classLabel={selectedBook.classLabel}
-                          rollNo={selectedBook.rollNo}
-                        />
+                      {/* الصفحة اليسرى: الملاحظات المسطّرة + استيكر الاسم + زر الإغلاق */}
+                      <div
+                        className="qz-superr-book-page qz-superr-book-page-left"
+                        data-lenis-prevent
+                      >
+                        <div>
+                          <div className="flex items-center justify-between gap-3 border-b border-[#2b2723]/15 pb-3">
+                            <h3 className="font-[family-name:var(--font-gelica)] text-[20px] font-semibold leading-[1.5] text-[#33251a]">
+                              الملاحظات المسطّرة بالداخل
+                            </h3>
+                            <button
+                              type="button"
+                              className="qz-superr-btn !px-4 !py-1.5 !text-[14px]"
+                              onClick={() => setSelectedBook(null)}
+                            >
+                              <span>إغلاق الدفتر ×</span>
+                            </button>
+                          </div>
+
+                          <ul className="mt-6 space-y-4">
+                            {selectedBook.marginNotes.map((note, i) => (
+                              <li
+                                key={i}
+                                className="flex items-start gap-3 font-[family-name:var(--font-body-ar)] text-[16.5px] leading-[1.85] text-[#33251a]"
+                              >
+                                <span className="mt-1.5 inline-grid size-6 shrink-0 place-items-center rounded-full border border-[#2b2723] bg-[#f2ece3] font-[family-name:var(--font-geist)] text-[12px] font-semibold text-[#2b2723]">
+                                  {i + 1}
+                                </span>
+                                <span>{note}</span>
+                              </li>
+                            ))}
+                          </ul>
+
+                          <div className="mt-7">
+                            <NameLabelSticker
+                              name={selectedBook.studentName}
+                              classLabel={selectedBook.classLabel}
+                              rollNo={selectedBook.rollNo}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between border-t border-[#2b2723]/12 pt-3 font-[family-name:var(--font-geist)] text-[12px] text-[#33251a]/65">
+                          <span>{selectedBook.pages}</span>
+                          <span>صفحة ٠٢</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 </motion.div>
-              </motion.div>
-            )}
+              )
+            })()}
           </AnimatePresence>,
           document.body,
         )}
