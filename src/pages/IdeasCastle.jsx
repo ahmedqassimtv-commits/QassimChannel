@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
+import BrandLogo from '../components/brand/BrandLogo.jsx'
 import { playGlassTap } from '../utils/glassSound.js'
 
 /* ══ قاع الأفكار — Superr Full-Page Notebook Experience ═════════════════
@@ -299,34 +300,36 @@ function NameLabelSticker({ name, classLabel, rollNo }) {
   )
 }
 
-/* ── غلاف الدفتر حسب النوع (جلد بني / أزرق بسحب بيضاء / وردي / أخضر) ── */
+/* ── غلاف الدفتر حسب النوع (جلد بني / أزرق هادئ / وردي / أخضر) ── */
 function getCoverPalette(style) {
   switch (style) {
     case 'blue-clouds':
       return {
-        backgroundColor: '#6b8fae',
+        backgroundColor: '#5e7f9d',
         backgroundImage:
-          'radial-gradient(circle at 22% 24%, #faf7f2 0%, #faf7f2 14%, transparent 15%), radial-gradient(circle at 32% 26%, #faf7f2 0%, #faf7f2 11%, transparent 12%), radial-gradient(circle at 76% 72%, #faf7f2 0%, #faf7f2 13%, transparent 14%), radial-gradient(circle at 66% 74%, #faf7f2 0%, #faf7f2 10%, transparent 11%)',
+          'linear-gradient(145deg, rgba(250, 247, 242, 0.1) 0%, transparent 55%, rgba(43, 39, 35, 0.12) 100%)',
         color: '#faf7f2',
       }
     case 'rose-pink':
       return {
         backgroundColor: '#c88a9e',
         backgroundImage:
-          'radial-gradient(circle at 78% 20%, rgba(253,251,249,0.28) 0%, transparent 35%)',
+          'linear-gradient(145deg, rgba(250, 247, 242, 0.18) 0%, transparent 60%)',
         color: '#2b2723',
       }
     case 'sprout-green':
       return {
         backgroundColor: '#628b6f',
-        color: '#2b2723',
+        backgroundImage:
+          'linear-gradient(145deg, rgba(250, 247, 242, 0.12) 0%, transparent 60%)',
+        color: '#faf7f2',
       }
     case 'brown-leather':
     default:
       return {
         backgroundColor: '#6e4d37',
         backgroundImage:
-          'radial-gradient(circle at 28% 22%, rgba(255,255,255,0.08), transparent 55%)',
+          'linear-gradient(145deg, rgba(250, 247, 242, 0.08) 0%, transparent 55%, rgba(20, 14, 10, 0.16) 100%)',
         color: '#faf7f2',
       }
   }
@@ -365,18 +368,23 @@ function ProductNotebookCard({ notebook, onOpen }) {
       <div>
         <div className="flex items-center justify-between gap-2">
           <span
-            className="inline-block rounded-[20px] border border-[#2b2723] bg-[#faf7f2] px-3 py-0.5 text-[13px] font-medium text-[#2b2723]"
+            className="inline-block rounded-[20px] border border-[#2b2723] bg-[#faf7f2] px-3 py-0.5 font-[family-name:var(--font-geist)] text-[13px] font-medium text-[#2b2723]"
           >
             {notebook.category}
           </span>
-          <span className="qz-latin text-xs font-medium opacity-80">#{notebook.rollNo}</span>
+          {/* ختم لوجو قاسمز المحفور بدقة */}
+          <span className="qz-superr-stamp" aria-hidden="true" title="ختم قاسمز">
+            <BrandLogo variant="solid" className="h-3.5 w-auto" />
+          </span>
         </div>
 
-        <h3 className="mt-5 font-[family-name:var(--font-gelica)] text-[26px] font-semibold leading-[1.22]">
+        <h3 className="mt-5 font-[family-name:var(--font-gelica)] text-[25px] font-semibold leading-[1.52]">
           {notebook.title}
         </h3>
 
-        <p className="mt-2.5 text-[15px] leading-[1.55] opacity-90">{notebook.summary}</p>
+        <p className="mt-3 font-[family-name:var(--font-body-ar)] text-[15px] leading-[1.82] opacity-90">
+          {notebook.summary}
+        </p>
       </div>
 
       <div className="mt-6 space-y-3">
@@ -385,7 +393,7 @@ function ProductNotebookCard({ notebook, onOpen }) {
           classLabel={notebook.classLabel}
           rollNo={notebook.rollNo}
         />
-        <div className="flex items-center justify-between text-[13px] font-medium opacity-90">
+        <div className="flex items-center justify-between font-[family-name:var(--font-geist)] text-[13px] font-medium opacity-90">
           <span>{notebook.pages}</span>
           <span className="underline underline-offset-4">افتح الدفتر ←</span>
         </div>
@@ -402,6 +410,16 @@ export default function IdeasCastle() {
   const [ideaTitle, setIdeaTitle] = useState('')
   const [ideaCat, setIdeaCat] = useState('بذور الحلقات')
   const [ideaSummary, setIdeaSummary] = useState('')
+
+  // إيقاف تمرير Lenis الخلفي أثناء فتح نافذة الدفتر ليعمل السكرول داخلها بسلاسة تامة
+  useEffect(() => {
+    const lenis = window.__qzLenis
+    if (!selectedBook) return undefined
+    lenis?.stop?.()
+    return () => {
+      lenis?.start?.()
+    }
+  }, [selectedBook])
 
   const heroBrown = notebooks[0]
   const blueBook = notebooks[1] || notebooks[0]
@@ -631,12 +649,12 @@ export default function IdeasCastle() {
                 <Sticker type="ghost" size={46} rotate="12deg" />
               </div>
               <span className="qz-superr-caption">مثل صناعة</span>
-              <h2 className="mt-2 font-[family-name:var(--font-gelica)] text-[36px] font-medium leading-[1.2] text-[#33251a]">
+              <h2 className="mt-2 font-[family-name:var(--font-gelica)] text-[34px] font-medium leading-[1.52] text-[#33251a]">
                 دفترنا الخاص.
                 <br />
                 بطريقتنا الخاصة.
               </h2>
-              <p className="mt-3 text-[18px] leading-[1.5] text-[#33251a]/85">
+              <p className="mt-4 font-[family-name:var(--font-body-ar)] text-[17px] leading-[1.85] text-[#33251a]/85">
                 اضغط على أي دفتر لتقرأ الملاحظات المسطّرة على هوامشه.
               </p>
             </div>
@@ -654,13 +672,13 @@ export default function IdeasCastle() {
           </div>
         </section>
 
-        {/* ── ٣. مواصفات دفاتر قاع الأفكار (Dew Drop #f2ece3 Cards — 12px radius) ── */}
+        {/* ── ٣. فكرة قسم قاع الأفكار ولماذا صُنع (Dew Drop #f2ece3 Cards) ── */}
         <section className="mt-[64px]">
           <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
             <div>
-              <span className="qz-superr-caption">لماذا قاع الأفكار؟</span>
-              <h2 className="mt-1 text-[46px] font-semibold leading-[1.2] text-[#33251a]">
-                مواصفات الدفتر الورقي
+              <span className="qz-superr-caption">فكرة القسم</span>
+              <h2 className="mt-2 font-[family-name:var(--font-gelica)] text-[clamp(30px,4vw,44px)] font-semibold leading-[1.48] text-[#33251a]">
+                لماذا صُنع «قاع الأفكار»؟
               </h2>
             </div>
             <div className="flex items-center gap-3">
@@ -671,32 +689,32 @@ export default function IdeasCastle() {
 
           <div className="grid gap-6 md:grid-cols-3">
             <div className="qz-superr-card">
-              <span className="qz-superr-caption !text-[20px]">٠١ · مرقّم بالكامل</span>
-              <h3 className="mt-2 text-[28px] font-semibold leading-[1.3] text-[#33251a]">
-                فهرس لكل شرارة
+              <span className="qz-superr-caption !text-[19px]">٠١ · قبل أن تضيء الكاميرا</span>
+              <h3 className="mt-3 font-[family-name:var(--font-gelica)] text-[24px] font-semibold leading-[1.52] text-[#33251a]">
+                مختبر المسودات الأولى
               </h3>
-              <p className="mt-3 text-[18px] leading-[1.5] text-[#33251a]">
-                كل صفحة مرقّمة ومربوطة ببطاقة الاسم المصفّحة على الغلاف للوصول لأي مسودة حلقة فوراً.
+              <p className="mt-4 font-[family-name:var(--font-body-ar)] text-[17px] leading-[1.85] text-[#33251a]/90">
+                قاع الأفكار هو المطبخ الخلفي لقاسمز؛ هنا نجمع الشرارات الأولى والأسئلة التي تخطر في منتصف الليل أو بين سطور الكتب قبل أن تتحول إلى حلقات ومراجعات.
               </p>
             </div>
 
             <div className="qz-superr-card">
-              <span className="qz-superr-caption !text-[20px]">٠٢ · ورق كريمي دافئ</span>
-              <h3 className="mt-2 text-[28px] font-semibold leading-[1.3] text-[#33251a]">
-                مريح للعين والقراءة
+              <span className="qz-superr-caption !text-[19px]">٠٢ · التفكير بصوتٍ مسموع</span>
+              <h3 className="mt-3 font-[family-name:var(--font-gelica)] text-[24px] font-semibold leading-[1.52] text-[#33251a]">
+                كواليس صناعة الحكاية
               </h3>
-              <p className="mt-3 text-[18px] leading-[1.5] text-[#33251a]">
-                أرضية كريمية غير لامعة (#faf7f2) مع حبر الكاكاو الداكن (#33251a) لقراءة هادئة بلا إجهاد.
+              <p className="mt-4 font-[family-name:var(--font-body-ar)] text-[17px] leading-[1.85] text-[#33251a]/90">
+                بدل أن ترى النتيجة النهائية فقط على يوتيوب، نشاركك هنا رحلة تطور الفكرة: الهوامش الجانبية، المراجع، والزوايا التي نختبرها حتى تنضج القصة.
               </p>
             </div>
 
             <div className="qz-superr-card">
-              <span className="qz-superr-caption !text-[20px]">٠٣ · هوامش المونتاج</span>
-              <h3 className="mt-2 text-[28px] font-semibold leading-[1.3] text-[#33251a]">
-                مساحة للشخبطة الحرة
+              <span className="qz-superr-caption !text-[19px]">٠٣ · مساحة مفتوحة لك أيضاً</span>
+              <h3 className="mt-3 font-[family-name:var(--font-gelica)] text-[24px] font-semibold leading-[1.52] text-[#33251a]">
+                فكرتك قد تكون الحلقة القادمة
               </h3>
-              <p className="mt-3 text-[18px] leading-[1.5] text-[#33251a]">
-                ملاحظات جانبية واقتباسات مرسومة بالماركر البرتقالي تربط بين الفكرة الأولى والمشهد النهائي.
+              <p className="mt-4 font-[family-name:var(--font-body-ar)] text-[17px] leading-[1.85] text-[#33251a]/90">
+                القسم ليس مغلقاً علينا وحدنا؛ يمكنك فتح دفتر جديد وتدوين سؤال أو زاوية سينمائية ترى أنها تستحق التشريح لتبقى محفوظة في أرشيفنا.
               </p>
             </div>
           </div>
@@ -707,7 +725,7 @@ export default function IdeasCastle() {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <span className="qz-superr-caption">تصفّح الرف الكامل</span>
-              <h2 className="mt-1 text-[36px] font-semibold leading-[1.2] text-[#33251a]">
+              <h2 className="mt-2 font-[family-name:var(--font-gelica)] text-[34px] font-semibold leading-[1.5] text-[#33251a]">
                 جميع دفاتر قاع الأفكار ({filtered.length})
               </h2>
             </div>
@@ -759,10 +777,10 @@ export default function IdeasCastle() {
                 <Sticker type="heart" size={44} rotate="8deg" />
                 <Sticker type="ghost" size={44} rotate="-6deg" />
               </div>
-              <h2 className="font-[family-name:var(--font-gelica)] text-[clamp(32px,4.5vw,46px)] font-semibold leading-[1.15] text-[#2b2723]">
+              <h2 className="font-[family-name:var(--font-gelica)] text-[clamp(28px,4vw,42px)] font-semibold leading-[1.52] text-[#2b2723]">
                 قاع الأفكار — المكان الذي تبدأ منه كل حكاية في قاسمز.
               </h2>
-              <p className="mt-3 text-[20px] leading-[1.5] text-[#2b2723]/85">
+              <p className="mt-5 font-[family-name:var(--font-body-ar)] text-[18px] leading-[1.85] text-[#2b2723]/88">
                 هل لديك فكرة حلقة أو زاوية سينمائية تستحق دفتراً جديداً؟ افتح مسودة ودوّنها الآن.
               </p>
             </div>
@@ -792,13 +810,14 @@ export default function IdeasCastle() {
         </div>
       </footer>
 
-      {/* ── نافذة قراءة الدفتر المفتوح ── */}
+      {/* ── نافذة قراءة الدفتر المفتوح (مع دعم كامل للسكرول وتجاوز Lenis) ── */}
       <AnimatePresence>
         {selectedBook && (
           <motion.div
             role="dialog"
             aria-modal="true"
             aria-label={selectedBook.title}
+            data-lenis-prevent
             className="qz-superr-modal-backdrop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -806,6 +825,7 @@ export default function IdeasCastle() {
             onClick={() => setSelectedBook(null)}
           >
             <motion.div
+              data-lenis-prevent
               className="qz-superr-modal-sheet"
               dir="rtl"
               initial={{ opacity: 0, y: 16, scale: 0.97 }}
@@ -815,10 +835,10 @@ export default function IdeasCastle() {
             >
               <div className="flex flex-wrap items-center justify-between gap-4 border-b border-[#2b2723]/20 pb-5">
                 <div>
-                  <span className="qz-superr-caption !text-[20px]">
+                  <span className="qz-superr-caption !text-[19px]">
                     {selectedBook.handCaption} · رقم #{selectedBook.rollNo}
                   </span>
-                  <h2 className="mt-1 text-[36px] font-semibold leading-[1.2] text-[#33251a]">
+                  <h2 className="mt-2 font-[family-name:var(--font-gelica)] text-[32px] font-semibold leading-[1.5] text-[#33251a]">
                     {selectedBook.title}
                   </h2>
                 </div>
@@ -836,23 +856,23 @@ export default function IdeasCastle() {
                 <p className="qz-superr-body">{selectedBook.summary}</p>
 
                 <div className="qz-superr-card">
-                  <span className="qz-superr-caption !text-[20px]">اقتباس على الهامش</span>
-                  <blockquote className="mt-2 text-[24px] font-medium leading-[1.45] text-[#33251a]">
+                  <span className="qz-superr-caption !text-[19px]">اقتباس على الهامش</span>
+                  <blockquote className="mt-3 font-[family-name:var(--font-body-ar)] text-[22px] font-medium leading-[1.75] text-[#33251a]">
                     {selectedBook.sketchQuote}
                   </blockquote>
                 </div>
 
                 <div>
-                  <h3 className="text-[24px] font-semibold text-[#33251a]">
+                  <h3 className="font-[family-name:var(--font-gelica)] text-[22px] font-semibold leading-[1.55] text-[#33251a]">
                     الملاحظات المسطّرة داخل الدفتر:
                   </h3>
-                  <ul className="mt-4 space-y-3">
+                  <ul className="mt-4 space-y-3.5">
                     {selectedBook.marginNotes.map((note, i) => (
                       <li
                         key={i}
-                        className="flex items-start gap-3 text-[18px] leading-[1.6] text-[#33251a]"
+                        className="flex items-start gap-3 font-[family-name:var(--font-body-ar)] text-[17px] leading-[1.85] text-[#33251a]"
                       >
-                        <span className="mt-1 inline-grid size-6 shrink-0 place-items-center rounded-full border border-[#2b2723] bg-[#f2ece3] text-[13px] font-semibold text-[#2b2723]">
+                        <span className="mt-1.5 inline-grid size-6 shrink-0 place-items-center rounded-full border border-[#2b2723] bg-[#f2ece3] font-[family-name:var(--font-geist)] text-[13px] font-semibold text-[#2b2723]">
                           {i + 1}
                         </span>
                         <span>{note}</span>
