@@ -265,14 +265,14 @@ function ProductNotebookCard({ notebook, isLifted = false, onOpen }) {
       }}
       onClick={(e) => {
         playGlassTap()
-        onOpen(notebook, e.currentTarget.getBoundingClientRect())
+        onOpen(notebook, e.currentTarget)
       }}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault()
-          onOpen(notebook, e.currentTarget.getBoundingClientRect())
+          onOpen(notebook, e.currentTarget)
         }
       }}
       aria-label={`افتح دفتر ${notebook.title}`}
@@ -332,13 +332,22 @@ export default function IdeasCastle() {
   const [activeCategory, setActiveCategory] = useState('كل الدفاتر')
   const [selectedBook, setSelectedBook] = useState(null)
   const [liftedBookId, setLiftedBookId] = useState(null)
+  const [bookSettled, setBookSettled] = useState(false)
   const [originFlight, setOriginFlight] = useState({ x: 0, y: 24, scale: 0.72, rotate: -6 })
   const [newIdeaOpen, setNewIdeaOpen] = useState(false)
 
-  const handleOpenBook = (book, rect) => {
-    if (rect && typeof window !== 'undefined') {
-      const stageW = Math.min(980, window.innerWidth * 0.94)
-      const scale = Math.min(1, Math.max(0.55, rect.width / (stageW * 0.5)))
+  const handleCloseBook = () => {
+    setBookSettled(false)
+    setSelectedBook(null)
+  }
+
+  const handleOpenBook = (book, cardEl) => {
+    setBookSettled(false)
+    if (cardEl && typeof window !== 'undefined') {
+      const rect = cardEl.getBoundingClientRect()
+      const unrotatedW = cardEl.offsetWidth || rect.width
+      const stageW = Math.min(920, window.innerWidth * 0.92, (window.innerHeight * 0.8 * 6) / 3.9)
+      const scale = Math.min(1.05, Math.max(0.5, unrotatedW / (stageW * 0.5)))
       const closedCenterX = window.innerWidth / 2 - stageW * 0.25 * scale
       const closedCenterY = window.innerHeight / 2
       const cardCenterX = rect.left + rect.width / 2
@@ -347,11 +356,11 @@ export default function IdeasCastle() {
       setOriginFlight({
         x: Math.round(cardCenterX - closedCenterX),
         y: Math.round(cardCenterY - closedCenterY),
-        scale: Number(scale.toFixed(3)),
+        scale: Number(scale.toFixed(4)),
         rotate: tiltNum,
       })
     } else {
-      setOriginFlight({ x: 0, y: 24, scale: 0.72, rotate: -5 })
+      setOriginFlight({ x: 0, y: 24, scale: 0.78, rotate: -5 })
     }
     setLiftedBookId(book.id)
     setSelectedBook(book)
@@ -372,7 +381,7 @@ export default function IdeasCastle() {
     if (!selectedBook) return undefined
     lenis?.stop?.()
     const onKeyDown = (e) => {
-      if (e.key === 'Escape') setSelectedBook(null)
+      if (e.key === 'Escape') handleCloseBook()
     }
     window.addEventListener('keydown', onKeyDown)
     return () => {
@@ -975,6 +984,47 @@ export default function IdeasCastle() {
           <AnimatePresence onExitComplete={() => setLiftedBookId(null)}>
             {selectedBook && (() => {
               const bookCover = getCoverPalette(selectedBook.coverStyle)
+              const rightPageContent = (
+                <div className="qz-book3d-page qz-book3d-page-right" data-lenis-prevent>
+                  <div>
+                    <div className="flex items-center justify-between gap-3 border-b border-[#2b2723]/15 pb-3">
+                      <span className="qz-superr-caption !text-[15px]">
+                        {selectedBook.handCaption} · #{selectedBook.rollNo}
+                      </span>
+                      <span
+                        className="inline-flex items-center rounded-full border border-[#2b2723]/30 bg-[#f2ece3] px-2.5 py-1 text-[#2b2723]"
+                        aria-hidden="true"
+                      >
+                        <BrandLogo variant="solid" className="h-3.5 w-auto" />
+                      </span>
+                    </div>
+
+                    <h2 className="mt-4 font-[family-name:var(--font-gelica)] text-[clamp(22px,2.4vw,28px)] font-semibold leading-[1.52] text-[#33251a]">
+                      {selectedBook.title}
+                    </h2>
+
+                    {selectedBook.suggestedBy && (
+                      <p className="mt-2 inline-block rounded-full border border-[#2b2723]/40 bg-[#f2ece3] px-3 py-0.5 font-[family-name:var(--font-geist)] text-[12px] font-semibold text-[#33251a]">
+                        فكرة المتابع: {selectedBook.suggestedBy}
+                      </p>
+                    )}
+
+                    <p className="qz-superr-body mt-4">{selectedBook.summary}</p>
+
+                    <div className="qz-superr-card mt-5 !p-4">
+                      <span className="qz-superr-caption !text-[16px]">اقتباس على الهامش</span>
+                      <blockquote className="mt-2 font-[family-name:var(--font-body-ar)] text-[18px] font-medium leading-[1.78] text-[#33251a]">
+                        {selectedBook.sketchQuote}
+                      </blockquote>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between border-t border-[#2b2723]/12 pt-2.5 font-[family-name:var(--font-geist)] text-[12px] text-[#33251a]/65">
+                    <span>{selectedBook.category}</span>
+                    <span>صفحة ٠١</span>
+                  </div>
+                </div>
+              )
               return (
                 <motion.div
                   key={selectedBook.id}
@@ -986,10 +1036,11 @@ export default function IdeasCastle() {
                   initial={{ opacity: 1 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 1, transition: { duration: 0.88 } }}
-                  onClick={() => setSelectedBook(null)}
+                  onClick={handleCloseBook}
                 >
                   <motion.div
                     data-lenis-prevent
+                    data-settled={bookSettled ? 'true' : undefined}
                     className="qz-book3d-stage"
                     dir="rtl"
                     initial={{
@@ -1028,7 +1079,7 @@ export default function IdeasCastle() {
                             <button
                               type="button"
                               className="qz-superr-btn !px-3.5 !py-1 !text-[13px]"
-                              onClick={() => setSelectedBook(null)}
+                              onClick={handleCloseBook}
                             >
                               <span>إغلاق الدفتر ×</span>
                             </button>
@@ -1064,9 +1115,23 @@ export default function IdeasCastle() {
                       </div>
                     </div>
 
-                    {/* الورقة المفصلية 3D: تقلب الغلاف الأمامي 180 درجة نحو اليمين عند الفتح وتُغلقه أولاً عند الخروج */}
+                    {/* النصف الأيمن المسطّح 2D بعد الاستقرار — دقة 4K حادة 100% بلا أي بلور */}
+                    {bookSettled && (
+                      <div
+                        className="qz-book3d-right-static"
+                        style={{ backgroundColor: bookCover.backgroundColor }}
+                      >
+                        {rightPageContent}
+                      </div>
+                    )}
+
+                    {/* الورقة المفصلية 3D: تعمل أثناء حركة الفتح والإغلاق ثم تختفي عند الاستقرار لمنع البلور */}
                     <motion.div
                       className="qz-book3d-leaf"
+                      style={{
+                        visibility: bookSettled ? 'hidden' : 'visible',
+                        pointerEvents: bookSettled ? 'none' : 'auto',
+                      }}
                       initial={{ rotateY: 0, z: 2 }}
                       animate={{
                         rotateY: 180,
@@ -1078,6 +1143,9 @@ export default function IdeasCastle() {
                         z: 2,
                         transition: { delay: 0, duration: 0.44, ease: [0.4, 0, 0.2, 1] },
                       }}
+                      onAnimationComplete={(def) => {
+                        if (def && def.rotateY === 180) setBookSettled(true)
+                      }}
                     >
                       {/* الوجه الأمامي: نفس غلاف الدفتر بالضبط بدون أي اختلاف عند الفتح أو الإغلاق */}
                       <div
@@ -1085,6 +1153,11 @@ export default function IdeasCastle() {
                         style={bookCover}
                         aria-hidden="true"
                       >
+                        <span
+                          className="qz-superr-pencil"
+                          style={{ backgroundColor: selectedBook.pencilColor || '#c86d3b' }}
+                          aria-hidden="true"
+                        />
                         <div>
                           <div className="flex items-center justify-between gap-2">
                             <span className="inline-block rounded-[20px] border border-[#2b2723] bg-[#faf7f2] px-3 py-0.5 font-[family-name:var(--font-geist)] text-[13px] font-medium text-[#2b2723]">
@@ -1123,50 +1196,12 @@ export default function IdeasCastle() {
                         </div>
                       </div>
 
-                      {/* الوجه الخلفي: الصفحة اليمنى المفتوحة 01 */}
+                      {/* الوجه الخلفي: الصفحة اليمنى أثناء الانقلاب 3D */}
                       <div
                         className="qz-book3d-face qz-book3d-back"
                         style={{ backgroundColor: bookCover.backgroundColor }}
                       >
-                        <div className="qz-book3d-page qz-book3d-page-right" data-lenis-prevent>
-                          <div>
-                            <div className="flex items-center justify-between gap-3 border-b border-[#2b2723]/15 pb-3">
-                              <span className="qz-superr-caption !text-[15px]">
-                                {selectedBook.handCaption} · #{selectedBook.rollNo}
-                              </span>
-                              <span
-                                className="inline-flex items-center rounded-full border border-[#2b2723]/30 bg-[#f2ece3] px-2.5 py-1 text-[#2b2723]"
-                                aria-hidden="true"
-                              >
-                                <BrandLogo variant="solid" className="h-3.5 w-auto" />
-                              </span>
-                            </div>
-
-                            <h2 className="mt-4 font-[family-name:var(--font-gelica)] text-[clamp(22px,2.4vw,28px)] font-semibold leading-[1.52] text-[#33251a]">
-                              {selectedBook.title}
-                            </h2>
-
-                            {selectedBook.suggestedBy && (
-                              <p className="mt-2 inline-block rounded-full border border-[#2b2723]/40 bg-[#f2ece3] px-3 py-0.5 font-[family-name:var(--font-geist)] text-[12px] font-semibold text-[#33251a]">
-                                فكرة المتابع: {selectedBook.suggestedBy}
-                              </p>
-                            )}
-
-                            <p className="qz-superr-body mt-4">{selectedBook.summary}</p>
-
-                            <div className="qz-superr-card mt-5 !p-4">
-                              <span className="qz-superr-caption !text-[16px]">اقتباس على الهامش</span>
-                              <blockquote className="mt-2 font-[family-name:var(--font-body-ar)] text-[18px] font-medium leading-[1.78] text-[#33251a]">
-                                {selectedBook.sketchQuote}
-                              </blockquote>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center justify-between border-t border-[#2b2723]/12 pt-2.5 font-[family-name:var(--font-geist)] text-[12px] text-[#33251a]/65">
-                            <span>{selectedBook.category}</span>
-                            <span>صفحة ٠١</span>
-                          </div>
-                        </div>
+                        {rightPageContent}
                       </div>
                     </motion.div>
                   </motion.div>
