@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import BrandLogo from '../components/brand/BrandLogo.jsx'
+import { IDEAS_NOTEBOOKS } from '../data/ideasNotebooks.js'
 import { playGlassTap } from '../utils/glassSound.js'
 
 /* ══ قاع الأفكار — Superr Full-Page Notebook Experience ═════════════════
@@ -14,116 +15,6 @@ import { playGlassTap } from '../utils/glassSound.js'
    - Product Notebooks: دفاتر مائلة 5–8 درجات (جلد بني، أزرق بسحب بيضاء، وردي) مع استيكر الاسم المصفّح
    - Sticker Illustrations: استيكرات مسطّحة بحدود 2px داكنة مائلة بزاوية 5–15 درجة بدون ظلال
    - Footer Brand Band: شريط برتقالي (#c86d3b) بعرض الصفحة بالكامل وبحافة علوية 56px. */
-
-const INITIAL_NOTEBOOKS = [
-  {
-    id: 'nb-hero-brown',
-    rollNo: '01',
-    studentName: 'أحمد قاسم',
-    classLabel: 'فلسفة الصورة · مونتاج',
-    category: 'تأملات سينمائية',
-    title: 'لماذا نصدّق الكاميرا حين تكذب؟',
-    handCaption: 'دفتر الجلد البني الكلاسيكي',
-    tilt: '-6deg',
-    coverStyle: 'brown-leather',
-    pencilColor: '#c86d3b',
-    pages: '١٢٠ صفحة مرقّمة · 100 GSM',
-    summary:
-      'مسودة أولى عن الخداع البصري في السينما الوثائقية: كيف تخلق زاوية العدسة وإيقاع القطع شعوراً بالحقيقة حتى لو كان المشهد مُعاد التمثيل بالكامل.',
-    marginNotes: [
-      'العدسة الواسعة ٢٤مم تقرّب المتفرج من الحدث لكنها تشوّه المسافة العاطفية.',
-      'قاعدة الـ ٣ ثوانٍ: إذا استمرت اللقطة بعد انتهاء الجملة، يبدأ المشاهد في قراءة ما وراء الوجه.',
-      'مراجعة افتتاحية فيلم Close-Up لعباس كيارستمي كمثال على التداخل بين الواقع والتمثيل.',
-    ],
-    sketchQuote:
-      '«الحقيقة في السينما ليست ما حدث أمام الكاميرا، بل ما يبقى في ذهن المتفرج بعد إظلام الشاشة.»',
-  },
-  {
-    id: 'nb-blue-parchi',
-    rollNo: '02',
-    studentName: 'أحمد قاسم',
-    classLabel: 'وثائقيات · أرشيف المدن',
-    category: 'بذور الحلقات',
-    title: 'أطلس الأماكن التي نسيتها الخرائط',
-    handCaption: 'دفتر السحاب الأزرق الكبير',
-    tilt: '-5.5deg',
-    coverStyle: 'blue-clouds',
-    pencilColor: '#6b8fae',
-    pages: '٩٦ صفحة مسطّرة · هوامش عريضة',
-    summary:
-      'دفتر ميداني يجمع حكايات المحطات المهجورة ودور السينما الصيفية في المدن العربية: كيف تتحول العمارة إلى شاهد صامت على تحوّلات الناس.',
-    marginNotes: [
-      'سينما ريو الصيفية: المقاعد الخشبية ما زالت تحمل أرقامها المعدنية منذ ١٩٦٨.',
-      'تسجيل صوت الهواء داخل المباني الفارغة كطبقة موسيقية أساسية للحلقة بدل الموسيقى التصويرية.',
-      'مقابلة مع آخر خطّاط أفيشات يدوية في وسط البلد.',
-    ],
-    sketchQuote: '«كل مبنى مهجور هو شريط سينمائي توقّف جهاز العرض عن تدويره.»',
-  },
-  {
-    id: 'nb-cute-pink',
-    rollNo: '03',
-    studentName: 'أحمد قاسم',
-    classLabel: 'الفِردِكت · تشريح مشهد',
-    category: 'تأملات سينمائية',
-    title: 'هندسة التوتر في المشهد الواحد',
-    handCaption: 'مسودات وردية لطيفة',
-    tilt: '6.5deg',
-    coverStyle: 'rose-pink',
-    pencilColor: '#c88a9e',
-    pages: '٨٠ صفحة شبكية · رسم كادرات',
-    summary:
-      'تفكيك بصري للمشاهد الطويلة (Long Takes) التي تحبس الأنفاس دون قطرة دم واحدة: كيف يتصاعد الإيقاع عبر حركة الممثلين داخل الكادر الثابت.',
-    marginNotes: [
-      'المشهد الافتتاحي في Inglourious Basterds: الكاميرا تتحرك أقل من ٣ مرات خلال ١٨ دقيقة.',
-      'توزيع الإضاءة بين الظل والضوء يعمل كمؤشر نفسي لمن يملك السيطرة في الحوار.',
-      'الصمت قبل جملة الحُكم في الفِردِكت يضاعف أثر التقييم النهائي.',
-    ],
-    sketchQuote: '«التوتر لا يصنعه الانفجار، بل يصنعه علم المتفرج بوجود القنبلة تحت الطاولة.»',
-  },
-  {
-    id: 'nb-sprout-green',
-    rollNo: '04',
-    studentName: 'أحمد قاسم',
-    classLabel: 'هندسة صوتية · سيكولوجيا',
-    category: 'بذور الحلقات',
-    title: 'الصوت الخفي: كيف نسمع الصورة؟',
-    handCaption: 'دفتر التجارب الصوتية',
-    tilt: '-5deg',
-    coverStyle: 'sprout-green',
-    pencilColor: '#628b6f',
-    pages: '٧٢ صفحة مسطّرة · ورق كريمي',
-    summary:
-      'بحث في تصميم الصوت السينمائي (Foley & Room Tone): كيف تغيّر ترددات الخلفية المنخفضة تفسيرنا لنفس اللقطة البصرية تماماً.',
-    marginNotes: [
-      'تجربة عملية: عرض نفس اللقطة بثلاث طبقات صوتية مختلفة (مطر، ساعة حائط، صمت مطلق).',
-      'صوت تقليب الورق في أرشيف الحكايات يمنح شعوراً ملموساً بالزمن.',
-      'تجهيز مقارنة سمعية بصرية مباشرة داخل الحلقة القادمة.',
-    ],
-    sketchQuote: '«العين ترى الإطار، لكن الأذن هي التي تقرر حجم الغرفة.»',
-  },
-  {
-    id: 'nb-cocoa-drafts',
-    rollNo: '05',
-    studentName: 'أحمد قاسم',
-    classLabel: 'أرشيف شخصي · قيد البحث',
-    category: 'مسودات لم تكتمل',
-    title: 'حكايات لم تجد نهايتها بعد',
-    handCaption: 'قصاصات وأسئلة مفتوحة',
-    tilt: '5.5deg',
-    coverStyle: 'brown-leather',
-    pencilColor: '#a6562b',
-    pages: '٦٤ صفحة مرقّمة · أرشيف حي',
-    summary:
-      'قصاصات وأسئلة مفتوحة من كتب ومراسلات قديمة لم تتحول بعد إلى فيديو كامل، لكنها تشكّل الخلفية الفكرية للحلقات القادمة.',
-    marginNotes: [
-      'قصة المصوّر الذي التقط ١٠ آلاف صورة لشارع واحد على مدار ٤٠ عاماً.',
-      'هل يمكن صناعة حلقة كاملة تعتمد فقط على قراءة رسائل صوتية قديمة؟',
-      'ربط أرشيف الحكايات بمكتبة الكتب بحيث يحيل كل كتاب إلى حكاية مصوّرة.',
-    ],
-    sketchQuote:
-      '«بعض الأفكار تحتاج أن تختمر في الدفتر شهوراً قبل أن تستحق دقيقة واحدة على الشاشة.»',
-  },
-]
 
 const CATEGORIES = ['كل الدفاتر', 'بذور الحلقات', 'تأملات سينمائية', 'مسودات لم تكتمل']
 
@@ -148,8 +39,8 @@ const EPISODE_GUIDE_STEPS = [
   },
   {
     num: '٠٤',
-    title: 'اكتب اسمك ليُذكر في الحلقة',
-    desc: 'لو تحوّلت فكرتك إلى حلقة على القناة، نعتز بذكر اسمك أو حسابك كصاحب الشرارة الأولى.',
+    title: 'النشر باسمك في قاع الأفكار',
+    desc: 'تُراجع كل الأفكار بواسطة أحمد قاسم، وإذا أُعجبته فكرتك وتحوّلت لحلقة سيُنشر لها دفتر خاص هنا مع كتابة اسمك كصاحب الفكرة.',
   },
 ]
 
@@ -408,6 +299,12 @@ function ProductNotebookCard({ notebook, onOpen }) {
           {notebook.title}
         </h3>
 
+        {notebook.suggestedBy && (
+          <p className="mt-2 inline-block rounded-full border border-current/35 px-3 py-0.5 font-[family-name:var(--font-geist)] text-[12px] font-semibold">
+            فكرة المتابع: {notebook.suggestedBy}
+          </p>
+        )}
+
         <p className="mt-3 font-[family-name:var(--font-body-ar)] text-[15px] leading-[1.82] opacity-90">
           {notebook.summary}
         </p>
@@ -429,7 +326,7 @@ function ProductNotebookCard({ notebook, onOpen }) {
 }
 
 export default function IdeasCastle() {
-  const [notebooks, setNotebooks] = useState(INITIAL_NOTEBOOKS)
+  const notebooks = IDEAS_NOTEBOOKS
   const [activeCategory, setActiveCategory] = useState('كل الدفاتر')
   const [selectedBook, setSelectedBook] = useState(null)
   const [newIdeaOpen, setNewIdeaOpen] = useState(false)
@@ -480,39 +377,14 @@ export default function IdeasCastle() {
     return `mailto:${IDEAS_EMAIL}?subject=${subject}&body=${body}`
   }
 
-  const handleAddNotebook = async (e) => {
+  const handleSubmitIdea = async (e) => {
     e.preventDefault()
     if (!ideaTitle.trim() || sendStatus === 'sending') return
     playGlassTap()
     setSendStatus('sending')
     setSendFeedback('')
 
-    const nextNum = String(notebooks.length + 1).padStart(2, '0')
-    const styles = ['blue-clouds', 'rose-pink', 'brown-leather', 'sprout-green']
     const authorLabel = senderName.trim() || 'زائر من قناة قاسمز'
-    const created = {
-      id: `nb-${nextNum}-${Date.now()}`,
-      rollNo: nextNum,
-      studentName: authorLabel,
-      classLabel: `${ideaCat} · مقترح حلقة`,
-      category: ideaCat,
-      title: ideaTitle.trim(),
-      handCaption: 'مقترح حلقة من زائر!',
-      tilt: notebooks.length % 2 === 0 ? '-5.5deg' : '5.5deg',
-      coverStyle: styles[notebooks.length % styles.length],
-      pencilColor: '#c86d3b',
-      pages: 'مسودة مقترحة · أُرسلت لبريد القناة',
-      summary:
-        ideaSummary.trim() ||
-        'فكرة حلقة جديدة أُرسلت عبر قاع الأفكار، جاهزة للتحول إلى حلقة قادمة.',
-      marginNotes: [
-        `صاحب الفكرة: ${authorLabel}`,
-        ideaRefs.trim()
-          ? `مراجع وأمثلة مقترحة: ${ideaRefs.trim()}`
-          : 'فكرة مفتوحة للبحث البصري وبناء المعالجة.',
-      ],
-      sketchQuote: `«${ideaTitle.trim()} — شرارة حلقة جديدة من مجتمع قاسمز.»`,
-    }
 
     try {
       const res = await fetch(FORMSUBMIT_ENDPOINT, {
@@ -537,19 +409,19 @@ export default function IdeasCastle() {
 
       if (!res.ok) throw new Error('FormSubmit rejected')
 
-      setNotebooks((prev) => [created, ...prev])
       setSendStatus('sent')
-      setSendFeedback(`تم إرسال فكرتك بنجاح إلى ${IDEAS_EMAIL} وحُفظت كدفتر جديد في الأرشيف!`)
+      setSendFeedback(
+        `تم إرسال فكرتك بنجاح إلى ${IDEAS_EMAIL}! سيراجعها أحمد قاسم، وإذا نالت إعجابه وتحوّلت إلى حلقة سيُنشر لها دفتر خاص هنا باسمك.`,
+      )
       setIdeaTitle('')
       setIdeaSummary('')
       setSenderName('')
       setSenderEmail('')
       setIdeaRefs('')
     } catch {
-      setNotebooks((prev) => [created, ...prev])
       setSendStatus('fallback')
       setSendFeedback(
-        `حُفظت فكرتك في الدفتر، لكن تعذّر الإرسال التلقائي الآن — اضغط على الزر أدناه لإرسالها مباشرة إلى ${IDEAS_EMAIL}.`,
+        `تعذّر الإرسال التلقائي الآن — اضغط على الزر أدناه لإرسال فكرتك مباشرة إلى ${IDEAS_EMAIL} عبر تطبيق البريد.`,
       )
     }
   }
@@ -649,7 +521,7 @@ export default function IdeasCastle() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              onSubmit={handleAddNotebook}
+              onSubmit={handleSubmitIdea}
               className="mt-6 overflow-hidden"
             >
               <div className="qz-superr-card">
@@ -779,8 +651,8 @@ export default function IdeasCastle() {
                 )}
 
                 <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
-                  <span className="font-[family-name:var(--font-geist)] text-[13px] text-[#33251a]/75">
-                    سيصلك إشعار فوري فور الإرسال وتُضاف الفكرة أيضاً في الدفتر.
+                  <span className="font-[family-name:var(--font-geist)] text-[13px] leading-[1.7] text-[#33251a]/80">
+                    الدفاتر تُنشر بواسطة أحمد قاسم فقط — ولو أُعجبته فكرتك وعمل منها حلقة ستُنشر هنا في دفتر مستقل باسمك.
                   </span>
                   <button
                     type="submit"
@@ -843,7 +715,7 @@ export default function IdeasCastle() {
                 </button>
               </div>
               <p className="qz-superr-preorder">
-                الطبعة التفاعلية لعام ٢٠٢٦ · جميع الدفاتر مفتوحة للقراءة والتدوين.
+                الطبعة التفاعلية لعام ٢٠٢٦ · الدفاتر تُحرَّر وتُنشر بواسطة أحمد قاسم، والأفكار المختارة من المتابعين تُنشر هنا بأسمائهم.
               </p>
             </div>
           </div>
@@ -948,12 +820,12 @@ export default function IdeasCastle() {
             </div>
 
             <div className="qz-superr-card">
-              <span className="qz-superr-caption !text-[19px]">٠٣ · مساحة مفتوحة لك أيضاً</span>
+              <span className="qz-superr-caption !text-[19px]">٠٣ · أفكاركم بتوقيعكم</span>
               <h3 className="mt-3 font-[family-name:var(--font-gelica)] text-[24px] font-semibold leading-[1.52] text-[#33251a]">
-                فكرتك قد تكون الحلقة القادمة
+                فكرتك قد تصبح دفتراً وحلقة باسمك
               </h3>
               <p className="mt-4 font-[family-name:var(--font-body-ar)] text-[17px] leading-[1.85] text-[#33251a]/90">
-                القسم ليس مغلقاً علينا وحدنا؛ يمكنك فتح دفتر جديد وتدوين سؤال أو زاوية سينمائية ترى أنها تستحق التشريح لتبقى محفوظة في أرشيفنا.
+                تُحرَّر الدفاتر وتُنشر هنا بواسطة أحمد قاسم فقط؛ أرسل اقتراحك عبر النموذج، ولو أُعجبتني الفكرة وعملنا منها حلقة سيتم نشرها هنا في دفتر خاص مع كتابة اسمك كصاحب الفكرة.
               </p>
             </div>
           </div>
@@ -1020,7 +892,7 @@ export default function IdeasCastle() {
                 قاع الأفكار — المكان الذي تبدأ منه كل حكاية في قاسمز.
               </h2>
               <p className="mt-5 font-[family-name:var(--font-body-ar)] text-[18px] leading-[1.85] text-[#2b2723]/88">
-                هل لديك فكرة حلقة أو زاوية سينمائية تستحق دفتراً جديداً؟ افتح مسودة ودوّنها الآن.
+                هل لديك فكرة حلقة أو زاوية سينمائية مميّزة؟ أرسلها لأحمد، ولو أُعجبته وتحوّلت لحلقة سيُنشر لها دفتر هنا باسمك.
               </p>
             </div>
 
@@ -1031,10 +903,11 @@ export default function IdeasCastle() {
                 onClick={() => {
                   playGlassTap()
                   setNewIdeaOpen(true)
+                  setGuideOpen(true)
                   window.scrollTo({ top: 0, behavior: 'smooth' })
                 }}
               >
-                <span>دوّن فكرة جديدة الآن!</span>
+                <span>أرسل فكرة حلقة لأحمد!</span>
               </button>
               <Link to="/" className="qz-superr-btn">
                 <span>العودة للرئيسية</span>
@@ -1080,6 +953,11 @@ export default function IdeasCastle() {
                   <h2 className="mt-2 font-[family-name:var(--font-gelica)] text-[32px] font-semibold leading-[1.5] text-[#33251a]">
                     {selectedBook.title}
                   </h2>
+                  {selectedBook.suggestedBy && (
+                    <p className="mt-2 inline-block rounded-full border border-[#2b2723]/40 bg-[#f2ece3] px-3 py-0.5 font-[family-name:var(--font-geist)] text-[13px] font-semibold text-[#33251a]">
+                      مقترحة من المتابع: {selectedBook.suggestedBy}
+                    </p>
+                  )}
                 </div>
 
                 <button
