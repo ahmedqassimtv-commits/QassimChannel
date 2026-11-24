@@ -74,6 +74,17 @@ export default function NavHost({
     const vw = window.innerWidth
     const w = Math.min(PANEL_W, vw - 24)
     const btnCenter = r.left + r.width / 2
+    const island = el.closest('.qz-island')?.getBoundingClientRect()
+    // «عن أحمد» على الديسكتوب: النافبار شريط جانبي، فالفقاعة واللوحة بيفتحوا جنبه
+    if (navTheme === 'ahmed' && vw >= 1024 && island) {
+      setAnchor({
+        top: Math.max(12, r.top),
+        left: Math.max(12, island.left - w - 14),
+        originX: w - 24,
+        btnLeft: island.left - 114,
+      })
+      return
+    }
     const left = Math.min(Math.max(btnCenter - w / 2, 12), vw - w - 12)
     setAnchor({
       top: r.bottom + 14,
@@ -81,7 +92,7 @@ export default function NavHost({
       originX: Math.max(24, Math.min(w - 24, btnCenter - left)),
       btnLeft: btnCenter,
     })
-  }, [])
+  }, [navTheme])
 
   useLayoutEffect(() => {
     if (!open && !hello) return undefined
