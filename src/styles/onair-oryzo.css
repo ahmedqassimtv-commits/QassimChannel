@@ -1,0 +1,501 @@
+/* ══ أون إير — نظام ORYZO ═══════════════════════════════════════════
+   walnut #100904 · bark #382416 · cork #40372e · driftwood #6c5f51
+   cream #ffedd7 · ember #dc5000 (للكريديت بس، عمره ما يبقى زرار)
+   halyard-display-variable ← Thmanyah Sans (الخط الوحيد): 500 لكل حاجة،
+   400 للنص الوصفي بس. مفيش ظلال على الواجهة — العمق من الصور بس. */
+
+.qz-oz {
+  --oz-walnut: #100904;
+  --oz-bark: #382416;
+  --oz-cork: #40372e;
+  --oz-drift: #6c5f51;
+  --oz-cream: #ffedd7;
+  --oz-ember: #dc5000;
+  --oz-font: 'Thmanyah Sans', system-ui, sans-serif;
+  --oz-pad: clamp(16px, 1.6vw, 24px);
+  font-family: var(--oz-font);
+  font-weight: 500;
+  color: var(--oz-cream);
+  background: var(--oz-walnut);
+  overflow-x: clip;
+}
+
+/* ── المسرح الثابت ── */
+.qz-oz-track {
+  position: relative;
+  height: 560svh;
+}
+.qz-oz-stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  background:
+    radial-gradient(60% 70% at 18% 100%, rgb(124 58 18 / 0.35), transparent 70%),
+    var(--oz-walnut);
+}
+.qz-oz-desk {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 52%;
+  filter: saturate(0.92) contrast(1.05);
+}
+
+/* إطار الألوان الطيفية حوالين الشاشة (لحظة «مدعوم بالحكايات») */
+.qz-oz-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  padding: 10px;
+  border-radius: 22px;
+  background: conic-gradient(from var(--oz-a, 0deg), #ff4d4d, #ffb000, #fff36b, #46e38c, #3fd4ff, #6a5bff, #ff4fd8, #ff4d4d);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  filter: blur(14px);
+  animation: oz-spin 6s linear infinite;
+}
+@property --oz-a {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes oz-spin {
+  to {
+    --oz-a: 360deg;
+  }
+}
+
+/* ── ١. الافتتاحية ── */
+.qz-oz-hero {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+.qz-oz-hero > * {
+  pointer-events: auto;
+}
+.qz-oz-lockup {
+  position: absolute;
+  top: calc(56px + 6px);
+  inset-inline-start: var(--oz-pad);
+}
+.qz-oz-tag {
+  font-size: 12px;
+  line-height: 1.1;
+  margin-inline-start: clamp(60px, 12vw, 220px);
+}
+.qz-oz-word {
+  margin-top: 4px;
+  font-size: clamp(64px, 9vw, 150px);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  color: var(--oz-cream);
+}
+.qz-oz-hero-body {
+  position: absolute;
+  top: 38%;
+  inset-inline-end: 22%;
+  max-width: 340px;
+  font-size: clamp(17px, 1.5vw, 24px);
+  font-weight: 400;
+  line-height: 1.3;
+  text-shadow: 0 1px 12px rgb(0 0 0 / 0.35);
+}
+.qz-oz-info {
+  position: absolute;
+  inset-inline-start: var(--oz-pad);
+  bottom: var(--oz-pad);
+  display: flex;
+  flex-direction: column;
+  width: clamp(170px, 15vw, 230px);
+  height: clamp(220px, 32vh, 330px);
+  padding: 14px;
+  border-radius: 12px;
+  background: rgb(255 237 215 / 0.12);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.qz-oz-info-title {
+  font-size: 13px;
+  line-height: 1.15;
+}
+.qz-oz-dash {
+  display: block;
+  margin-top: auto;
+  border-top: 1px dashed rgb(255 237 215 / 0.4);
+}
+.qz-oz-info-foot {
+  margin-top: 10px;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.3;
+  text-align: end;
+  opacity: 0.85;
+}
+.qz-oz-thumb {
+  position: absolute;
+  inset-inline-end: var(--oz-pad);
+  bottom: var(--oz-pad);
+  width: clamp(120px, 11vw, 170px);
+  aspect-ratio: 16 / 10;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgb(255 237 215 / 0.25);
+}
+.qz-oz-thumb-img {
+  position: absolute !important;
+  inset: 0;
+  border-radius: 0 !important;
+}
+.qz-oz-thumb-word {
+  position: absolute;
+  inset: auto 10px 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--oz-cream);
+  text-shadow: 0 2px 10px rgb(0 0 0 / 0.6);
+}
+.qz-oz-thumb-play {
+  position: absolute;
+  top: 8px;
+  inset-inline-start: 8px;
+  color: var(--oz-cream);
+}
+.qz-oz-scroll {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--oz-pad) + 4px);
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+.qz-oz-scroll-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid var(--oz-cream);
+}
+
+/* ── البكرة ── */
+.qz-oz-reel-anchor {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  perspective: 1100px;
+  pointer-events: none;
+}
+.qz-oz-reel {
+  width: min(44vh, 40vw);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.qz-oz-reel img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ── ٢. الكشف ── */
+.qz-oz-reveal-h {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  inset-inline-start: 9vw;
+  translate: 0 -50%;
+  font-size: clamp(28px, 2.9vw, 44px);
+  font-weight: 500;
+  line-height: 1.02;
+}
+.qz-oz-reveal-p {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  inset-inline-end: 9vw;
+  translate: 0 -50%;
+  max-width: 260px;
+  font-size: clamp(17px, 1.6vw, 24px);
+  font-weight: 400;
+  line-height: 1.3;
+}
+.qz-oz-reveal-p sup,
+.qz-oz-power-h sup {
+  font-size: 0.45em;
+}
+
+/* ── ٣. مدعوم بالحكايات ── */
+.qz-oz-power {
+  position: absolute;
+  z-index: 3;
+  top: calc(56px + 3vh);
+  left: 50%;
+  translate: -50% 0;
+  text-align: center;
+  white-space: nowrap;
+}
+.qz-oz-power-h {
+  font-size: clamp(44px, 6vw, 96px);
+  font-weight: 500;
+  line-height: 1;
+}
+.qz-oz-ember {
+  display: block;
+  margin-top: 4px;
+  margin-inline-end: -10%;
+  text-align: end;
+  font-size: 12px;
+  color: var(--oz-ember);
+}
+.qz-oz-power-note {
+  position: absolute;
+  z-index: 3;
+  bottom: 22%;
+  inset-inline-end: 34%;
+  font-size: 11px;
+  line-height: 1.25;
+  text-align: start;
+}
+.qz-oz-hover-hint {
+  position: absolute;
+  z-index: 3;
+  bottom: 20%;
+  inset-inline-start: 25%;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--oz-cork);
+  font-size: 10px;
+  color: rgb(255 237 215 / 0.6);
+}
+.qz-oz-hand {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  bottom: 0;
+  width: min(34vh, 30vw);
+  margin-left: calc(min(34vh, 30vw) / -2);
+  transform-origin: 50% 100%;
+  pointer-events: none;
+}
+.qz-oz-hand img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: -18%;
+  filter: brightness(0.62) sepia(0.25);
+}
+
+.qz-oz-legal {
+  position: absolute;
+  z-index: 4;
+  inset-inline-end: var(--oz-pad);
+  bottom: 10px;
+  font-family: Arial, sans-serif;
+  font-size: 8px;
+  opacity: 0.8;
+}
+.qz-oz-side {
+  position: absolute;
+  z-index: 4;
+  top: 50%;
+  inset-inline-end: 6px;
+  writing-mode: vertical-rl;
+  translate: 0 -50%;
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+/* ── ٤. الحلقات ── */
+.qz-oz-list {
+  padding: clamp(80px, 12vw, 160px) var(--oz-pad) clamp(60px, 8vw, 100px);
+  border-top: 1px dashed var(--oz-cork);
+}
+.qz-oz-list-head {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  max-width: 1200px;
+  margin-inline: auto;
+}
+.qz-oz-h {
+  font-size: clamp(30px, 3.2vw, 51px);
+  font-weight: 500;
+  line-height: 1.02;
+}
+.qz-oz-body {
+  max-width: 460px;
+  font-size: clamp(18px, 1.8vw, 29px);
+  font-weight: 400;
+  line-height: 1.26;
+}
+.qz-oz-rows {
+  max-width: 1200px;
+  margin: clamp(48px, 7vw, 96px) auto 0;
+  border-top: 1px dashed var(--oz-cork);
+}
+.qz-oz-row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr) 160px 140px;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+  padding: 22px 0;
+  border-bottom: 1px dashed var(--oz-cork);
+  text-align: start;
+  font-size: 14px;
+  transition: color 0.25s ease;
+}
+.qz-oz-row-n,
+.qz-oz-row-c,
+.qz-oz-row-d {
+  font-size: 12px;
+  color: var(--oz-drift);
+}
+.qz-oz-row-t {
+  font-size: clamp(18px, 1.7vw, 24px);
+}
+.qz-oz-row-img {
+  position: absolute !important;
+  inset-inline-end: 22%;
+  top: 50%;
+  width: 200px;
+  aspect-ratio: 16 / 10;
+  border-radius: 12px !important;
+  opacity: 0;
+  translate: 0 -50%;
+  scale: 0.92;
+  pointer-events: none;
+  transition:
+    opacity 0.3s ease,
+    scale 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (hover: hover) {
+  .qz-oz-row:hover .qz-oz-row-img {
+    opacity: 1;
+    scale: 1;
+  }
+  .qz-oz-row:hover .qz-oz-row-n {
+    color: var(--oz-ember);
+  }
+}
+.qz-oz-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  max-width: 1200px;
+  margin: 48px auto 0;
+}
+.qz-oz-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 14px 24px;
+  border-radius: 36px;
+  background: var(--oz-bark);
+  color: var(--oz-cream);
+  font-size: 14px;
+  transition: background 0.25s ease;
+}
+@media (hover: hover) {
+  .qz-oz-pill:hover {
+    background: #4a301d;
+  }
+}
+.qz-oz-credit {
+  font-size: 12px;
+}
+.qz-oz-credit span {
+  color: var(--oz-ember);
+}
+.qz-oz :where(button, a):focus-visible {
+  outline: 1px dashed var(--oz-cream);
+  outline-offset: 4px;
+}
+
+/* ── موبايل ── */
+@media (max-width: 760px) {
+  .qz-oz-hero-body {
+    top: auto;
+    bottom: 44%;
+    inset-inline-end: var(--oz-pad);
+    max-width: 62vw;
+    font-size: 15px;
+  }
+  .qz-oz-info {
+    height: auto;
+    width: 46vw;
+  }
+  .qz-oz-dash {
+    margin-top: 12px;
+  }
+  .qz-oz-scroll {
+    display: none;
+  }
+  .qz-oz-reel {
+    width: 62vw;
+  }
+  .qz-oz-reveal-h {
+    top: 20%;
+    translate: none;
+    inset-inline-start: var(--oz-pad);
+  }
+  .qz-oz-reveal-p {
+    top: auto;
+    bottom: 14%;
+    translate: none;
+    inset-inline-end: var(--oz-pad);
+    max-width: 70vw;
+  }
+  .qz-oz-power-h {
+    font-size: 40px;
+  }
+  .qz-oz-hand {
+    width: 54vw;
+    margin-left: -27vw;
+  }
+  .qz-oz-power-note {
+    inset-inline-end: var(--oz-pad);
+    bottom: 34%;
+  }
+  .qz-oz-hover-hint {
+    display: none;
+  }
+  .qz-oz-list-head {
+    grid-template-columns: 1fr;
+  }
+  .qz-oz-row {
+    grid-template-columns: 32px minmax(0, 1fr);
+  }
+  .qz-oz-row-c,
+  .qz-oz-row-d,
+  .qz-oz-row-img {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qz-oz-track {
+    height: auto;
+  }
+  .qz-oz-stage {
+    position: relative;
+  }
+  .qz-oz-glow {
+    animation: none;
+  }
+}

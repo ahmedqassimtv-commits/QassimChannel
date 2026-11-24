@@ -262,7 +262,7 @@ export default function SiteNav() {
   const pulseTimerRef = useRef(0)
 
   const navTone =
-    navTheme === 'articles' || navTheme === 'ideas' || navTheme === 'onair'
+    navTheme === 'articles' || navTheme === 'ideas'
       ? 'light'
       : navTheme === 'stories'
         ? storiesDark
