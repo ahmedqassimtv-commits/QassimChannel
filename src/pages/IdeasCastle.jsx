@@ -127,6 +127,32 @@ const INITIAL_NOTEBOOKS = [
 
 const CATEGORIES = ['كل الدفاتر', 'بذور الحلقات', 'تأملات سينمائية', 'مسودات لم تكتمل']
 
+const IDEAS_EMAIL = 'contact@qassimz.com'
+const FORMSUBMIT_ENDPOINT = `https://formsubmit.co/ajax/${IDEAS_EMAIL}`
+
+const EPISODE_GUIDE_STEPS = [
+  {
+    num: '٠١',
+    title: 'ابدأ بسؤال أو زاوية لافتة',
+    desc: 'اختر فكرة يمكن تلخيصها في سؤال واحد يثير الفضول، مثل: «لماذا تبقى بعض النهايات الصامتة عالقة في ذاكرتنا؟».',
+  },
+  {
+    num: '٠٢',
+    title: 'وضّح لماذا تستحق أن تكون حلقة',
+    desc: 'اكتب في سطرين أو ثلاثة ما الشعور أو الزاوية الجديدة التي سيخرج بها المشاهد بعد مشاهدة الحلقة.',
+  },
+  {
+    num: '٠٣',
+    title: 'أضف مرجعاً أو مثالاً (اختياري)',
+    desc: 'اذكر فيلماً أو مسلسلاً أو كتاباً أو رابطاً يقرّب الصورة؛ مثال واحد واضح يختصر شرحاً طويلاً.',
+  },
+  {
+    num: '٠٤',
+    title: 'اكتب اسمك ليُذكر في الحلقة',
+    desc: 'لو تحوّلت فكرتك إلى حلقة على القناة، نعتز بذكر اسمك أو حسابك كصاحب الشرارة الأولى.',
+  },
+]
+
 /* ── Top-left Brand Mark: Small illustrated hand/pointing icon (~32px) in Charcoal ── */
 function HandBrandMark() {
   return (
@@ -407,9 +433,15 @@ export default function IdeasCastle() {
   const [activeCategory, setActiveCategory] = useState('كل الدفاتر')
   const [selectedBook, setSelectedBook] = useState(null)
   const [newIdeaOpen, setNewIdeaOpen] = useState(false)
+  const [guideOpen, setGuideOpen] = useState(false)
   const [ideaTitle, setIdeaTitle] = useState('')
   const [ideaCat, setIdeaCat] = useState('بذور الحلقات')
   const [ideaSummary, setIdeaSummary] = useState('')
+  const [senderName, setSenderName] = useState('')
+  const [senderEmail, setSenderEmail] = useState('')
+  const [ideaRefs, setIdeaRefs] = useState('')
+  const [sendStatus, setSendStatus] = useState('idle') // 'idle' | 'sending' | 'sent' | 'fallback'
+  const [sendFeedback, setSendFeedback] = useState('')
 
   // إيقاف تمرير Lenis الخلفي أثناء فتح نافذة الدفتر ليعمل السكرول داخلها بسلاسة تامة
   useEffect(() => {
@@ -430,38 +462,96 @@ export default function IdeasCastle() {
     return notebooks.filter((n) => n.category === activeCategory)
   }, [notebooks, activeCategory])
 
-  const handleAddNotebook = (e) => {
+  const buildMailtoHref = () => {
+    const subject = encodeURIComponent(`فكرة حلقة جديدة من قاع الأفكار: ${ideaTitle.trim() || 'اقتراح حلقة'}`)
+    const body = encodeURIComponent(
+      [
+        `عنوان الفكرة: ${ideaTitle.trim()}`,
+        `التصنيف: ${ideaCat}`,
+        `الاسم: ${senderName.trim() || 'زائر من القناة'}`,
+        senderEmail.trim() ? `البريد للتواصل: ${senderEmail.trim()}` : '',
+        '',
+        `تفاصيل الفكرة:\n${ideaSummary.trim()}`,
+        ideaRefs.trim() ? `\nمراجع أو أمثلة مقترحة:\n${ideaRefs.trim()}` : '',
+      ]
+        .filter(Boolean)
+        .join('\n'),
+    )
+    return `mailto:${IDEAS_EMAIL}?subject=${subject}&body=${body}`
+  }
+
+  const handleAddNotebook = async (e) => {
     e.preventDefault()
-    if (!ideaTitle.trim()) return
+    if (!ideaTitle.trim() || sendStatus === 'sending') return
+    playGlassTap()
+    setSendStatus('sending')
+    setSendFeedback('')
+
     const nextNum = String(notebooks.length + 1).padStart(2, '0')
     const styles = ['blue-clouds', 'rose-pink', 'brown-leather', 'sprout-green']
+    const authorLabel = senderName.trim() || 'زائر من قناة قاسمز'
     const created = {
-      id: `nb-${nextNum}`,
+      id: `nb-${nextNum}-${Date.now()}`,
       rollNo: nextNum,
-      studentName: 'أحمد قاسم',
-      classLabel: `${ideaCat} · مسودة جديدة`,
+      studentName: authorLabel,
+      classLabel: `${ideaCat} · مقترح حلقة`,
       category: ideaCat,
       title: ideaTitle.trim(),
-      handCaption: 'ملاحظة مضافة بخط اليد!',
+      handCaption: 'مقترح حلقة من زائر!',
       tilt: notebooks.length % 2 === 0 ? '-5.5deg' : '5.5deg',
       coverStyle: styles[notebooks.length % styles.length],
       pencilColor: '#c86d3b',
-      pages: '٦٤ صفحة مرقّمة · 100 GSM',
+      pages: 'مسودة مقترحة · أُرسلت لبريد القناة',
       summary:
         ideaSummary.trim() ||
-        'فكرة جديدة في قاع الأفكار، جاهزة للتحول إلى حلقة أو تجربة بصرية قادمة.',
+        'فكرة حلقة جديدة أُرسلت عبر قاع الأفكار، جاهزة للتحول إلى حلقة قادمة.',
       marginNotes: [
-        'صياغة السؤال الأساسي للفكرة في جملة واحدة واضحة.',
-        'تجميع المراجع البصرية والمشاهد المرتبطة بالموضوع.',
+        `صاحب الفكرة: ${authorLabel}`,
+        ideaRefs.trim()
+          ? `مراجع وأمثلة مقترحة: ${ideaRefs.trim()}`
+          : 'فكرة مفتوحة للبحث البصري وبناء المعالجة.',
       ],
-      sketchQuote: `«${ideaTitle.trim()} — كل حكاية تبدأ بسطر صادق في دفتر.»`,
+      sketchQuote: `«${ideaTitle.trim()} — شرارة حلقة جديدة من مجتمع قاسمز.»`,
     }
-    setNotebooks((prev) => [created, ...prev])
-    setIdeaTitle('')
-    setIdeaSummary('')
-    setNewIdeaOpen(false)
-    setSelectedBook(created)
-    playGlassTap()
+
+    try {
+      const res = await fetch(FORMSUBMIT_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          _subject: `فكرة حلقة جديدة من قاع الأفكار: ${ideaTitle.trim()}`,
+          _template: 'table',
+          _captcha: 'false',
+          الاسم: authorLabel,
+          البريد_الإلكتروني: senderEmail.trim() || 'غير مضاف',
+          التصنيف: ideaCat,
+          عنوان_الفكرة: ideaTitle.trim(),
+          تفاصيل_الفكرة: ideaSummary.trim(),
+          مراجع_وأمثلة: ideaRefs.trim() || 'لا توجد',
+          المصدر: 'قاع الأفكار — منصة قاسمز',
+        }),
+      })
+
+      if (!res.ok) throw new Error('FormSubmit rejected')
+
+      setNotebooks((prev) => [created, ...prev])
+      setSendStatus('sent')
+      setSendFeedback(`تم إرسال فكرتك بنجاح إلى ${IDEAS_EMAIL} وحُفظت كدفتر جديد في الأرشيف!`)
+      setIdeaTitle('')
+      setIdeaSummary('')
+      setSenderName('')
+      setSenderEmail('')
+      setIdeaRefs('')
+    } catch {
+      setNotebooks((prev) => [created, ...prev])
+      setSendStatus('fallback')
+      setSendFeedback(
+        `حُفظت فكرتك في الدفتر، لكن تعذّر الإرسال التلقائي الآن — اضغط على الزر أدناه لإرسالها مباشرة إلى ${IDEAS_EMAIL}.`,
+      )
+    }
   }
 
   return (
@@ -474,19 +564,85 @@ export default function IdeasCastle() {
             <span className="qz-superr-caption !text-[20px]">قاع الأفكار · superrbook</span>
           </div>
 
-          <button
-            type="button"
-            className="qz-superr-btn"
-            onClick={() => {
-              playGlassTap()
-              setNewIdeaOpen((v) => !v)
-            }}
-          >
-            <span>{newIdeaOpen ? 'إغلاق المسودة' : 'دوّن فكرة جديدة!'}</span>
-          </button>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <button
+              type="button"
+              className="qz-superr-btn"
+              onClick={() => {
+                playGlassTap()
+                setGuideOpen((v) => !v)
+              }}
+            >
+              <span>{guideOpen ? 'إخفاء الدليل' : 'كيف تكتب فكرة حلقة؟'}</span>
+            </button>
+            <button
+              type="button"
+              className="qz-superr-btn"
+              onClick={() => {
+                playGlassTap()
+                setNewIdeaOpen((v) => !v)
+                setSendStatus('idle')
+                setSendFeedback('')
+              }}
+            >
+              <span>{newIdeaOpen ? 'إغلاق النموذج' : 'اقترح فكرة حلقة!'}</span>
+            </button>
+          </div>
         </header>
 
-        {/* ── نموذج تدوين فكرة جديدة في دفتر ── */}
+        {/* ── دليل كيفية كتابة فكرة حلقة لزوار القناة ── */}
+        <AnimatePresence>
+          {guideOpen && (
+            <motion.section
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mt-6 overflow-hidden"
+              aria-label="دليل كتابة فكرة حلقة"
+            >
+              <div className="qz-superr-card">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div>
+                    <span className="qz-superr-caption !text-[19px]">دليل زوار قناة قاسمز</span>
+                    <h2 className="mt-1 font-[family-name:var(--font-gelica)] text-[26px] font-semibold leading-[1.5] text-[#33251a]">
+                      كيف تكتب فكرة حلقة مميّزة في ٤ خطوات بسيطة؟
+                    </h2>
+                  </div>
+                  <button
+                    type="button"
+                    className="qz-superr-btn"
+                    onClick={() => {
+                      playGlassTap()
+                      setGuideOpen(false)
+                      setNewIdeaOpen(true)
+                    }}
+                  >
+                    <span>ابدأ بكتابة فكرتك الآن ←</span>
+                  </button>
+                </div>
+
+                <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  {EPISODE_GUIDE_STEPS.map((step) => (
+                    <div
+                      key={step.num}
+                      className="rounded-[10px] border border-[#2b2723]/25 bg-[#faf7f2] p-4"
+                    >
+                      <span className="qz-superr-caption !text-[18px]">{step.num}</span>
+                      <h3 className="mt-1 font-[family-name:var(--font-gelica)] text-[19px] font-semibold leading-[1.5] text-[#33251a]">
+                        {step.title}
+                      </h3>
+                      <p className="mt-2 font-[family-name:var(--font-body-ar)] text-[15px] leading-[1.82] text-[#33251a]/88">
+                        {step.desc}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.section>
+          )}
+        </AnimatePresence>
+
+        {/* ── نموذج اقتراح فكرة حلقة وإرسالها مباشرة لبريد contact@qassimz.com ── */}
         <AnimatePresence>
           {newIdeaOpen && (
             <motion.form
@@ -499,18 +655,57 @@ export default function IdeasCastle() {
               <div className="qz-superr-card">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div>
-                    <span className="qz-superr-caption">افتح صفحة جديدة</span>
-                    <h2 className="mt-1 text-[28px] font-semibold text-[#33251a]">
-                      أضف دفتراً أو مسودة إلى قاع الأفكار
+                    <span className="qz-superr-caption !text-[19px]">
+                      تصل رسالتك مباشرة إلى بريد القناة ({IDEAS_EMAIL})
+                    </span>
+                    <h2 className="mt-1 font-[family-name:var(--font-gelica)] text-[26px] font-semibold leading-[1.5] text-[#33251a]">
+                      اقترح فكرة حلقة جديدة لقناة قاسمز
                     </h2>
                   </div>
-                  <Sticker type="heart" size={44} rotate="-8deg" />
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      className="qz-superr-tag !py-1.5 !text-[14px]"
+                      onClick={() => setGuideOpen((v) => !v)}
+                    >
+                      <span>{guideOpen ? 'إخفاء خطوات الكتابة' : 'كيف أكتب فكرة قوية؟'}</span>
+                    </button>
+                    <Sticker type="heart" size={44} rotate="-8deg" />
+                  </div>
                 </div>
 
                 <div className="mt-5 grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="mb-1.5 block text-[16px] font-medium text-[#33251a]">
-                      عنوان الدفتر أو الفكرة
+                    <label className="mb-1.5 block font-[family-name:var(--font-geist)] text-[15px] font-medium text-[#33251a]">
+                      اسمك أو لقبك (اختياري لذكره في الحلقة)
+                    </label>
+                    <input
+                      type="text"
+                      value={senderName}
+                      onChange={(e) => setSenderName(e.target.value)}
+                      placeholder="مثال: كريم / @username"
+                      className="qz-superr-input"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block font-[family-name:var(--font-geist)] text-[15px] font-medium text-[#33251a]">
+                      بريدك الإلكتروني (اختياري للرد عليك)
+                    </label>
+                    <input
+                      type="email"
+                      value={senderEmail}
+                      onChange={(e) => setSenderEmail(e.target.value)}
+                      placeholder="name@example.com"
+                      dir="ltr"
+                      className="qz-superr-input text-right"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-1.5 block font-[family-name:var(--font-geist)] text-[15px] font-medium text-[#33251a]">
+                      عنوان الفكرة أو السؤال المركزي *
                     </label>
                     <input
                       type="text"
@@ -522,8 +717,8 @@ export default function IdeasCastle() {
                     />
                   </div>
                   <div>
-                    <label className="mb-1.5 block text-[16px] font-medium text-[#33251a]">
-                      القسم / التصنيف
+                    <label className="mb-1.5 block font-[family-name:var(--font-geist)] text-[15px] font-medium text-[#33251a]">
+                      القسم / نوع الحلقة
                     </label>
                     <select
                       value={ideaCat}
@@ -540,21 +735,63 @@ export default function IdeasCastle() {
                 </div>
 
                 <div className="mt-4">
-                  <label className="mb-1.5 block text-[16px] font-medium text-[#33251a]">
-                    تفاصيل المسودة أو الهوامش
+                  <label className="mb-1.5 block font-[family-name:var(--font-geist)] text-[15px] font-medium text-[#33251a]">
+                    شرح الفكرة ولماذا تستحق أن تصبح حلقة *
                   </label>
                   <textarea
                     rows={3}
+                    required
                     value={ideaSummary}
                     onChange={(e) => setIdeaSummary(e.target.value)}
-                    placeholder="اكتب الشرارة الأولى أو الفكرة التي تريد حفظها في الدفتر..."
+                    placeholder="اكتب الزاوية التي تهمك، وما الذي يجعل هذه القصة أو الفكرة ممتعة للمشاهد..."
                     className="qz-superr-input"
                   />
                 </div>
 
-                <div className="mt-5 flex justify-end">
-                  <button type="submit" className="qz-superr-btn">
-                    <span>احفظ الدفتر في قاع الأفكار</span>
+                <div className="mt-4">
+                  <label className="mb-1.5 block font-[family-name:var(--font-geist)] text-[15px] font-medium text-[#33251a]">
+                    مراجع، أفلام، أو روابط مقترحة (اختياري)
+                  </label>
+                  <input
+                    type="text"
+                    value={ideaRefs}
+                    onChange={(e) => setIdeaRefs(e.target.value)}
+                    placeholder="مثال: فيلم Close-Up أو كتاب أو رابط مقال..."
+                    className="qz-superr-input"
+                  />
+                </div>
+
+                {sendFeedback && (
+                  <div
+                    role="status"
+                    className="mt-4 rounded-[10px] border border-[#2b2723]/30 bg-[#faf7f2] px-4 py-3 font-[family-name:var(--font-geist)] text-[15px] leading-[1.7] text-[#33251a]"
+                  >
+                    <p>{sendFeedback}</p>
+                    {sendStatus === 'fallback' && (
+                      <a
+                        href={buildMailtoHref()}
+                        className="qz-superr-btn mt-3 inline-flex"
+                      >
+                        <span>افتح تطبيق البريد لإرسال الفكرة الآن</span>
+                      </a>
+                    )}
+                  </div>
+                )}
+
+                <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+                  <span className="font-[family-name:var(--font-geist)] text-[13px] text-[#33251a]/75">
+                    سيصلك إشعار فوري فور الإرسال وتُضاف الفكرة أيضاً في الدفتر.
+                  </span>
+                  <button
+                    type="submit"
+                    disabled={sendStatus === 'sending'}
+                    className="qz-superr-btn disabled:opacity-60"
+                  >
+                    <span>
+                      {sendStatus === 'sending'
+                        ? 'جاري إرسال الفكرة للإيميل...'
+                        : 'أرسل فكرة الحلقة إلى أحمد ←'}
+                    </span>
                   </button>
                 </div>
               </div>
@@ -598,9 +835,11 @@ export default function IdeasCastle() {
                   onClick={() => {
                     playGlassTap()
                     setNewIdeaOpen(true)
+                    setGuideOpen(true)
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
                   }}
                 >
-                  <span>أضف فكرتك الخاصة</span>
+                  <span>اقترح فكرة حلقة للقناة</span>
                 </button>
               </div>
               <p className="qz-superr-preorder">
