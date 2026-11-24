@@ -126,14 +126,15 @@
   z-index: 0;
   align-self: center;
   /* في المسار الطبيعي تحت الزرار — عمرها ما تغطي على «ادخل الأرشيف» */
-  margin-top: max(5svh, 40px);
+  /* المقاس بيتظبط على عرض وطول الشاشة سوا عشان المسافات تفضل متناسقة */
+  --wm: min(31vw, max(26vw, 36svh));
   margin-top: auto;
-  padding-top: max(4svh, 28px);
-  margin-bottom: calc(5svh + 0.205 * 26vw);
+  padding-top: clamp(28px, 6svh, 80px);
+  margin-bottom: calc(4svh + 0.205 * var(--wm));
   width: max-content;
   font-family: var(--sx-serif);
   font-weight: 500;
-  font-size: 26vw;
+  font-size: var(--wm);
   line-height: 0.84;
   letter-spacing: -0.009em;
   color: var(--sx-ink);
@@ -143,6 +144,16 @@
   text-rendering: geometricPrecision;
   -webkit-font-smoothing: antialiased;
   backface-visibility: hidden;
+}
+
+/* الشاشات الطولية/المربعة: الافتتاحية على قد محتواها بدل ما تتمط لطول الشاشة */
+@media (max-aspect-ratio: 4/3) {
+  .qz-sx-hero {
+    min-height: 0;
+  }
+  .qz-sx-wordmark {
+    margin-top: 0;
+  }
 }
 
 /* ══ ٢. رحلة اللوحة ═══════════════════════════════════════════════════ */
@@ -843,7 +854,7 @@
 /* ══ الموبايل ═════════════════════════════════════════════════════════ */
 @media (max-width: 760px) {
   .qz-sx-hero {
-    min-height: max(76svh, 520px);
+    min-height: 0;
   }
   .qz-sx-journey {
     --tw: 56vw;
