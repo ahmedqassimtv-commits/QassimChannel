@@ -859,6 +859,22 @@
   .qz-sx-journey {
     --tw: 56vw;
   }
+  /* اللوحة على الموبايل أعرض من الشاشة، فالتيجان بتتثبت على حواف الشاشة نفسها */
+  .qz-sx-crownbox {
+    left: 0;
+    translate: none;
+    width: 100%;
+    aspect-ratio: 2.6 / 1;
+  }
+  .qz-sx-crown {
+    width: 46%;
+  }
+  .qz-sx-crown.is-l {
+    left: -8%;
+  }
+  .qz-sx-crown.is-r {
+    right: -8%;
+  }
   .qz-sx-ibis {
     width: 9%;
   }
