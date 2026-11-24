@@ -37,6 +37,7 @@ import { SPRING, SPRING_NAV } from '../motion/Motion.jsx'
 
 function getNavTheme(pathname) {
   if (pathname.startsWith('/stories')) return 'stories'
+  if (pathname === '/masaha/on-air') return 'onair'
   if (pathname.startsWith('/articles')) return 'articles'
   if (pathname.startsWith('/ideas') || pathname.startsWith('/masaha/ideas')) return 'ideas'
   if (pathname.startsWith('/verdict') || pathname.startsWith('/review')) return 'verdict'
@@ -263,7 +264,7 @@ export default function SiteNav() {
   const navTone =
     navTheme === 'articles' || navTheme === 'ideas'
       ? 'light'
-      : navTheme === 'stories'
+      : navTheme === 'stories' || navTheme === 'onair'
         ? storiesDark
           ? 'dark'
           : 'light'
@@ -271,7 +272,7 @@ export default function SiteNav() {
 
   // استشعار سطح القاعة الحالية خلف النافبار داخل قسم الحكايات (Putty فاتح ⇄ Ink داكن)
   useEffect(() => {
-    if (navTheme !== 'stories') {
+    if (navTheme !== 'stories' && navTheme !== 'onair') {
       setStoriesDark(false)
       setStoriesTop(true)
       setStoriesHidden(false)

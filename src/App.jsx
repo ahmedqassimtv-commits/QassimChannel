@@ -100,6 +100,7 @@ function AppShell({ lenisRef }) {
   const { pathname } = useLocation()
   const isImmersive =
     pathname === '/masaha/ahmed' ||
+    pathname === '/masaha/on-air' ||
     pathname.startsWith('/verdict') ||
     pathname.startsWith('/stories') ||
     pathname.startsWith('/ideas') ||
