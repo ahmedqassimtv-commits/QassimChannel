@@ -31,8 +31,8 @@ import ClothRibbon from '../components/stories/ClothRibbon.jsx'
 const IMG = (name) => assetUrl(`/images/stories/structured/${name}`)
 // اللوحة بدقة 4K (3840px) + نسخ أصغر للشاشات الأقل
 const CROWN = {
-  src: IMG('nile-crown-2400.webp'),
-  srcSet: `${IMG('nile-crown-1280.webp')} 1280w, ${IMG('nile-crown-2400.webp')} 2400w, ${IMG('nile-crown-3840.webp')} 3840w`,
+  src: IMG('nile-crown-v2-2400.webp'),
+  srcSet: `${IMG('nile-crown-v2-1280.webp')} 1280w, ${IMG('nile-crown-v2-2400.webp')} 2400w, ${IMG('nile-crown-v2-3840.webp')} 3840w`,
 }
 const PAINTING = {
   src: IMG('nile-painting-2400.webp'),
