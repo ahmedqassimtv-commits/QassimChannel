@@ -295,7 +295,9 @@
   flex-direction: column;
   justify-content: space-between;
   cursor: pointer;
-  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  transition:
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.26s ease;
 }
 
 .qz-superr-notebook:hover {
@@ -439,6 +441,7 @@
 }
 
 /* نافذة قراءة الدفتر المفتوح — Portal فوق الصفحة + شريط تمرير مصمّم بنفس هوية الدفتر */
+/* حاوية الكتاب العائم — بدون تعتيم أو إخفاء لباقي الصفحة */
 .qz-superr-modal-backdrop {
   --color-cream-paper: #faf7f2;
   --color-charcoal: #2b2723;
@@ -451,15 +454,14 @@
   --font-geist: 'Thmanyah Sans', var(--font-sans-ui), ui-sans-serif, system-ui, sans-serif;
   --text-caption: 15px;
   --leading-caption: 1.72;
-  --text-body: 18px;
-  --leading-body: 1.88;
+  --text-body: 17px;
+  --leading-body: 1.86;
   --text-subheading: 22px;
   --leading-subheading: 1.62;
   --radius-cards: 14px;
   --radius-buttons: 20px;
   --radius-inputs: 8px;
-  --card-padding: 22px;
-  --shadow-lg: rgba(43, 39, 35, 0.24) 0px 28px 64px -12px;
+  --card-padding: 20px;
   --shadow-subtle: rgba(43, 39, 35, 0.16) 0px 1px 3px 0px;
 
   color-scheme: only light;
@@ -469,171 +471,175 @@
   display: grid;
   place-items: center;
   padding: clamp(24px, 4vh, 48px) clamp(14px, 3vw, 32px);
-  background-color: rgba(43, 39, 35, 0.56);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  perspective: 1800px;
+  /* شفاف تماماً حتى يظل باقي القسم واضحاً بالكامل خلف الكتاب */
+  background-color: transparent;
+  perspective: 2200px;
   overscroll-behavior: contain;
 }
 
-/* غلاف الكتاب المفتوح بصفحتين + طبقات الورق الجانبية */
-.qz-superr-book-shell {
+/* مسرح الكتاب ثلاثي الأبعاد (صفحتان + غلاف مفصلي حقيقي يفتح 180 درجة) */
+.qz-book3d-stage {
   position: relative;
-  width: min(1040px, 100%);
-  max-height: min(84dvh, 760px);
-  padding: 14px;
-  border-radius: 22px;
-  border: 1.5px solid var(--color-charcoal);
-  box-shadow:
-    0 24px 60px -14px rgba(24, 18, 12, 0.48),
-    inset 0 1px 0 rgba(250, 247, 242, 0.22);
+  width: min(980px, 94vw);
+  height: min(640px, 80dvh);
   transform-style: preserve-3d;
-  display: flex;
-  flex-direction: column;
 }
 
-/* خياطة الغلاف الخارجي للكتاب */
-.qz-superr-book-shell::before {
-  content: '';
-  position: absolute;
-  inset: 6px;
-  border-radius: 17px;
-  border: 1px dashed rgba(250, 247, 242, 0.26);
-  pointer-events: none;
-}
-
-/* غلاف أمامي يفتح بحركة 3D لحظة فتح الدفتر */
-.qz-superr-book-cover-flap {
-  position: absolute;
-  inset: 14px 14px 14px 50%;
-  border-radius: 4px 14px 14px 4px;
-  border: 1.5px solid var(--color-charcoal);
-  transform-origin: left center;
-  backface-visibility: hidden;
-  pointer-events: none;
-  z-index: 6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 12px 0 32px rgba(0, 0, 0, 0.25);
-}
-
-.qz-superr-book-spread {
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  flex: 1;
-  min-height: 0;
-  border-radius: 14px;
-  border: 1.25px solid var(--color-charcoal);
-  background-color: var(--color-cream-paper);
-  overflow: hidden;
-  /* حواف الورق المكدّسة يميناً ويساراً */
-  box-shadow:
-    inset 4px 0 0 #ece4d8,
-    inset -4px 0 0 #ece4d8,
-    inset 5px 0 0 rgba(43, 39, 35, 0.14),
-    inset -5px 0 0 rgba(43, 39, 35, 0.14);
-}
-
-/* كعب الكتاب (الطيّة الوسطى بالظل الواقعي) */
-.qz-superr-book-spine {
+/* النصف الأيسر الثابت (الغلاف الخلفي + الصفحة اليسرى 02) */
+.qz-book3d-base {
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 50%;
-  width: 34px;
-  transform: translateX(-50%);
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(43, 39, 35, 0.05) 26%,
-    rgba(43, 39, 35, 0.15) 48%,
-    rgba(43, 39, 35, 0.22) 50%,
-    rgba(43, 39, 35, 0.15) 52%,
-    rgba(43, 39, 35, 0.05) 74%,
-    transparent 100%
-  );
-  pointer-events: none;
-  z-index: 3;
+  left: 0;
+  width: 50%;
+  padding: 12px 0 12px 12px;
+  border-radius: 18px 4px 4px 18px;
+  border: 1.5px solid var(--color-charcoal);
+  border-right: 0;
+  box-shadow:
+    -18px 26px 52px -14px rgba(32, 24, 16, 0.34),
+    0 12px 28px -10px rgba(32, 24, 16, 0.22);
+  display: flex;
 }
 
-.qz-superr-book-page {
+/* الورقة المفصلية ثلاثية الأبعاد: الوجه الأمامي = غلاف الدفتر، والخلفي = الصفحة اليمنى 01 */
+.qz-book3d-leaf {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 50%;
+  transform-origin: right center;
+  transform-style: preserve-3d;
+  z-index: 5;
+}
+
+.qz-book3d-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+}
+
+/* الوجه الأمامي للورقة المفصلية (الغلاف الفعلي للدفتر قبل وبعد الفتح) */
+.qz-book3d-front {
+  border-radius: 18px 4px 4px 18px;
+  border: 1.5px solid var(--color-charcoal);
+  padding: 28px 26px;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 24px 50px -14px rgba(32, 24, 16, 0.34);
+}
+
+.qz-book3d-front::after {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border-radius: 12px;
+  border: 1px dashed rgba(250, 247, 242, 0.28);
+  pointer-events: none;
+}
+
+/* الوجه الخلفي للورقة المفصلية (يستقر كصفحة يمنى 01 عند دوران 180 درجة) */
+.qz-book3d-back {
+  transform: rotateY(180deg);
+  padding: 12px 12px 12px 0;
+  border-radius: 4px 18px 18px 4px;
+  border: 1.5px solid var(--color-charcoal);
+  border-left: 0;
+  box-shadow:
+    18px 26px 52px -14px rgba(32, 24, 16, 0.34),
+    0 12px 28px -10px rgba(32, 24, 16, 0.22);
+}
+
+/* صفحة الورق الكريمي النظيفة بدون أي شريط تمرير مرئي */
+.qz-book3d-page {
   position: relative;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  padding: clamp(22px, 3vw, 34px) clamp(22px, 3vw, 34px) 24px;
+  padding: clamp(20px, 2.8vw, 30px) clamp(20px, 2.8vw, 30px) 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 20px;
+  gap: 16px;
   background-color: var(--color-cream-paper);
-  /* سطور دفتر خفيفة وهادئة */
   background-image: repeating-linear-gradient(
     to bottom,
     transparent 0px,
-    transparent 35px,
-    rgba(107, 143, 174, 0.13) 36px
+    transparent 34px,
+    rgba(107, 143, 174, 0.12) 35px
   );
   background-position: 0 18px;
   color: var(--color-cocoa-ink);
-  scrollbar-width: thin;
-  scrollbar-color: #c86d3b #f2ece3;
+  scrollbar-width: none;
 }
 
-.qz-superr-book-page-left {
-  border-inline-start: 1px solid rgba(43, 39, 35, 0.08);
+.qz-book3d-page::-webkit-scrollbar {
+  display: none;
 }
 
-/* خط الهامش الأحمر الهادئ في صفحة الملاحظات */
-.qz-superr-book-page-left::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  inset-inline-start: 22px;
-  width: 1px;
-  background: rgba(200, 109, 59, 0.25);
+.qz-book3d-page-right {
+  border-radius: 2px 12px 12px 2px;
+  border: 1px solid rgba(43, 39, 35, 0.22);
+  border-left: 0;
+  box-shadow:
+    inset 18px 0 24px -18px rgba(43, 39, 35, 0.28),
+    inset -4px 0 0 #ece4d8,
+    inset -5px 0 0 rgba(43, 39, 35, 0.12);
+}
+
+.qz-book3d-page-left {
+  border-radius: 12px 2px 2px 12px;
+  border: 1px solid rgba(43, 39, 35, 0.22);
+  border-right: 0;
+  box-shadow:
+    inset -18px 0 24px -18px rgba(43, 39, 35, 0.28),
+    inset 4px 0 0 #ece4d8,
+    inset 5px 0 0 rgba(43, 39, 35, 0.12);
+}
+
+/* إخفاء مكان الدفتر في الرف بسلاسة عند سحبه للفتح */
+.qz-superr-notebook[data-lifted='true'] {
+  opacity: 0;
   pointer-events: none;
+  transform: scale(0.94) !important;
 }
 
-/* شريط التمرير المخصّص بهوية الورق والحبر لكل صفحة */
-.qz-superr-book-page::-webkit-scrollbar {
-  width: 9px;
-}
-
-.qz-superr-book-page::-webkit-scrollbar-track {
-  background-color: #f2ece3;
-  border-radius: 999px;
-  margin-block: 14px;
-}
-
-.qz-superr-book-page::-webkit-scrollbar-thumb {
-  background-color: #c86d3b;
-  border-radius: 999px;
-  border: 2px solid #f2ece3;
-}
-
-.qz-superr-book-page::-webkit-scrollbar-thumb:hover {
-  background-color: #a6562b;
-}
-
-@media (max-width: 860px) {
-  .qz-superr-book-cover-flap,
-  .qz-superr-book-spine,
-  .qz-superr-book-page-left::before {
+@media (max-width: 820px) {
+  .qz-book3d-stage {
+    height: auto;
+    max-height: 82dvh;
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .qz-book3d-stage::-webkit-scrollbar {
     display: none;
   }
-  .qz-superr-book-spread {
-    grid-template-columns: 1fr;
-    overflow-y: auto;
+  .qz-book3d-base,
+  .qz-book3d-leaf {
+    position: relative;
+    width: 100%;
+    height: auto;
+    transform: none !important;
+    padding: 10px;
+    border: 1.5px solid var(--color-charcoal);
+    border-radius: 16px;
   }
-  .qz-superr-book-page {
-    overflow-y: visible;
+  .qz-book3d-front {
+    display: none;
   }
-  .qz-superr-book-page-left {
-    border-inline-start: 0;
-    border-top: 1.25px dashed rgba(43, 39, 35, 0.22);
+  .qz-book3d-back {
+    position: relative;
+    transform: none !important;
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+  }
+  .qz-book3d-base {
+    margin-top: 12px;
   }
 }
