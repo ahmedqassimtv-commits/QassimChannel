@@ -4,7 +4,6 @@ import { Play } from 'lucide-react'
 import { CinemaThumb, useCinema } from '../components/qz/CinemaPlayer.jsx'
 import { fmtDate } from '../components/qz/Kit.jsx'
 import { assetUrl } from '../utils/assets.js'
-import CorkReel3D from '../components/onair/CorkReel3D.jsx'
 import { videos } from '../data/videos.js'
 import { YOUTUBE_CONFIG } from '../data/youtubeConfig.js'
 
@@ -33,20 +32,22 @@ function Stage() {
   const heroO = useTransform(p, [0, 0.08, 0.16], [1, 1, 0])
   const heroY = useTransform(p, [0, 0.16], ['0vh', '-6vh'])
 
-  // ٢. البكرة: نفس العنصر طول الوقت
-  const reelScale = useTransform(p, [0, 0.24, 0.62, 0.74, 1], [0.78, 1, 1, 0.56, 0.56])
-  const reelY = useTransform(p, [0, 0.62, 0.74, 1], ['0vh', '0vh', '-9vh', '-9vh'])
-  const rotX = useTransform(p, [0.26, 0.36, 0.46, 0.56, 0.62], [0, 58, 70, 28, 0])
-  const rotY = useTransform(p, [0.26, 0.36, 0.46, 0.56, 0.62], [0, -24, 36, -12, 0])
-  const rotZ = useTransform(p, [0, 1], [0, 220])
-
+  // ٢. البكرة: صور رندر حقيقية من زاويتين — بتلف بالسكرول وبتتبدّل بينهم
+  const reelScale = useTransform(p, [0, 0.24, 0.62, 0.7], [0.74, 1, 1, 0.9])
+  const rotZ = useTransform(p, [0, 0.66], [0, 150])
+  const tiltO = useTransform(p, [0.3, 0.37, 0.5, 0.57], [0, 1, 1, 0])
+  const frontO = useTransform(p, [0.3, 0.37, 0.5, 0.57, 0.66, 0.72], [1, 0, 0, 1, 1, 0])
+  const rotY = useTransform(p, [0.26, 0.37, 0.5, 0.62], [0, -18, 14, 0])
+  const rotX = useTransform(p, [0.26, 0.37, 0.5, 0.62], [0, 10, -8, 0])
+  const reelY = useTransform(p, [0.62, 0.72], ['0vh', '-4vh'])
   const revealO = useTransform(p, [0.26, 0.34, 0.58, 0.66], [0, 1, 1, 0])
   const revealX = useTransform(p, [0.26, 0.34], ['3vw', '0vw'])
 
   // ٣. مدعوم بالحكايات
   const powerO = useTransform(p, [0.68, 0.76], [0, 1])
   const powerBlur = useTransform(p, [0.68, 0.78], ['blur(14px)', 'blur(0px)'])
-  const handY = useTransform(p, [0.66, 0.82], ['70vh', '0vh'])
+  // الإيد طالعة ماسكة البكرة فعلاً — بتطلع لنفس مكان البكرة الطايرة اللي بتختفي
+  const handY = useTransform(p, [0.64, 0.74], ['80vh', '0vh'])
   const glowO = useTransform(p, [0.86, 0.94], [0, 1])
 
   // الإيد بتميل مع الماوس (زي «Try to hover hand»)
@@ -137,12 +138,32 @@ function Stage() {
         </motion.p>
 
         <motion.div className="qz-oz-hand" style={{ y: handY, rotate: handR }} aria-hidden="true">
-          <img src={IMG('hand-1000.webp')} srcSet={set('hand', 560, 1000)} sizes="34vh" alt="" data-no-tint="true" />
+          <img src={IMG('hand-reel-1600.webp')} srcSet={set('hand-reel', 700, 1600)} sizes="(max-width: 760px) 70vw, 46vh" alt="" data-no-tint="true" />
         </motion.div>
 
         <div className="qz-oz-reel-anchor" aria-hidden="true">
-          <motion.div className="qz-oz-reel" style={reduce ? undefined : { scale: reelScale, y: reelY }}>
-            <CorkReel3D textureUrl={IMG('cork.jpg')} rotX={rotX} rotY={rotY} rotZ={rotZ} className="qz-oz-reel-gl" />
+          <motion.div
+            className="qz-oz-reel"
+            style={reduce ? undefined : { scale: reelScale, y: reelY, rotateX: rotX, rotateY: rotY }}
+          >
+            <motion.img
+              className="qz-oz-reel-img"
+              src={IMG('reel-front-2048.webp')}
+              srcSet={set('reel-front', 900, 2048)}
+              sizes="(max-width: 760px) 86vw, 62vh"
+              alt=""
+              data-no-tint="true"
+              style={reduce ? undefined : { opacity: frontO, rotate: rotZ }}
+            />
+            <motion.img
+              className="qz-oz-reel-img"
+              src={IMG('reel-tilt-2048.webp')}
+              srcSet={set('reel-tilt', 900, 2048)}
+              sizes="(max-width: 760px) 86vw, 62vh"
+              alt=""
+              data-no-tint="true"
+              style={reduce ? { opacity: 0 } : { opacity: tiltO }}
+            />
           </motion.div>
         </div>
 
