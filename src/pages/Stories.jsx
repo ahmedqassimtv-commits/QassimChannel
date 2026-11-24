@@ -30,13 +30,15 @@ import ClothRibbon from '../components/stories/ClothRibbon.jsx'
 
 const IMG = (name) => assetUrl(`/images/stories/structured/${name}`)
 // اللوحة بدقة 4K (3840px) + نسخ أصغر للشاشات الأقل
-const CROWN = {
-  src: IMG('nile-crown-v2-2400.webp'),
-  srcSet: `${IMG('nile-crown-v2-1280.webp')} 1280w, ${IMG('nile-crown-v2-2400.webp')} 2400w, ${IMG('nile-crown-v2-3840.webp')} 3840w`,
-}
+const crownSet = (side) => ({
+  src: IMG(`crown-${side}-v3-1200.webp`),
+  srcSet: `${IMG(`crown-${side}-v3-640.webp`)} 640w, ${IMG(`crown-${side}-v3-1200.webp`)} 1200w, ${IMG(`crown-${side}-v3-1800.webp`)} 1800w`,
+})
+const CROWN_L = crownSet('left')
+const CROWN_R = crownSet('right')
 const PAINTING = {
-  src: IMG('nile-painting-2400.webp'),
-  srcSet: `${IMG('nile-painting-1280.webp')} 1280w, ${IMG('nile-painting-2400.webp')} 2400w, ${IMG('nile-painting-3840.webp')} 3840w`,
+  src: IMG('nile-painting-v3-2400.webp'),
+  srcSet: `${IMG('nile-painting-1280.webp')} 1280w, ${IMG('nile-painting-v3-2400.webp')} 2400w, ${IMG('nile-painting-3840.webp')} 3840w`,
 }
 
 const EASE = [0.22, 1, 0.36, 1]
@@ -163,14 +165,10 @@ function HeroAndJourney() {
       <section ref={journeyRef} className="qz-sx-journey" data-structured-surface="ink" aria-label="رحلة اللوحة عبر الحكايات">
         {/* تيجان الشجر: نفس بكسلات اللوحة، متقصوصة من السما — بتطلع فوق الكلمة */}
         <div className="qz-sx-crownwrap" aria-hidden="true">
-          <img
-            className="qz-sx-crown"
-            src={CROWN.src}
-            srcSet={CROWN.srcSet}
-            sizes="(max-width: 760px) 240svh, 160vw"
-            alt=""
-            data-no-tint="true"
-          />
+          <div className="qz-sx-crownbox">
+            <img className="qz-sx-crown is-l" src={CROWN_L.src} srcSet={CROWN_L.srcSet} sizes="(max-width: 760px) 75svh, 50vw" alt="" data-no-tint="true" />
+            <img className="qz-sx-crown is-r" src={CROWN_R.src} srcSet={CROWN_R.srcSet} sizes="(max-width: 760px) 75svh, 50vw" alt="" data-no-tint="true" />
+          </div>
         </div>
 
         <div className="qz-sx-frame">
@@ -182,7 +180,7 @@ function HeroAndJourney() {
               src={PAINTING.src}
               srcSet={PAINTING.srcSet}
               sizes="(max-width: 760px) 240svh, 160vw"
-              alt="لوحة زيتية طويلة: شجرتين جميز عتيقتين بتحضنوا أهرامات الجيزة تحت السحاب، والنيل بفلوكته ونخيله ومعابده، وتمثال فرعوني جالس بين البردي واللوتس وأبو منجل"
+              alt="لوحة زيتية طويلة: جذعين جميز عتيقين بيحضنوا أهرامات الجيزة تحت السحاب، والنيل بفلوكته ونخيله ومعابده، وتمثال فرعوني جالس بين البردي واللوتس وأبو منجل"
               fetchPriority="high"
               data-no-tint="true"
             />
