@@ -15,6 +15,7 @@
   --fb-serif: 'Thmanyah Display', 'Thmanyah Sans', serif;
   --fb-sans: 'Thmanyah Sans', system-ui, sans-serif;
   --fb-x: clamp(20px, 4vw, 64px);
+  --fb-row: clamp(100px, 11.5vw, 180px);
   font-family: var(--fb-sans);
   color: var(--fb-ink);
   background: var(--fb-sky);
@@ -84,8 +85,9 @@
   align-items: start;
   max-width: 1440px;
   margin-inline: auto;
-  padding: clamp(28px, 4vw, 56px) var(--fb-x) 0;
-  min-height: clamp(380px, 46vw, 600px);
+  padding: clamp(24px, 3vw, 44px) var(--fb-x) 0;
+  /* الحيطة لازم تبان في أول شاشة زي الأصل */
+  height: max(300px, calc(100svh - 56px - 2 * var(--fb-row) - 12px));
 }
 .qz-fb-hero-copy {
   position: relative;
@@ -108,18 +110,23 @@
 }
 .qz-fb-hero-art {
   position: relative;
-  align-self: end;
+  align-self: stretch;
   justify-self: center;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
   width: min(100%, 520px);
-  margin-bottom: -2px;
+  height: 100%;
+  margin-bottom: -6px;
 }
 .qz-fb-hero-art img {
   position: relative;
   z-index: 1;
   display: block;
-  width: 62%;
-  margin-inline: auto;
-  height: auto;
+  height: 104%;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
 }
 
 /* حيطة الأغلفة — صفّين لازقين بيجروا عكس بعض */
@@ -135,7 +142,7 @@
 .qz-fb-wall-row {
   display: flex;
   width: max-content;
-  height: clamp(110px, 12.5vw, 190px);
+  height: var(--fb-row);
 }
 .qz-fb-wall-row.is-a {
   animation: fb-wall 70s linear infinite;
@@ -194,7 +201,7 @@
   max-width: 1200px;
   margin-inline: auto;
   padding: clamp(40px, 6vw, 90px) var(--fb-x);
-  min-height: min(110svh, 980px);
+  min-height: min(100svh, 900px);
 }
 .qz-fb-scene.is-reverse .qz-fb-scene-copy {
   order: 2;
@@ -221,13 +228,13 @@
 .qz-fb-scene-art {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 0.62fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1fr);
   grid-template-areas:
     'char big'
     'minis big';
   align-items: end;
   gap: 18px;
-  padding-top: clamp(80px, 10vw, 150px);
+  padding-top: clamp(24px, 3vw, 48px);
 }
 .qz-fb-scene-char {
   grid-area: char;
@@ -246,16 +253,14 @@
   margin-bottom: -40px;
 }
 .qz-fb-scene-char.is-b {
-  position: absolute;
-  inset-inline-start: 4%;
-  top: 0;
-  width: 34%;
+  width: 78%;
+  margin-inline-start: auto;
+  margin-bottom: -36px;
 }
 .qz-fb-scene-char.is-c {
-  position: absolute;
-  inset-inline-end: -4%;
-  top: -10px;
-  width: 30%;
+  width: 86%;
+  margin-inline-start: auto;
+  margin-bottom: -60px;
 }
 
 .qz-fb-bigcard {
@@ -583,8 +588,14 @@
   .qz-fb-scene {
     grid-template-columns: minmax(0, 1fr);
   }
+  .qz-fb-hero-in {
+    height: auto;
+  }
+  .qz-fb-hero-art {
+    height: 320px;
+  }
   .qz-fb-hero-art img {
-    width: 56%;
+    height: 100%;
   }
   .qz-fb-scene.is-reverse .qz-fb-scene-copy {
     order: 0;
