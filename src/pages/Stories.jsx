@@ -38,7 +38,7 @@ const CROWN_L = crownSet('left')
 const CROWN_R = crownSet('right')
 const PAINTING = {
   src: IMG('nile-painting-v3-2400.webp'),
-  srcSet: `${IMG('nile-painting-1280.webp')} 1280w, ${IMG('nile-painting-v3-2400.webp')} 2400w, ${IMG('nile-painting-3840.webp')} 3840w`,
+  srcSet: `${IMG('nile-painting-v3-1280.webp')} 1280w, ${IMG('nile-painting-v3-2400.webp')} 2400w, ${IMG('nile-painting-v3-3840.webp')} 3840w`,
 }
 
 const EASE = [0.22, 1, 0.36, 1]
