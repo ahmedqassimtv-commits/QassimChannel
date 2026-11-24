@@ -35,9 +35,9 @@ function Stage() {
   // ٢. البكرة: صور رندر حقيقية من زاويتين — بتلف بالسكرول وبتتبدّل بينهم
   const reelScale = useTransform(p, [0, 0.24, 0.62, 0.7], [0.74, 1, 1, 0.9])
   const rotZ = useTransform(p, [0, 0.66], [0, 150])
-  const tiltO = useTransform(p, [0.3, 0.37, 0.5, 0.57], [0, 1, 1, 0])
-  const frontO = useTransform(p, [0.3, 0.37, 0.5, 0.57, 0.66, 0.72], [1, 0, 0, 1, 1, 0])
-  const rotY = useTransform(p, [0.26, 0.37, 0.5, 0.62], [0, -18, 14, 0])
+  const tiltO = useTransform(p, [0.34, 0.355, 0.52, 0.535], [0, 1, 1, 0])
+  const frontO = useTransform(p, [0.34, 0.355, 0.52, 0.535, 0.66, 0.72], [1, 0, 0, 1, 1, 0])
+  const rotY = useTransform(p, [0.26, 0.345, 0.43, 0.53, 0.62], [0, -28, 8, 26, 0])
   const rotX = useTransform(p, [0.26, 0.37, 0.5, 0.62], [0, 10, -8, 0])
   const reelY = useTransform(p, [0.62, 0.72], ['0vh', '-4vh'])
   const revealO = useTransform(p, [0.26, 0.34, 0.58, 0.66], [0, 1, 1, 0])
