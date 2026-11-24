@@ -1,0 +1,43 @@
+# إعدادات صفحة الكتابة (Sveltia CMS)
+# أي مقال بيتحفظ هنا بيتعمله commit على main، والنشر على الموقع بيحصل لوحده
+backend:
+  name: github
+  repo: ahmedqassimtv-commits/QassimChannel
+  branch: main
+  commit_messages:
+    create: 'مقال جديد: {{slug}}'
+    update: 'تعديل مقال: {{slug}}'
+    delete: 'حذف مقال: {{slug}}'
+    uploadMedia: 'رفع صورة: {{path}}'
+    deleteMedia: 'حذف صورة: {{path}}'
+
+site_url: https://ahmedqassimtv-commits.github.io/QassimChannel/
+display_url: https://ahmedqassimtv-commits.github.io/QassimChannel/
+
+# الصور بتترفع في public/uploads وبتتكتب في المقال كـ /uploads/...
+media_folder: public/uploads
+public_folder: /uploads
+
+collections:
+  - name: articles
+    label: المقالات
+    label_singular: مقال
+    folder: src/content/articles
+    create: true
+    slug: '{{slug}}'
+    summary: '{{title}} — {{date}}'
+    sortable_fields: [date, title]
+    preview_path: articles/{{slug}}
+    fields:
+      - { name: title, label: العنوان, widget: string }
+      - { name: date, label: التاريخ, widget: datetime, format: 'YYYY-MM-DD', time_format: false }
+      - name: category
+        label: التصنيف
+        widget: select
+        default: الصورة والسينما
+        options: [الصورة والسينما, حكايات, مراجعات, كواليس, أفكار]
+      - { name: excerpt, label: المقدمة القصيرة, widget: text, hint: 'سطرين بيظهروا تحت العنوان وفي قائمة المقالات' }
+      - { name: cover, label: صورة الغلاف, widget: image, required: false }
+      - { name: tags, label: الوسوم, widget: list, required: false }
+      - { name: draft, label: مسودة (مش منشورة), widget: boolean, default: false }
+      - { name: body, label: نص المقال, widget: markdown }

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- عائلات خط ثمانية الثلاث: تحميل مسبق للأوزان الأساسية -->
+    <link rel="preload" as="font" type="font/woff2" href="/QassimChannel/fonts/thmanyahsans/woff2/thmanyahsans-Regular.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/QassimChannel/fonts/thmanyahsans/woff2/thmanyahsans-Bold.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/QassimChannel/fonts/thmanyahserifdisplay/woff2/thmanyahserifdisplay-Bold.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/QassimChannel/fonts/thmanyahseriftext/woff2/thmanyahseriftext-Regular.woff2" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
+    <meta name="theme-color" content="#051F20" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="description" content="منصة قاسم للأفلام والوثائقيات والمراجعات والمقالات." />
+    <link rel="icon" type="image/svg+xml" href="/QassimChannel/favicon.svg" />
+    <link rel="mask-icon" href="/QassimChannel/favicon.svg" color="#051F20" />
+
+    <!-- مشاركة الروابط (واتساب / فيسبوك / X) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="قاسمز" />
+    <meta property="og:locale" content="ar_AR" />
+    <meta property="og:title" content="قاسم | مساحة للصورة والحكاية" />
+    <meta property="og:description" content="منصة قاسم للأفلام والوثائقيات والمراجعات والمقالات." />
+    <!-- home.jpg غير موجودة في المستودع؛ تُستخدم شعار المنصة كصورة معاينة للروابط -->
+    <meta property="og:image" content="/QassimChannel/images/qassimz-logo.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="قاسم | مساحة للصورة والحكاية" />
+    <meta name="twitter:description" content="منصة قاسم للأفلام والوثائقيات والمراجعات والمقالات." />
+    <meta name="twitter:image" content="/QassimChannel/images/qassimz-logo.svg" />
+
+    <!-- تحميل مسبق لخلفية الصفحة الرئيسية (نسخة 1200px للموبايل و 2400px للشاشات الكبيرة) -->
+    <link
+      rel="preload"
+      as="image"
+      type="image/webp"
+      href="/QassimChannel/fractal/optimized/08.webp"
+      imagesrcset="/QassimChannel/fractal/optimized/08-1200.webp 1200w, /QassimChannel/fractal/optimized/08.webp 2400w"
+      imagesizes="108vmax"
+      fetchpriority="high"
+    />
+
+    <!-- تطبيق الثيم المحفوظ قبل تحميل React (مفيش وميض) -->
+    <script>
+      // الثيمات الثلاثة فقط: green (أخضر) و red (أحمر) و gold (ذهبي)
+      // أي قيمة أخرى (ومنها emerald/sand القديمتان) تُعاد إلى الأخضر الافتراضي
+      var THEME_COLORS = { green: '#051F20', red: '#1A0A07', gold: '#1A1408' }
+      document.documentElement.dataset.theme = 'green'
+      try {
+        var t = localStorage.getItem('qassimz:theme')
+        if (t === 'green' || t === 'red' || t === 'gold') {
+          document.documentElement.dataset.theme = t
+        }
+        var themeNow = document.documentElement.dataset.theme
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', THEME_COLORS[themeNow])
+        // جميع الثيمات داكنة
+        document.querySelector('meta[name="color-scheme"]').setAttribute('content', 'dark')
+      } catch (e) {}
+    </script>
+
+    <title>قاسم | مساحة للصورة والحكاية</title>
+    <script type="module" crossorigin src="/QassimChannel/assets/index-BCFYda25.js"></script>
+    <link rel="modulepreload" crossorigin href="/QassimChannel/assets/rolldown-runtime-XKyaHtl9.js">
+    <link rel="modulepreload" crossorigin href="/QassimChannel/assets/framer-motion-Bkbt-eAB.js">
+    <link rel="modulepreload" crossorigin href="/QassimChannel/assets/react-CEq7P9-z.js">
+    <link rel="modulepreload" crossorigin href="/QassimChannel/assets/router-e7sxIyrn.js">
+    <link rel="stylesheet" crossorigin href="/QassimChannel/assets/index-pj97gvhr.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

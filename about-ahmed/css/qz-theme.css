@@ -1,0 +1,243 @@
+/* ══════════════════════════════════════════════════════════════════════
+   QASSIMZ THEME ADAPTER — صفحة «عن أحمد»
+   يستبدل ألوان الأخضر/اللايم الأصلية بهوية قاسمز عبر الثيمات الثلاثة:
+   - green (الزمردي الافتراضي)
+   - red   (الجمري)
+   - gold  (الذهبي)
+   مع الحفاظ الكامل على كل الحركات ومشاهد WebGL و Rive و GSAP.
+   ══════════════════════════════════════════════════════════════════════ */
+
+:root,
+html[data-qz-theme='green'] {
+  color-scheme: dark;
+
+  /* سطح وخلفيات قاسمز — الثيم الزمردي */
+  --qz-ink: #051f20;
+  --qz-deep: #0b2b26;
+  --qz-forest: #163832;
+  --qz-moss: #235347;
+  --qz-sage: #8eb69b;
+  --qz-mint: #daf1de;
+  --qz-x7: #eef8f0;
+  --qz-accent: #8ef0d2;
+  --qz-accent-soft: #5ec9a8;
+
+  /* تحويل متغيرات صفحة لاندو بالكامل لألوان قاسمز */
+  --color--black: #031415;
+  --color--dark-green: #051f20;
+  --color--dark-green-tint-1: #0b2b26;
+  --color--dark-green-tint-2: #235347;
+  --color--lime: #8ef0d2;
+  --color--lime-off: #5ec9a8;
+  --color--lime-zero: #8ef0d200;
+  --color--white: #eef8f0;
+  --color--cream: #e1f2e6;
+  --color--green-light: #daf1de;
+  --color--green-off-white-1: #c2e2cc;
+  --color--green-off-white-2: #8eb69b;
+  --color--grey-1: #daf1de;
+  --color--grey-2: #8eb69b;
+  --color--grey-on-track: #8eb69b;
+  --color--orange: #8ef0d2;
+
+  /* تدوير لون عناصر Rive والـ SVG الثابتة من اللايم (#D2FF00 ≈ 71°) إلى الزمردي (#8EF0D2 ≈ 162°) */
+  --qz-rive-accent-filter: hue-rotate(92deg) saturate(0.86) brightness(1.06);
+  --qz-rive-muted-filter: hue-rotate(84deg) saturate(0.55) brightness(1.04);
+}
+
+html[data-qz-theme='red'] {
+  color-scheme: dark;
+
+  /* سطح وخلفيات قاسمز — الثيم الجمري */
+  --qz-ink: #1a0a07;
+  --qz-deep: #261009;
+  --qz-forest: #3b160c;
+  --qz-moss: #8a2a12;
+  --qz-sage: #f2a65a;
+  --qz-mint: #ffe7c2;
+  --qz-x7: #fff4e3;
+  --qz-accent: #ffa046;
+  --qz-accent-soft: #f2672b;
+
+  --color--black: #120604;
+  --color--dark-green: #1a0a07;
+  --color--dark-green-tint-1: #261009;
+  --color--dark-green-tint-2: #8a2a12;
+  --color--lime: #ffa046;
+  --color--lime-off: #f2672b;
+  --color--lime-zero: #ffa04600;
+  --color--white: #fff4e3;
+  --color--cream: #fbead2;
+  --color--green-light: #ffe7c2;
+  --color--green-off-white-1: #f3ce9d;
+  --color--green-off-white-2: #f2a65a;
+  --color--grey-1: #ffe7c2;
+  --color--grey-2: #f2a65a;
+  --color--grey-on-track: #e2ac72;
+  --color--orange: #f2672b;
+
+  /* تدوير من اللايم (71°) إلى الجمري الدافئ (~25°) */
+  --qz-rive-accent-filter: hue-rotate(-46deg) saturate(1.18) brightness(1.02);
+  --qz-rive-muted-filter: hue-rotate(-42deg) saturate(0.95) brightness(1.02);
+}
+
+html[data-qz-theme='gold'] {
+  color-scheme: dark;
+
+  /* سطح وخلفيات قاسمز — الثيم الذهبي */
+  --qz-ink: #1a1408;
+  --qz-deep: #2a1f0e;
+  --qz-forest: #3d2e14;
+  --qz-moss: #8a6d3b;
+  --qz-sage: #c9a54e;
+  --color--white: #fff8e8;
+  --qz-mint: #f5e6c0;
+  --qz-x7: #fff8e8;
+  --qz-accent: #e8c96a;
+  --qz-accent-soft: #c9a54e;
+
+  --color--black: #0e0b04;
+  --color--dark-green: #1a1408;
+  --color--dark-green-tint-1: #2a1f0e;
+  --color--dark-green-tint-2: #8a6d3b;
+  --color--lime: #e8c96a;
+  --color--lime-off: #c9a54e;
+  --color--lime-zero: #e8c96a00;
+  --color--cream: #f7ebd0;
+  --color--green-light: #f5e6c0;
+  --color--green-off-white-1: #e4ce99;
+  --color--green-off-white-2: #c9a54e;
+  --color--grey-1: #f5e6c0;
+  --color--grey-2: #c9a54e;
+  --color--grey-on-track: #d4b76a;
+  --color--orange: #c9a54e;
+
+  /* تدوير من اللايم (71°) إلى الذهبي الفاخر (~45°) */
+  --qz-rive-accent-filter: hue-rotate(-26deg) saturate(0.76) brightness(0.98);
+  --qz-rive-muted-filter: hue-rotate(-24deg) saturate(0.62) brightness(1);
+}
+
+/* خلفية الصفحة الأساسية بانتقال ناعم عند تبديل الثيم:
+   مهم جداً: يجب أن تبقى html شفافة (transparent) حتى يرث الجذر خلفية body
+   ويظل عنصر WebGL (.gl-wrap ذو z-index: -1) مرئياً فوق خلفية الصفحة تماماً كما في الملف الأصلي. */
+html {
+  background-color: transparent !important;
+}
+
+body {
+  background-color: var(--color--dark-green);
+  color: var(--color--white);
+}
+
+html.qz-theme-switching,
+html.qz-theme-switching body,
+html.qz-theme-switching .transition-w,
+html.qz-theme-switching .scroll-indicator-bar {
+  transition:
+    background-color 0.45s ease,
+    color 0.45s ease,
+    border-color 0.45s ease,
+    filter 0.45s ease;
+}
+
+/* إخفاء نافبار لاندو الأصلي بصرياً حتى لا يتداخل مع الجزيرة الزجاجية لقاسمز */
+.nav {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* شاشة التحميل المبدئية بهوية قاسمز الداكنة بدلاً من الأخضر الفاقع */
+.transition-w {
+  background-color: var(--color--dark-green) !important;
+}
+
+.transition-w .btn-w[data-theme='lime'] {
+  background-color: var(--color--lime);
+  color: var(--color--black);
+}
+
+/* تباين نصوص بطاقة الزاوية فوق المشهد الداكن في الهيرو */
+.home-hero-next-race-w {
+  color: var(--color--green-off-white-2);
+}
+
+.home-hero-next-race-line {
+  background-color: var(--color--dark-green-tint-2);
+}
+
+/* شريط مؤشر التمرير بلون تمييز الثيم */
+.scroll-indicator-bar {
+  background-color: var(--color--lime);
+}
+
+/* إعادة تلوين عناصر Rive والـ SVG ذات اللون اللايم الثابت لتتبع الثيم النشط */
+canvas[data-rive-primary],
+canvas[data-rive-ln4],
+canvas[data-rive-file='signature'],
+canvas[data-rive-file='phrases'],
+canvas[data-rive-file='btn-ui'],
+.is-home-marquee-sig-img,
+.home-hero-tablet-text-w img,
+img[src*='signature2.svg'],
+img[src*='LN-logo-svg.svg'],
+img[src*='lando-norris-text-mobile.svg'],
+img[src*='blobs_footer'] {
+  filter: var(--qz-rive-accent-filter);
+  transition: filter 0.45s ease;
+}
+
+svg [fill='#D2FF00'],
+svg [fill='#d2ff00'] {
+  fill: var(--color--lime) !important;
+}
+
+svg [stroke='#D2FF00'],
+svg [stroke='#d2ff00'] {
+  stroke: var(--color--lime) !important;
+}
+
+canvas[data-rive-file='reef'],
+canvas[data-rive-file='circuits'] {
+  filter: var(--qz-rive-muted-filter);
+  transition: filter 0.45s ease;
+}
+
+/* أزرار data-theme="lime" وتباينها مع كل الثيمات */
+[data-theme='lime'] {
+  background-color: var(--color--lime);
+  color: var(--color--black);
+}
+
+/* تدرج الفوتر السفلي بلون التمييز */
+.footer-bg-gradient {
+  background-image: radial-gradient(
+    circle farthest-corner at 50% -190%,
+    var(--color--lime-zero) 68%,
+    var(--color--lime) 83%
+  );
+}
+
+/* احترام وضع التباين العالي في النظام (Forced Colors Mode) */
+@media (forced-colors: active) {
+  .scroll-indicator-bar {
+    background-color: Highlight;
+  }
+  .btn-w {
+    border: 1px solid ButtonText;
+  }
+  :where(:focus-visible) {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+}
+
+/* إزالة فلاتر التبديل الانتقالية عند تفضيل تقليل الحركة */
+@media (prefers-reduced-motion: reduce) {
+  html.qz-theme-switching,
+  html.qz-theme-switching body,
+  html.qz-theme-switching .transition-w,
+  html.qz-theme-switching .scroll-indicator-bar {
+    transition-duration: 0.01ms;
+  }
+}
