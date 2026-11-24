@@ -1282,81 +1282,81 @@ html.qz-vt-theme::view-transition-new(root) {
   box-shadow: none;
 }
 
-/* ── ٣. قسم قاع الأفكار (Superr Tactile Notebook — DESIGN 9) ── */
+/* ── ٣. قسم قاع الأفكار (Superr Tactile Notebook — Calm 4K Paper & Ink) ── */
 .qz-island[data-nav-theme='ideas'] .qz-island-glass {
   border-radius: 22px;
-  border: 1.5px solid #171717;
-  background: rgb(253 251 249 / 0.96);
+  border: 1.25px solid #2b2723;
+  background: rgb(250 247 242 / 0.95);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   box-shadow:
-    0 3px 0 0 #171717,
-    0 1px 2px 0 rgb(0 0 0 / 0.25);
+    0 2px 0 0 #2b2723,
+    0 4px 16px rgb(43 39 35 / 0.08);
 }
 
 .qz-island[data-nav-theme='ideas'] .qz-island-brand {
-  color: #2b1a07;
+  color: #33251a;
 }
 
 .qz-island[data-nav-theme='ideas'] .qz-island-sep {
-  background: rgb(23 23 23 / 0.2);
+  background: rgb(43 39 35 / 0.18);
 }
 
 .qz-island[data-nav-theme='ideas'] .qz-island-link {
-  color: #414141;
+  color: #5b534b;
   border-radius: 16px;
 }
 
 .qz-island[data-nav-theme='ideas'] .qz-island-link:hover {
-  color: #171717;
+  color: #2b2723;
 }
 
 .qz-island[data-nav-theme='ideas'] .qz-island-link[data-active='true'],
 .qz-island[data-nav-theme='ideas'] .qz-island-link[aria-expanded='true'] {
-  color: #fdfbf9;
+  color: #faf7f2;
 }
 
 .qz-island[data-nav-theme='ideas'] .qz-island-link[data-active='true'] .qz-nicon,
 .qz-island[data-nav-theme='ideas'] .qz-island-link[aria-expanded='true'] .qz-nicon {
-  color: #fdfbf9;
+  color: #faf7f2;
 }
 
 .qz-island[data-nav-theme='ideas'] .qz-island-active {
-  background: #ff6f1e;
-  box-shadow: inset 0 0 0 1.5px #171717;
+  background: #c86d3b;
+  box-shadow: inset 0 0 0 1.25px #2b2723;
 }
 
 .qz-island[data-nav-theme='ideas'] .qz-island-hover {
-  background: #f7efe9;
-  box-shadow: inset 0 0 0 1px rgb(23 23 23 / 0.16);
+  background: #f2ece3;
+  box-shadow: inset 0 0 0 1px rgb(43 39 35 / 0.14);
 }
 
 .qz-island[data-nav-theme='ideas'] .qz-island-dot {
-  background: #171717;
+  background: #2b2723;
   box-shadow: none;
 }
 
 .qz-island[data-nav-theme='ideas'] .qz-inline-search {
   border-radius: 20px;
-  border: 1.5px solid #171717;
-  background: #fdfbf9;
-  box-shadow: 0 2px 0 0 #171717;
-  color: #171717;
+  border: 1.25px solid #2b2723;
+  background: #faf7f2;
+  box-shadow: 0 2px 0 0 #2b2723;
+  color: #2b2723;
 }
 
 @media (hover: hover) {
   .qz-island[data-nav-theme='ideas'] .qz-inline-search:not([data-expanded='true']):hover {
-    background: #f7efe9;
-    border-color: #171717;
+    background: #f2ece3;
+    border-color: #2b2723;
   }
 }
 
 .qz-island[data-nav-theme='ideas'] .qz-inline-search[data-expanded='true'] {
-  background: #fdfbf9;
+  background: #faf7f2;
 }
 
 .qz-island[data-nav-theme='ideas'] .qz-inline-search-ico {
-  color: #ff6f1e;
+  color: #c86d3b;
 }
 
 .qz-island[data-nav-theme='ideas'] .qz-inline-search-label,
