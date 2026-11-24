@@ -283,7 +283,7 @@
 .qz-fb-minis {
   grid-area: minis;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(120px, 1fr));
   gap: 12px;
   align-items: end;
 }

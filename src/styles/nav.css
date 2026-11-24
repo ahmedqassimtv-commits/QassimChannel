@@ -1845,3 +1845,7 @@ html[data-theme='gold'] {
 .qz-island[data-nav-theme='onair'] .qz-inline-search[data-expanded='true'] {
   background: #f7f4ee;
 }
+.qz-island[data-nav-theme='onair'] .qz-island-logo {
+  filter: brightness(0) saturate(0);
+  opacity: 0.92;
+}
