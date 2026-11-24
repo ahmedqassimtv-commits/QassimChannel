@@ -1702,3 +1702,66 @@ html[data-theme='gold'] {
   border: 1px solid rgb(0 0 0 / 0.16);
   background: rgb(229 228 224 / 0.92);
 }
+
+/* ── «عن أحمد»: النافبار شريط جانبي رأسي على يمين الشاشة (ديسكتوب) ── */
+@media (min-width: 1024px) {
+  .qz-island[data-nav-theme='ahmed'] {
+    top: 50%;
+    left: auto;
+    right: 16px;
+    translate: 0 -50%;
+    width: auto;
+    max-width: none;
+    max-height: calc(100dvh - 24px);
+  }
+  .qz-island[data-nav-theme='ahmed'] .qz-island-row {
+    flex-direction: column;
+    align-items: stretch;
+    height: auto;
+    gap: 6px;
+    padding: 12px 8px;
+  }
+  .qz-island[data-nav-theme='ahmed'] .qz-island-brand {
+    justify-content: center;
+  }
+  .qz-island[data-nav-theme='ahmed'] .qz-island-nav {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    max-width: none;
+  }
+  .qz-island[data-nav-theme='ahmed'] .qz-island-link {
+    justify-content: flex-start;
+    width: 100%;
+  }
+  .qz-island[data-nav-theme='ahmed'] .qz-island-chev {
+    margin-inline-start: auto;
+    rotate: 90deg;
+  }
+  .qz-island[data-nav-theme='ahmed'] .qz-island-sep {
+    width: 100%;
+    height: 1px;
+  }
+  .qz-island[data-nav-theme='ahmed'] .qz-island-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  .qz-island[data-nav-theme='ahmed'] .qz-inline-search,
+  .qz-island[data-nav-theme='ahmed'] .qz-inline-search:not([data-expanded='true']) {
+    width: 100%;
+  }
+  .qz-island[data-nav-theme='ahmed'] .qz-inline-search-drop {
+    top: 0;
+    left: auto;
+    right: calc(100% + 12px);
+  }
+  .qz-island[data-nav-theme='ahmed'] .qz-kbd {
+    display: none;
+  }
+  .qz-island[data-nav-theme='ahmed'] .qz-theme-toast {
+    top: 50%;
+    right: calc(100% + 10px);
+    left: auto;
+    translate: 0 -50%;
+  }
+}

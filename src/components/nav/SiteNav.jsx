@@ -485,9 +485,14 @@ export default function SiteNav() {
     const r = el.getBoundingClientRect()
     const s = row.getBoundingClientRect()
     const half = MENU_W / 2 + 12
+    // «عن أحمد»: النافبار شريط جانبي، فالقايمة بتفتح جنبه بدل ما تنزل تحته
+    if (navTheme === 'ahmed' && window.innerWidth >= 1024) {
+      setAnchor({ top: Math.max(12, Math.min(r.top - 8, window.innerHeight - 440)), center: s.left - half })
+      return
+    }
     const center = Math.min(Math.max(r.left + r.width / 2, half), window.innerWidth - half)
     setAnchor({ top: s.bottom + 12, center })
-  }, [])
+  }, [navTheme])
 
   useLayoutEffect(() => {
     if (!open) return undefined
