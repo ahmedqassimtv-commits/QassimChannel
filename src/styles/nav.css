@@ -316,28 +316,23 @@
   direction: ltr;
 }
 
-/* ── سويتش الثيم المدمج باحترافية داخل الكبسولة الزجاجية ── */
+/* ── سويتش الثيم المدمج مباشرة بدون إطار خلفي إضافي ── */
 .qz-island-switch-slot {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   height: 40px;
-  padding-inline: 2px;
-  border-radius: 999px;
-  border: 1px solid rgb(255 255 255 / 0.08);
-  background: rgb(255 255 255 / 0.04);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
   flex: none;
-  transition:
-    transform 0.34s var(--qz-ease),
-    box-shadow 0.34s ease,
-    border-color 0.3s ease,
-    background-color 0.3s ease;
+  transition: transform 0.34s var(--qz-ease);
 }
 
 .qz-island-switch-slot[data-pulsing='true'] {
   animation: qz-switch-pop 0.56s var(--qz-ease);
-  box-shadow: 0 0 0 3px rgb(var(--qz-glow-rgb) / 0.32), 0 0 22px rgb(var(--qz-glow-rgb) / 0.35);
 }
 
 @keyframes qz-switch-pop {
@@ -1007,8 +1002,8 @@ html.qz-vt-theme::view-transition-new(root) {
 }
 
 .qz-island[data-nav-theme='stories'][data-nav-tone='light'] .qz-island-switch-slot {
-  border-color: #000000;
-  background: #c4c3b6;
+  border: 0;
+  background: transparent;
 }
 
 .qz-island[data-nav-theme='stories'][data-nav-tone='light'] .qz-island-mob-btn {
@@ -1125,8 +1120,8 @@ html.qz-vt-theme::view-transition-new(root) {
 }
 
 .qz-island[data-nav-theme='stories'][data-nav-tone='dark'] .qz-island-switch-slot {
-  border-color: rgb(223 220 213 / 0.45);
-  background: rgb(255 255 255 / 0.06);
+  border: 0;
+  background: transparent;
 }
 
 .qz-island[data-nav-theme='stories'][data-nav-tone='dark'] .qz-island-menu-glass,
@@ -1227,7 +1222,12 @@ html.qz-vt-theme::view-transition-new(root) {
   color: #1d1d1b;
 }
 
-.qz-island[data-nav-theme='articles'] .qz-island-switch-slot,
+.qz-island[data-nav-theme='articles'] .qz-island-switch-slot {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
 .qz-island[data-nav-theme='articles'] .qz-island-mob-btn {
   border-color: rgb(29 29 27 / 0.48);
   background: rgb(191 184 174 / 0.68);
@@ -1282,18 +1282,20 @@ html.qz-vt-theme::view-transition-new(root) {
   box-shadow: none;
 }
 
-/* ── ٣. قسم قلع الأفكار (Superr Tactile Notebook — DESIGN 3) ── */
+/* ── ٣. قسم قاع الأفكار (Superr Tactile Notebook — DESIGN 9) ── */
 .qz-island[data-nav-theme='ideas'] .qz-island-glass {
   border-radius: 22px;
   border: 1.5px solid #171717;
   background: rgb(253 251 249 / 0.96);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
-  box-shadow: 0 4px 0 0 #171717;
+  box-shadow:
+    0 3px 0 0 #171717,
+    0 1px 2px 0 rgb(0 0 0 / 0.25);
 }
 
 .qz-island[data-nav-theme='ideas'] .qz-island-brand {
-  color: #171717;
+  color: #2b1a07;
 }
 
 .qz-island[data-nav-theme='ideas'] .qz-island-sep {
@@ -1335,11 +1337,18 @@ html.qz-vt-theme::view-transition-new(root) {
 }
 
 .qz-island[data-nav-theme='ideas'] .qz-inline-search {
-  border-radius: 16px;
+  border-radius: 20px;
   border: 1.5px solid #171717;
-  background: #f7efe9;
+  background: #fdfbf9;
   box-shadow: 0 2px 0 0 #171717;
   color: #171717;
+}
+
+@media (hover: hover) {
+  .qz-island[data-nav-theme='ideas'] .qz-inline-search:not([data-expanded='true']):hover {
+    background: #f7efe9;
+    border-color: #171717;
+  }
 }
 
 .qz-island[data-nav-theme='ideas'] .qz-inline-search[data-expanded='true'] {
@@ -1370,12 +1379,33 @@ html.qz-vt-theme::view-transition-new(root) {
   color: #171717;
 }
 
-.qz-island[data-nav-theme='ideas'] .qz-island-switch-slot,
 .qz-island[data-nav-theme='ideas'] .qz-island-mob-btn {
   border: 1.5px solid #171717;
-  background: #f7efe9;
+  border-radius: 20px;
+  background: #fdfbf9;
   box-shadow: 0 2px 0 0 #171717;
   color: #171717;
+}
+
+/* زر التبديل مدمج مباشرة بدون أي إطار أو خلفية خلفه */
+.qz-island[data-nav-theme='ideas'] .qz-island-switch-slot {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.qz-island[data-nav-theme='ideas'] .qz-theme-toast {
+  border-radius: 12px;
+  border: 1.5px solid #171717;
+  background: #fdfbf9;
+  color: #2b1a07;
+  box-shadow: 0 3px 0 0 #171717;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.qz-island[data-nav-theme='ideas'] .qz-theme-toast-dot {
+  box-shadow: 0 0 0 1.5px #171717;
 }
 
 .qz-island[data-nav-theme='ideas'] .qz-island-menu-glass,

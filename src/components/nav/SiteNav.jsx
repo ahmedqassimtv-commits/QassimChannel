@@ -32,7 +32,7 @@ import { SPRING, SPRING_NAV } from '../motion/Motion.jsx'
 
 /* ══ النافبار العلوي المتكيّف مع كل قسم ═══════════════════════════════
    يتحوّل شكل ومادة وألوان وحواف النافبار تلقائياً عند الدخول لكل قسم
-   ليتلاءم مع هوية الصفحة (معرض الحكايات، جريدة المقالات، دفتر قلع الأفكار،
+   ليتلاءم مع هوية الصفحة (معرض الحكايات، جريدة المقالات، دفتر قاع الأفكار،
    بكرة الفِردِكت، عن أحمد، والجزيرة الزجاجية). */
 
 function getNavTheme(pathname) {
@@ -253,8 +253,8 @@ export default function SiteNav() {
   const [storiesDark, setStoriesDark] = useState(false)
   const [storiesTop, setStoriesTop] = useState(true)
   const [storiesHidden, setStoriesHidden] = useState(false)
-  // الأقسام اللي ليها هوية ثابتة مش محتاجة سويتش الثيمات
-  const fixedTheme = navTheme !== 'glass'
+  // سويتش الثيمات متاح في الجزيرة الزجاجية ومُدمج بطابع الورق والحبر في قاع الأفكار
+  const showThemeSwitch = navTheme === 'glass' || navTheme === 'ideas'
   const [themePulse, setThemePulse] = useState(false)
   const [themeToast, setThemeToast] = useState(null)
   const toastTimerRef = useRef(0)
@@ -755,7 +755,7 @@ export default function SiteNav() {
                 )}
               </div>
 
-              {!fixedTheme && (
+              {showThemeSwitch && (
                 <>
               {/* سويتش الثيم مدمج داخل نفس كبسولة النافبار مع نبضة حركة وإشعار الثيم */}
               <div
