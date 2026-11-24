@@ -1,254 +1,354 @@
-import { useRef } from 'react'
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
-import { ArrowUpLeft, Play } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { FoldingBill } from '../components/onair/FoldingBill.tsx'
+import { motion, useReducedMotion } from 'framer-motion'
+import { ArrowUpLeft, Bell, Play } from 'lucide-react'
 import { CinemaThumb, useCinema } from '../components/qz/CinemaPlayer.jsx'
 import { fmtDate } from '../components/qz/Kit.jsx'
+import { assetUrl } from '../utils/assets.js'
 import { videos } from '../data/videos.js'
 import { YOUTUBE_CONFIG } from '../data/youtubeConfig.js'
 
-/* ══ أون إير — بأسلوب Fable ══════════════════════════════════════════
-   أشرطة ألوان بعرض الشاشة بدل الكروت والفواصل: أخضر الغابة ← ورق كريمي
-   ← أزرق الحكايات ← كريمي ← فحمي. عناوين سيريف عريضة بسطور لازقة،
-   أزرار كبسولة (60px) غامقة على الفاتح وبيضا على الملوّن، والغلاف نفسه
-   هو العمل الفني من غير إطارات. */
+/* ══ أون إير — نسخة Fable ═══════════════════════════════════════════
+   نفس ترتيب الأصل: شريط أخضر الغابة فيه العنوان والشخصية، حيطة أغلفة
+   بتجري في صفين، وبعدين أزرق واحد طويل شايل تلات مشاهد (كروت كريمي +
+   موبايل + شخصية مرسومة)، صف «الأكثر مشاهدة»، وفوتر فحمي. */
 
 const EASE = [0.22, 1, 0.36, 1]
+const IMG = (n) => assetUrl(`/images/onair/${n}`)
 const longs = videos.filter((v) => v.type !== 'short')
 const shorts = videos.filter((v) => v.type === 'short')
 const latest = longs[0] ?? videos[0]
 
-function Reveal({ children, delay = 0, className, as = 'div' }) {
+function In({ children, className, delay = 0, y = 26, once = false, as = 'div' }) {
   const reduce = useReducedMotion()
   const M = motion[as]
   return (
     <M
       className={className}
-      initial={reduce ? false : { opacity: 0, y: 28 }}
+      initial={reduce ? false : { opacity: 0, y }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-12% 0px' }}
-      transition={{ duration: 0.8, ease: EASE, delay }}
+      viewport={{ once, amount: 0.3 }}
+      transition={{ duration: 0.75, ease: EASE, delay }}
     >
       {children}
     </M>
   )
 }
 
-function Pill({ tone = 'dark', children, ...rest }) {
-  const Comp = rest.to ? Link : rest.href ? 'a' : 'button'
-  return (
-    <Comp className={`qz-fb-pill is-${tone}`} {...rest}>
-      {children}
-    </Comp>
-  )
-}
-
-/* قصاصات هندسية مسطحة طايرة حوالين الرسمة (نجمة، دايرة، علامة +) */
-function Confetti() {
+function Stars({ items }) {
   const reduce = useReducedMotion()
-  const bits = [
-    { k: 'star', c: '#f5c445', x: '8%', y: '14%', s: 34, d: 0 },
-    { k: 'circle', c: '#f08a3c', x: '84%', y: '10%', s: 22, d: 0.6 },
-    { k: 'plus', c: '#43a1d7', x: '90%', y: '62%', s: 26, d: 1.1 },
-    { k: 'circle', c: '#f7f4ee', x: '4%', y: '72%', s: 14, d: 1.6 },
-    { k: 'star', c: '#ef8fb0', x: '70%', y: '88%', s: 24, d: 0.3 },
-    { k: 'plus', c: '#f5c445', x: '22%', y: '92%', s: 18, d: 0.9 },
-  ]
   return (
-    <div className="qz-fb-confetti" aria-hidden="true">
-      {bits.map((b, i) => (
+    <div className="qz-fb-stars" aria-hidden="true">
+      {items.map(([x, y, s, c, d], i) => (
         <motion.svg
           key={i}
           viewBox="0 0 24 24"
-          style={{ left: b.x, top: b.y, width: b.s, height: b.s }}
-          animate={reduce ? undefined : { y: [0, -10, 0], rotate: [0, b.k === 'plus' ? 45 : 18, 0] }}
-          transition={{ duration: 5 + i * 0.7, repeat: Infinity, ease: 'easeInOut', delay: b.d }}
+          style={{ left: x, top: y, width: s, height: s }}
+          animate={reduce ? undefined : { scale: [1, 0.7, 1], rotate: [0, 20, 0] }}
+          transition={{ duration: 3.2 + i * 0.4, repeat: Infinity, ease: 'easeInOut', delay: d }}
         >
-          {b.k === 'star' && <path d="M12 1.5l2.9 6.6 7.1.6-5.4 4.7 1.6 7-6.2-3.7-6.2 3.7 1.6-7L2 8.7l7.1-.6z" fill={b.c} />}
-          {b.k === 'circle' && <circle cx="12" cy="12" r="10" fill={b.c} />}
-          {b.k === 'plus' && <path d="M9 2h6v7h7v6h-7v7H9v-7H2V9h7z" fill={b.c} />}
+          <path d="M12 0c.6 6.2 5.8 11.4 12 12-6.2.6-11.4 5.8-12 12-.6-6.2-5.8-11.4-12-12C6.2 11.4 11.4 6.2 12 0z" fill={c} />
         </motion.svg>
       ))}
     </div>
   )
 }
 
-/* ١. شريط أخضر الغابة — الافتتاحية */
+/* ١. أخضر الغابة */
 function Hero() {
   const cinema = useCinema()
   return (
-    <section className="qz-fb-band is-forest qz-fb-hero" data-structured-surface="ink" aria-labelledby="onair-title">
-      <div className="qz-fb-wrap qz-fb-split">
-        <div className="qz-fb-copy">
-          <Reveal as="p" className="qz-fb-eyebrow">
-            <span className="qz-fb-live" aria-hidden="true" /> على الهوا دلوقتي
-          </Reveal>
-          <Reveal as="h1" delay={0.05} className="qz-fb-display" >
-            <span id="onair-title">أون إير:</span>
+    <section className="qz-fb-hero" aria-labelledby="onair-title">
+      <div className="qz-fb-hero-in">
+        <div className="qz-fb-hero-copy">
+          <In as="h1" className="qz-fb-h1" once>
+            <span id="onair-title">أون إير:</span> كل جديد
             <br />
-            كل جديد قاسم في مكان واحد
-          </Reveal>
-          <Reveal as="p" delay={0.12} className="qz-fb-lead">
-            منشورات يومية، مقتطفات سريعة، وآخر الحلقات من القناة — مساحة متجددة بتتحدّث مع كل نشر.
-          </Reveal>
-          <Reveal delay={0.2} className="qz-fb-actions">
-            <Pill tone="white" type="button" onClick={() => latest && cinema.open(latest)}>
-              <Play className="size-4 fill-current" aria-hidden="true" />
+            قاسم في مكان واحد
+          </In>
+          <In as="p" className="qz-fb-hero-lead" delay={0.08} once>
+            انضم لناس بتحب الحكايات الحلوة — منشورات يومية، لقطات سريعة، وآخر حلقات القناة.
+          </In>
+          <In delay={0.14} once>
+            <button type="button" className="qz-fb-pill is-white" onClick={() => latest && cinema.open(latest)}>
               شوف آخر حلقة
-            </Pill>
-            <a className="qz-fb-ghost is-light" href={YOUTUBE_CONFIG.channelUrl} target="_blank" rel="noreferrer">
-              القناة على يوتيوب
-            </a>
-          </Reveal>
+            </button>
+          </In>
         </div>
-        <Reveal delay={0.1} className="qz-fb-art">
-          <Confetti />
-          <div className="qz-fb-bill">
-            <FoldingBill />
-          </div>
-          <span className="qz-fb-art-note">اسحب الورقة واطويها</span>
-        </Reveal>
+        <In className="qz-fb-hero-art" delay={0.06} y={40} once>
+          <Stars
+            items={[
+              ['8%', '20%', 22, '#f5c445', 0],
+              ['86%', '8%', 18, '#f5c445', 0.8],
+              ['92%', '44%', 14, '#f5c445', 1.4],
+              ['2%', '58%', 12, '#f5c445', 0.4],
+            ]}
+          />
+          <img src={IMG('hero-character.webp')} alt="رسمة: شاب قاعد فوق برج من بكر الأفلام والكتب وبيصوّر بموبايله" data-no-tint="true" />
+        </In>
       </div>
+      <CoverWall />
     </section>
   )
 }
 
-/* ٢. صف الأغلفة — بعرض الشاشة وبيطلع برّه الحافة كأنه بيكمّل */
-function CoverRow() {
+/* حيطة الأغلفة: صفّين لازقين بيجروا عكس بعض، الغلاف هو العمل الفني */
+function WallRow({ list, dir }) {
   const cinema = useCinema()
-  const ref = useRef(null)
-  const reduce = useReducedMotion()
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
-  const x = useTransform(scrollYProgress, [0, 1], reduce ? ['0%', '0%'] : ['-6%', '6%'])
-  const row = [...videos, ...videos].slice(0, 8)
   return (
-    <section ref={ref} className="qz-fb-band is-cream qz-fb-covers" data-structured-surface="putty" aria-label="أغلفة الحلقات">
-      <motion.div className="qz-fb-cover-row" style={{ x }}>
-        {row.map((v, i) => (
-          <button
-            key={`${v.id}-${i}`}
-            type="button"
-            className={`qz-fb-cover ${v.type === 'short' ? 'is-short' : ''}`}
-            onClick={() => cinema.open(v)}
-            aria-label={`شغّل: ${v.title}`}
-            data-qz-silent
-          >
-            <CinemaThumb video={v} scope={`fb-row-${i}`} className="qz-fb-cover-img" />
-          </button>
-        ))}
-      </motion.div>
-    </section>
-  )
-}
-
-/* ٣. شريط كريمي — آخر ما اتنشر */
-function Latest() {
-  const cinema = useCinema()
-  if (!latest) return null
-  return (
-    <section className="qz-fb-band is-cream" data-structured-surface="putty" aria-labelledby="fb-latest">
-      <div className="qz-fb-wrap qz-fb-split is-reverse">
-        <div className="qz-fb-copy">
-          <Reveal as="p" className="qz-fb-eyebrow is-dark">من القناة · {fmtDate(latest.date)}</Reveal>
-          <Reveal as="h2" delay={0.05} className="qz-fb-display is-ink" >
-            <span id="fb-latest">{latest.title}</span>
-          </Reveal>
-          <Reveal as="p" delay={0.1} className="qz-fb-sub">{latest.summary}</Reveal>
-          <Reveal delay={0.16} className="qz-fb-actions">
-            <Pill tone="dark" type="button" onClick={() => cinema.open(latest)}>
-              <Play className="size-4 fill-current" aria-hidden="true" />
-              شغّل الحلقة
-            </Pill>
-            <Link className="qz-fb-ghost" to="/videos">
-              كل الفيديوهات
-            </Link>
-          </Reveal>
+    <div className={`qz-fb-wall-row is-${dir}`}>
+      {[0, 1].map((dup) => (
+        <div key={dup} className="qz-fb-wall-track" aria-hidden={dup === 1 ? 'true' : undefined}>
+          {list.map((v, i) => (
+            <button
+              key={`${v.id}-${i}`}
+              type="button"
+              tabIndex={dup === 1 ? -1 : undefined}
+              className={`qz-fb-wall-tile ${v.type === 'short' ? 'is-short' : ''}`}
+              onClick={() => cinema.open(v)}
+              aria-label={`شغّل: ${v.title}`}
+              data-qz-silent
+            >
+              <CinemaThumb video={v} scope={`fbw-${dir}-${dup}-${i}`} className="qz-fb-wall-img" />
+            </button>
+          ))}
         </div>
-        <Reveal delay={0.08} className="qz-fb-feature">
-          <button type="button" className="qz-fb-feature-card" onClick={() => cinema.open(latest)} data-qz-silent>
-            <CinemaThumb video={latest} scope="fb-latest" className="qz-fb-feature-img" priority />
-            <span className="qz-fb-play" aria-hidden="true">
-              <Play className="size-6 fill-current" />
-            </span>
-          </button>
-        </Reveal>
+      ))}
+    </div>
+  )
+}
+
+function CoverWall() {
+  const base = [...videos, ...videos, ...videos]
+  return (
+    <div className="qz-fb-wall" aria-label="أغلفة الحلقات">
+      <WallRow list={base} dir="a" />
+      <WallRow list={[...base].reverse()} dir="b" />
+    </div>
+  )
+}
+
+/* موبايل أبيض بشاشة واجهة حقيقية */
+function Phone({ children }) {
+  return (
+    <div className="qz-fb-phone">
+      <div className="qz-fb-phone-bar">
+        <span className="qz-num">9:41</span>
+        <span className="qz-fb-phone-notch" />
+        <span className="qz-fb-phone-dots" />
       </div>
-    </section>
+      <div className="qz-fb-phone-body">{children}</div>
+    </div>
   )
 }
 
-/* ٤. شريط أزرق الحكايات — الشورتس جوه موبايلات على كارت أبيض كبير */
-function Shorts() {
+function ListScreen() {
   const cinema = useCinema()
-  if (!shorts.length) return null
   return (
-    <section className="qz-fb-band is-sky" data-structured-surface="putty" aria-labelledby="fb-shorts">
-      <div className="qz-fb-wrap qz-fb-split">
-        <div className="qz-fb-copy">
-          <Reveal as="p" className="qz-fb-eyebrow is-dark">لقطات قصيرة</Reveal>
-          <Reveal as="h2" delay={0.05} className="qz-fb-display is-ink">
-            <span id="fb-shorts">دقيقة واحدة،</span>
-            <br />
-            حكاية كاملة
-          </Reveal>
-          <Reveal as="p" delay={0.1} className="qz-fb-sub">
-            تفاصيل صغيرة من يوم طويل وكواليس التصوير — بالطول، زي ما الكاميرا شافتها.
-          </Reveal>
-          <Reveal delay={0.16} className="qz-fb-actions">
-            <Pill tone="dark" type="button" onClick={() => cinema.open(shorts[0])}>
-              <Play className="size-4 fill-current" aria-hidden="true" />
-              ابدأ اللقطات
-            </Pill>
-          </Reveal>
-        </div>
-        <Reveal delay={0.08} className="qz-fb-elevated">
-          <div className="qz-fb-phones">
-            {shorts.slice(0, 2).map((v, i) => (
-              <button
-                key={v.id}
-                type="button"
-                className={`qz-fb-phone ${i === 1 ? 'is-back' : ''}`}
-                onClick={() => cinema.open(v)}
-                aria-label={`شغّل: ${v.title}`}
-                data-qz-silent
-              >
-                <CinemaThumb video={v} scope={`fb-short-${i}`} className="qz-fb-phone-screen" />
-                <span className="qz-fb-phone-cap">{v.title}</span>
-              </button>
+    <>
+      <p className="qz-fb-ui-title">شوف لاحقاً</p>
+      <p className="qz-fb-ui-meta">{videos.length} حلقات · من القناة</p>
+      <div className="qz-fb-ui-chips">
+        <span className="is-on">الكل</span>
+        <span>حلقات</span>
+        <span>شورتس</span>
+      </div>
+      {videos.slice(0, 3).map((v, i) => (
+        <button key={v.id} type="button" className="qz-fb-ui-row" onClick={() => cinema.open(v)} data-qz-silent>
+          <CinemaThumb video={v} scope={`fbl-${i}`} className="qz-fb-ui-thumb" />
+          <span>
+            <b>{v.title}</b>
+            <small>{v.summary}</small>
+          </span>
+        </button>
+      ))}
+    </>
+  )
+}
+
+function ShortScreen() {
+  const cinema = useCinema()
+  const s = shorts[0] ?? videos[0]
+  return (
+    <button type="button" className="qz-fb-ui-short" onClick={() => cinema.open(s)} data-qz-silent>
+      <CinemaThumb video={s} scope="fbs-0" className="qz-fb-ui-short-img" />
+      <span className="qz-fb-ui-short-cap">
+        <b>{s.title}</b>
+        <small className="qz-num">{fmtDate(s.date)}</small>
+      </span>
+    </button>
+  )
+}
+
+const FACES = ['#f08a3c', '#064c37', '#43a1d7', '#f5c445', '#292229']
+
+function ChatScreen() {
+  return (
+    <div className="qz-fb-ui-chat">
+      <p className="qz-fb-ui-title">غرف النقاش</p>
+      {['الحلقة الأخيرة', 'كواليس التصوير', 'الحلقة الجاية', 'أسئلة لقاسم'].map((r, i) => (
+        <div key={r} className="qz-fb-ui-room">
+          <span>{r}</span>
+          <span className="qz-fb-ui-faces" aria-hidden="true">
+            {FACES.slice(0, 4 - (i % 2)).map((c) => (
+              <i key={c} style={{ background: c }} />
             ))}
-          </div>
-        </Reveal>
-      </div>
-    </section>
+          </span>
+        </div>
+      ))}
+    </div>
   )
 }
 
-/* ٥. شريط كريمي — الأرشيف كروت كريمي */
-function Archive() {
-  const cinema = useCinema()
+/* مشهد على الأزرق: نص + شخصية + كارت كريمي كبير فيه موبايل + كارتين صغيرين */
+function Scene({ id, title, lead, cta, onCta, character, charClass, bigLabel, screen, minis, reverse }) {
   return (
-    <section className="qz-fb-band is-paper" data-structured-surface="putty" aria-labelledby="fb-archive">
-      <div className="qz-fb-wrap">
-        <Reveal as="h2" className="qz-fb-heading">
-          <span id="fb-archive">من الأرشيف</span>
-        </Reveal>
-        <div className="qz-fb-cards">
-          {videos.map((v, i) => (
-            <Reveal key={v.id} delay={i * 0.06}>
-              <button type="button" className="qz-fb-card" onClick={() => cinema.open(v)} data-qz-silent>
-                <CinemaThumb
-                  video={v}
-                  scope={`fb-card-${i}`}
-                  className={`qz-fb-card-img ${v.type === 'short' ? 'is-short' : ''}`}
-                />
-                <span className="qz-fb-card-meta">
-                  {v.category} · <span className="qz-num">{fmtDate(v.date)}</span>
-                </span>
-                <span className="qz-fb-card-title">{v.title}</span>
-                <span className="qz-fb-card-body">{v.summary}</span>
+    <div className={`qz-fb-scene ${reverse ? 'is-reverse' : ''}`} aria-labelledby={id}>
+      <In className="qz-fb-scene-copy">
+        <h2 id={id} className="qz-fb-h2">
+          {title}
+        </h2>
+        <p className="qz-fb-scene-lead">{lead}</p>
+        <button type="button" className="qz-fb-pill is-dark is-sm" onClick={onCta}>
+          {cta}
+        </button>
+      </In>
+      <div className="qz-fb-scene-art">
+        <In className={`qz-fb-scene-char ${charClass}`} y={40}>
+          <img src={IMG(character)} alt="" data-no-tint="true" />
+        </In>
+        <In className="qz-fb-bigcard" y={60} delay={0.05}>
+          <p className="qz-fb-card-label">{bigLabel}</p>
+          <Phone>{screen}</Phone>
+        </In>
+        <div className="qz-fb-minis">
+          {minis.map((m, i) => (
+            <In key={m.key} className="qz-fb-mini" y={50} delay={0.12 + i * 0.08}>
+              <p className="qz-fb-card-label">{m.label}</p>
+              {m.body}
+            </In>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function SkyStory() {
+  const cinema = useCinema()
+  const open = (v) => () => v && cinema.open(v)
+  return (
+    <section className="qz-fb-sky" aria-label="جوه أون إير">
+      <Stars items={[['3%', '1.2%', 26, '#ef8fb0', 0]]} />
+      <Scene
+        id="fb-s1"
+        title={<>كل الحلقات<br />في مكان واحد</>}
+        lead="قوايم مرتّبة، آخر ما اتنشر، وكل حلقة فاتتك — من غير ما تدوّر في ألف مكان."
+        cta="ابدأ المشاهدة"
+        onCta={open(latest)}
+        character="char-star.webp"
+        charClass="is-a"
+        bigLabel={<>قوايم مشاهدة<br />أحلى</>}
+        screen={<ListScreen />}
+        minis={[
+          {
+            key: 'a',
+            label: 'آخر حلقة',
+            body: (
+              <button type="button" className="qz-fb-mini-media" onClick={open(latest)} data-qz-silent>
+                <CinemaThumb video={latest} scope="fbm-1" className="qz-fb-mini-img" />
               </button>
-            </Reveal>
+            ),
+          },
+          {
+            key: 'b',
+            label: 'تنبيه بالجديد',
+            body: (
+              <span className="qz-fb-mini-icon">
+                <Bell className="size-6" aria-hidden="true" />
+              </span>
+            ),
+          },
+        ]}
+      />
+      <Scene
+        id="fb-s2"
+        reverse
+        title={<>دقيقة واحدة،<br />حكاية كاملة</>}
+        lead="لقطات قصيرة بالطول من الكواليس وتفاصيل اليوم — زي ما الكاميرا شافتها."
+        cta="شوف اللقطات"
+        onCta={open(shorts[0])}
+        character="char-camera.webp"
+        charClass="is-b"
+        bigLabel={<>اكتشف لقطتك<br />المفضّلة</>}
+        screen={<ShortScreen />}
+        minis={[
+          {
+            key: 'a',
+            label: 'لقطات الشهر',
+            body: (
+              <span className="qz-fb-mini-grid">
+                {shorts.concat(longs).slice(0, 4).map((v, i) => (
+                  <CinemaThumb key={v.id} video={v} scope={`fbg-${i}`} className="qz-fb-mini-cell" />
+                ))}
+              </span>
+            ),
+          },
+          {
+            key: 'b',
+            label: 'الأكتر مشاهدة',
+            body: (
+              <span className="qz-fb-mini-ring" aria-hidden="true">
+                <svg viewBox="0 0 44 44">
+                  <circle cx="22" cy="22" r="18" />
+                  <circle cx="22" cy="22" r="18" className="is-on" />
+                </svg>
+              </span>
+            ),
+          },
+        ]}
+      />
+      <Scene
+        id="fb-s3"
+        title={<>مجتمع لعشاق<br />الحكايات</>}
+        lead="اتكلم عن الحلقة مع ناس شبهك، واقترح الحكاية الجاية لقاسم."
+        cta="انضم للنقاش"
+        onCta={() => window.open(YOUTUBE_CONFIG.channelUrl, '_blank', 'noopener')}
+        character="char-wave.webp"
+        charClass="is-c"
+        bigLabel={<>غرف نقاش<br />من غير حرق</>}
+        screen={<ChatScreen />}
+        minis={[
+          {
+            key: 'a',
+            label: 'تعليقات عن الحلقات',
+            body: <span className="qz-fb-mini-quote">«أول مرة أشوف المدينة بالعين دي»</span>,
+          },
+          {
+            key: 'b',
+            label: 'ناس بتحب اللي بتحبه',
+            body: (
+              <span className="qz-fb-ui-faces is-lg" aria-hidden="true">
+                {FACES.map((c) => (
+                  <i key={c} style={{ background: c }} />
+                ))}
+              </span>
+            ),
+          },
+        ]}
+      />
+
+      <div className="qz-fb-popular">
+        <In as="h3" className="qz-fb-popular-title">
+          الأكثر مشاهدة <ArrowUpLeft className="size-4" aria-hidden="true" />
+        </In>
+        <div className="qz-fb-popular-row">
+          {[...videos, ...videos].slice(0, 6).map((v, i) => (
+            <In key={`${v.id}-${i}`} delay={i * 0.05} y={30}>
+              <button type="button" className="qz-fb-pop" onClick={() => cinema.open(v)} data-qz-silent>
+                <CinemaThumb video={v} scope={`fbp-${i}`} className="qz-fb-pop-img" />
+                <b>{v.title}</b>
+                <small>{v.category}</small>
+              </button>
+            </In>
           ))}
         </div>
       </div>
@@ -256,23 +356,17 @@ function Archive() {
   )
 }
 
-/* ٦. الشريط الفحمي الختامي */
-function Finale() {
+function Foot() {
   return (
-    <section className="qz-fb-band is-char" data-structured-surface="ink" aria-label="تابع قاسمز">
-      <div className="qz-fb-wrap qz-fb-finale">
-        <Reveal as="h2" className="qz-fb-display">
-          الحلقة الجاية
-          <br />
-          على الهوا قريب
-        </Reveal>
-        <Reveal delay={0.1} className="qz-fb-actions">
-          <Pill tone="white" href={YOUTUBE_CONFIG.channelUrl} target="_blank" rel="noreferrer">
-            اشترك في القناة
-            <ArrowUpLeft className="size-4" aria-hidden="true" />
-          </Pill>
-        </Reveal>
-      </div>
+    <section className="qz-fb-foot" aria-label="ختام أون إير">
+      <span className="qz-fb-foot-mark" aria-hidden="true">
+        <Play className="size-4 fill-current" />
+      </span>
+      <p className="qz-fb-foot-line">
+        مكان أهدى للحكايات —
+        <br />
+        بيتحدّث مع كل حلقة جديدة
+      </p>
     </section>
   )
 }
@@ -281,11 +375,8 @@ export default function OnAir() {
   return (
     <div className="qz-fb" dir="rtl">
       <Hero />
-      <CoverRow />
-      <Latest />
-      <Shorts />
-      <Archive />
-      <Finale />
+      <SkyStory />
+      <Foot />
     </div>
   )
 }

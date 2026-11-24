@@ -262,9 +262,9 @@ export default function SiteNav() {
   const pulseTimerRef = useRef(0)
 
   const navTone =
-    navTheme === 'articles' || navTheme === 'ideas'
+    navTheme === 'articles' || navTheme === 'ideas' || navTheme === 'onair'
       ? 'light'
-      : navTheme === 'stories' || navTheme === 'onair'
+      : navTheme === 'stories'
         ? storiesDark
           ? 'dark'
           : 'light'
@@ -272,7 +272,7 @@ export default function SiteNav() {
 
   // استشعار سطح القاعة الحالية خلف النافبار داخل قسم الحكايات (Putty فاتح ⇄ Ink داكن)
   useEffect(() => {
-    if (navTheme !== 'stories' && navTheme !== 'onair') {
+    if (navTheme !== 'stories') {
       setStoriesDark(false)
       setStoriesTop(true)
       setStoriesHidden(false)
