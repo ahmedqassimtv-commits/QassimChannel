@@ -438,31 +438,87 @@
   flex-shrink: 0;
 }
 
-/* نافذة قراءة الدفتر المفتوح — تمرير مستقل وسلس بدون تعارض مع Lenis */
+/* نافذة قراءة الدفتر المفتوح — Portal فوق الصفحة + شريط تمرير مصمّم بنفس هوية الدفتر */
 .qz-superr-modal-backdrop {
+  --color-cream-paper: #faf7f2;
+  --color-charcoal: #2b2723;
+  --color-cocoa-ink: #33251a;
+  --color-dew-drop: #f2ece3;
+  --color-marker-orange: #c86d3b;
+  --color-burnt-sienna: #a6562b;
+  --font-gelica: 'Thmanyah Display', var(--font-display), ui-sans-serif, system-ui, sans-serif;
+  --font-body-ar: 'Thmanyah Text', var(--font-text), Georgia, serif;
+  --font-geist: 'Thmanyah Sans', var(--font-sans-ui), ui-sans-serif, system-ui, sans-serif;
+  --text-caption: 15px;
+  --leading-caption: 1.72;
+  --text-body: 19px;
+  --leading-body: 1.88;
+  --text-subheading: 22px;
+  --leading-subheading: 1.62;
+  --radius-cards: 16px;
+  --radius-buttons: 20px;
+  --radius-inputs: 8px;
+  --card-padding: 28px;
+  --shadow-lg: rgba(43, 39, 35, 0.16) 0px 18px 48px 0px;
+  --shadow-subtle: rgba(43, 39, 35, 0.16) 0px 1px 3px 0px;
+
+  color-scheme: only light;
   position: fixed;
   inset: 0;
-  z-index: 95;
+  z-index: 120;
   display: grid;
   place-items: center;
-  padding: 20px;
-  background-color: rgba(43, 39, 35, 0.45);
+  padding: clamp(28px, 4.5vh, 52px) clamp(16px, 3vw, 32px);
+  background-color: rgba(43, 39, 35, 0.48);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
   overscroll-behavior: contain;
 }
 
 .qz-superr-modal-sheet {
   position: relative;
   width: min(820px, 100%);
-  max-height: 86dvh;
+  max-height: min(82dvh, 780px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--color-cream-paper);
+  border: 1.5px solid var(--color-charcoal);
+  border-radius: 20px;
+  box-shadow:
+    0 4px 0 0 var(--color-charcoal),
+    var(--shadow-lg);
+  color: var(--color-cocoa-ink);
+}
+
+.qz-superr-modal-scroll {
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
-  background-color: var(--color-cream-paper);
-  border: 1.25px solid var(--color-charcoal);
-  border-radius: var(--radius-cards);
-  padding: var(--card-padding);
-  box-shadow: var(--shadow-lg);
-  color: var(--color-cocoa-ink);
+  padding: clamp(22px, 3.5vw, 34px);
   scrollbar-width: thin;
-  scrollbar-color: rgba(43, 39, 35, 0.28) transparent;
+  scrollbar-color: #c86d3b #f2ece3;
+}
+
+/* شريط التمرير المخصّص بهوية الورق والحبر (بدلاً من الشريط الرمادي الافتراضي) */
+.qz-superr-modal-scroll::-webkit-scrollbar {
+  width: 11px;
+}
+
+.qz-superr-modal-scroll::-webkit-scrollbar-track {
+  background-color: #f2ece3;
+  border-radius: 999px;
+  margin-block: 14px;
+  border: 1px solid rgba(43, 39, 35, 0.14);
+}
+
+.qz-superr-modal-scroll::-webkit-scrollbar-thumb {
+  background-color: #c86d3b;
+  border-radius: 999px;
+  border: 2px solid #f2ece3;
+  box-shadow: inset 0 0 0 1px rgba(43, 39, 35, 0.45);
+}
+
+.qz-superr-modal-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: #a6562b;
 }
