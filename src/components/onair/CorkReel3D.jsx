@@ -81,7 +81,7 @@ export default function CorkReel3D({ textureUrl, rotX, rotY, rotZ, className }) 
       const cork = loader.load(textureUrl, () => render())
       cork.colorSpace = THREE.SRGBColorSpace
       cork.wrapS = cork.wrapT = THREE.RepeatWrapping
-      cork.repeat.set(0.55, 0.55)
+      cork.repeat.set(1.3, 1.3)
       cork.anisotropy = renderer.capabilities.getMaxAnisotropy()
       const bump = loader.load(textureUrl, () => render())
       bump.wrapS = bump.wrapT = THREE.RepeatWrapping
@@ -89,7 +89,7 @@ export default function CorkReel3D({ textureUrl, rotX, rotY, rotZ, className }) 
 
       const corkMat = new THREE.MeshStandardMaterial({ map: cork, bumpMap: bump, bumpScale: 2.2, roughness: 0.92, metalness: 0 })
       const sideCork = cork.clone()
-      sideCork.repeat.set(2.4, 0.18)
+      sideCork.repeat.set(5, 0.35)
       sideCork.needsUpdate = true
       const sideMat = new THREE.MeshStandardMaterial({ map: sideCork, bumpMap: bump, bumpScale: 1.4, roughness: 0.9, color: 0xf2d2a8 })
       const woodMat = new THREE.MeshStandardMaterial({ color: 0xd9a066, roughness: 0.55, metalness: 0.05 })
@@ -103,8 +103,8 @@ export default function CorkReel3D({ textureUrl, rotX, rotY, rotZ, className }) 
       const n = 5
       for (let i = 0; i < n; i++) {
         const c = (i / n) * Math.PI * 2 + Math.PI / 2
-        const half = (Math.PI * 2) / n / 2 - 0.2
-        disc.holes.push(windowShape(THREE, c - half, c + half, R * 0.3, R * 0.8, 3))
+        const half = (Math.PI * 2) / n / 2 - 0.3
+        disc.holes.push(windowShape(THREE, c - half, c + half, R * 0.34, R * 0.74, 4))
       }
       const hole = new THREE.Path()
       hole.absarc(0, 0, R * 0.055, 0, Math.PI * 2, true)
