@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import Lenis from 'lenis'
-import LiquidScene from './components/scene/LiquidScene.jsx'
+import GlassBackground from './components/glass/GlassBackground.jsx'
 import SiteNav from './components/nav/SiteNav.jsx'
 import Footer from './components/layout/Footer.jsx'
 import BackToTop from './components/ui/BackToTop.jsx'
@@ -114,7 +114,7 @@ function AppShell({ lenisRef }) {
         انتقل للمحتوى
       </a>
       <LiquidGlassFilters />
-      <LiquidScene />
+      <GlassBackground />
       <SiteNav />
       <main
         id="main"

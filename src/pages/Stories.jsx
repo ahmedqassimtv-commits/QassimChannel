@@ -31,14 +31,14 @@ import ClothRibbon from '../components/stories/ClothRibbon.jsx'
 const IMG = (name) => assetUrl(`/images/stories/structured/${name}`)
 // اللوحة بدقة 4K (3840px) + نسخ أصغر للشاشات الأقل
 const crownSet = (side) => ({
-  src: IMG(`crown-${side}-v4-1200.webp`),
-  srcSet: `${IMG(`crown-${side}-v4-640.webp`)} 640w, ${IMG(`crown-${side}-v4-1200.webp`)} 1200w, ${IMG(`crown-${side}-v4-1800.webp`)} 1800w`,
+  src: IMG(`crown-${side}-v3-1200.webp`),
+  srcSet: `${IMG(`crown-${side}-v3-640.webp`)} 640w, ${IMG(`crown-${side}-v3-1200.webp`)} 1200w, ${IMG(`crown-${side}-v3-1800.webp`)} 1800w`,
 })
 const CROWN_L = crownSet('left')
 const CROWN_R = crownSet('right')
 const PAINTING = {
-  src: IMG('nile-painting-v4-2400.webp'),
-  srcSet: `${IMG('nile-painting-v4-1280.webp')} 1280w, ${IMG('nile-painting-v4-2400.webp')} 2400w, ${IMG('nile-painting-v4-3840.webp')} 3840w`,
+  src: IMG('nile-painting-v3-2400.webp'),
+  srcSet: `${IMG('nile-painting-v3-1280.webp')} 1280w, ${IMG('nile-painting-v3-2400.webp')} 2400w, ${IMG('nile-painting-v3-3840.webp')} 3840w`,
 }
 
 const EASE = [0.22, 1, 0.36, 1]
